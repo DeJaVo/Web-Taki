@@ -1,11 +1,11 @@
 <?php
-require_once('DataBase.php');
+include_once('DataBase.php');
 
-class TakiModel
+class taki_model
 {
-     private $db = null;
+     private $db;
 
-    function create_account($data)
+    /*function create_account($data)
     {
         create_database();
 
@@ -42,10 +42,23 @@ class TakiModel
 
             }
         }
+    }*/
+
+    public function taki_model()
+    {
+        $this->db= new data_base();
     }
 
-    function create_database()
+    function search_user()
     {
-        $this->db = DataBase::Instance();
+        $str='Sheira';
+        echo $this->db->search_user($str);
     }
+
+    function insert_new_player()
+    {
+        $str='Sheira';
+        $this->db->insert_new_player($str,'123456','123456');
+    }
+
 }

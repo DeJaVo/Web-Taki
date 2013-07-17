@@ -4,7 +4,7 @@ class View
     private $model;
     private $controller;
 
-    public function __construct($controller,$model) {
+    public function construct($controller,$model) {
         $this->controller = $controller;
         $this->model = $model;
     }

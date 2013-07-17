@@ -1,14 +1,12 @@
 <?php
-class Controller
+class controller
 {
     private $model;
 
-    public function construct($model) {
-        $this->model = $model;
-    }
-    public function signup_process()
-    {
-
+    public function controller() {
+        $this->model = new taki_model();
+        $this->model->insert_new_player();
+        $this->model->search_user();
     }
 
 }

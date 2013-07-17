@@ -1,18 +1,6 @@
 <?php
-class DataBase
+class data_base
 {
-    //Create a singleton
-    //return DataBase object
-    public static function Instance()
-    {
-        static $inst = null;
-        if($inst === null)
-        {
-            $inst = new DataBase();
-        }
-        return $inst;
-    }
-
     //Constructor
     public function data_base()
     {
@@ -90,13 +78,13 @@ class DataBase
         return;
     }
 
-    public function InsertNewPlayer($username, $password, $nickname) {
+    public function insert_new_player($username, $password, $nickname) {
         $con=mysqli_connect("","root","","taki_db");
         if (mysqli_connect_errno())
         {
             echo "Failed to connect to MySQL: " . mysqli_connect_error();
         }
-        mysqli_query($con,"INSERT INTO players (username, password, nickname) VALUES ($username, $password, $nickname)");
+        mysqli_query($con,"INSERT INTO players (username, password, nickname) VALUES ('$username', '$password', '$nickname')");
         mysqli_close($con);
     }
     public function search_user($user)
@@ -107,7 +95,7 @@ class DataBase
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error();
         }
-        $result = mysqli_query($con,"SELECT * FROM players WHERE 'username'=$user");
+        $result = mysqli_query($con,"SELECT * FROM players WHERE 'username'='$user'");
         $row = mysqli_fetch_array($result);
         mysqli_close($con);
        return array ($row['username'],$row['password'],$row['nickname']);
