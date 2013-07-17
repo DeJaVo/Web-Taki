@@ -3,7 +3,12 @@ class Controller
 {
     private $model;
 
-    public function __construct($model) {
+    public function construct($model) {
         $this->model = $model;
     }
+    public function signup_process()
+    {
+
+    }
+
 }

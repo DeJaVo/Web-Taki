@@ -7,3 +7,5 @@ $model = new TakiModel();
 $controller = new Controller($model);
 $view = new View($controller, $model);
 echo $view->output();
+
+?>
