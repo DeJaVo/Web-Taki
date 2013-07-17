@@ -89,6 +89,8 @@ class DataBase
 
 }
 
+print(hello);
+
 print("hello");
 //$data = DataBase::Instance();
 
