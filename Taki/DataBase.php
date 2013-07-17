@@ -83,4 +83,12 @@ class DataBase
         return;
     }
 
+    public function InsertNewPlayer() {
+
+    }
+
 }
+
+print("hello");
+//$data = DataBase::Instance();
+
