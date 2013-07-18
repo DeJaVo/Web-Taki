@@ -51,14 +51,12 @@ class taki_model
 
     function search_user()
     {
-        echo "search_user<br>";
         $str='Sheira';
         print_r($this->db->search_user($str));
     }
 
     function insert_new_player()
     {
-        echo "insert new player<br>";
         $this->db->insert_new_player('Sheira','123456','123456');
     }
 
