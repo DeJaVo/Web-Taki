@@ -9,10 +9,9 @@ class data_base
         // Check connection
         if (mysqli_connect_errno($con))
         {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error();
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
             //TODO:deal with error
         }
-
         $sql="CREATE DATABASE taki_db";
         if (mysqli_query($con,$sql))
         {
@@ -21,7 +20,7 @@ class data_base
         else
         {
             //TODO: deal with error
-            echo "Error creating database: taki_db <br>" . mysqli_error($con);
+            echo "Error creating database: taki_db <br>" . mysqli_error($con)."<br>";
         }
 
         /////////////////////Create Tables////////////////////
@@ -31,7 +30,7 @@ class data_base
         // Check connection
         if (mysqli_connect_errno())
         {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error();
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         // Create table
         $sql="CREATE TABLE games
@@ -60,7 +59,7 @@ class data_base
         $sql="CREATE TABLE players
 	    (
             username VARCHAR(200) NOT NULL,
-            PRIMARY KEY(username),password BLOB,
+            PRIMARY KEY(username),user_password BLOB,
             nick_name TEXT, num_of_games INT, num_of_wins INT,
             num_of_loses INT,average_num_of_cards_per_game DOUBLE
 	    )";
@@ -70,7 +69,7 @@ class data_base
         }
         else
         {
-            echo "Error creating table: Players<br>" . mysqli_error($con);
+            echo "Error creating table: Players<br>" . mysqli_error($con)."<br>";
             //TODO:deal with error
         }
         //close the connection
@@ -82,9 +81,9 @@ class data_base
         $con=mysqli_connect("","root","","taki_db");
         if (mysqli_connect_errno())
         {
-            echo "Failed to connect to MySQL: " . mysqli_connect_error();
+            echo "Failed to connect to MySQL: " . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"INSERT INTO players (username, password, nickname) VALUES ('$username', '$password', '$nickname')");
+        mysqli_query($con,"INSERT INTO players (username, user_password, nick_name) VALUES ('$username', '$password', '$nickname')");
         mysqli_close($con);
     }
     public function search_user($user)
@@ -93,12 +92,12 @@ class data_base
         // Check connection
         if (mysqli_connect_errno())
         {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error();
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT * FROM players WHERE 'username'='$user'");
+        $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$user'");
         $row = mysqli_fetch_array($result);
         mysqli_close($con);
-       return array ($row['username'],$row['password'],$row['nickname']);
+       return array ($row['username'],$row['user_password'],$row['nick_name']);
     }
 }
 

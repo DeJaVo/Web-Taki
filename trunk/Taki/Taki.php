@@ -5,6 +5,6 @@ include_once('controller.php');
 
 $model = new taki_model();
 $controller = new controller($model);
-$view = new View($controller, $model);
+
 
 
