@@ -1,7 +1,8 @@
 <?php
 class data_base
 {
-    //Constructor
+    private $key = 'ASKSDFNSDFKEISDJAHDLDSDF1235UUUiidfsdf';
+    //Constructor (Creates connection, database and tables
     public function data_base()
     {
         ////////////////////CREATE NEW DB ///////////////////////
@@ -77,15 +78,18 @@ class data_base
         return;
     }
 
+    //Insert New Player + encrypt password
     public function insert_new_player($username, $password, $nickname) {
         $con=mysqli_connect("","root","","taki_db");
         if (mysqli_connect_errno())
         {
             echo "Failed to connect to MySQL: " . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"INSERT INTO players (username, user_password, nick_name) VALUES ('$username', '$password', '$nickname')");
+        mysqli_query($con,"INSERT INTO players (username, user_password, nick_name) VALUES ('$username', AES_ENCRYPT('$password','$this->key'), '$nickname')");
         mysqli_close($con);
     }
+
+    // Search User
     public function search_user($user)
     {
         $con=mysqli_connect("","root","","taki_db");
@@ -94,10 +98,13 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$user'");
+        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_descrypt FROM players WHERE username ='$user'");
         $row = mysqli_fetch_array($result);
         mysqli_close($con);
-       return array ($row['username'],$row['user_password'],$row['nick_name']);
+       return array ($row['username'],$row['pass_descrypt'],$row['nick_name']);
     }
+
+
 }
+
 
