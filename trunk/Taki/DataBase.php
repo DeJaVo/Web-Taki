@@ -40,8 +40,8 @@ class data_base
             PRIMARY KEY(game_id),
             playerA_id INT NOT NULL,
             playerB_id INT NOT NULL,
-            cards_A TEXT,highest_number_of_cards_A INT, cards_B TEXT,highest_number_of_cards_B INT,
-            last_open_card TEXT , closed_cards TEXT , turn INT, sum_of_turns INT,winner INT,
+            cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
+            last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP
         )";
         if (mysqli_query($con,$sql))
@@ -61,8 +61,8 @@ class data_base
 	    (
             username VARCHAR(200) NOT NULL,
             PRIMARY KEY(username),user_password BLOB,
-            nick_name TEXT, num_of_games INT, num_of_wins INT,
-            num_of_loses INT,average_num_of_cards_per_game DOUBLE
+            nick_name TEXT, num_of_games INT DEFAULT '0', num_of_wins INT DEFAULT '0',
+            num_of_loses INT DEFAULT '0',average_num_of_cards_per_game DOUBLE DEFAULT '0.0'
 	    )";
         if (mysqli_query($con,$sql))
         {
@@ -79,7 +79,7 @@ class data_base
     }
 
     //Insert New Player + encrypt password
-    public function insert_new_player($username, $password, $nickname) {
+    public function db_insert_new_player($username, $password, $nickname) {
         $con=mysqli_connect("","root","","taki_db");
         if (mysqli_connect_errno())
         {
@@ -90,7 +90,7 @@ class data_base
     }
 
     // Search User
-    public function search_user($user)
+    public function db_search_user_by_username($user)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
@@ -105,7 +105,7 @@ class data_base
     }
 
     //Check User
-    public function check_user($username,$password,$nickname)
+    public function db_find_user_by_parms($username,$password,$nickname)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
