@@ -113,9 +113,10 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$username',pass_decrypt='$password',nick_name='$nickname'");
+        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$username'&& pass_decrypt='$password' && nick_name='$nickname'");
         if(!$result)
         {
+            mysqli_close($con);
             return false;
         }
         mysqli_close($con);
