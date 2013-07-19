@@ -28,19 +28,19 @@ class login
                 }
                 else
                 {
-                    printfjs("alert('Error! incorrect information, please enter new details");
+                    die("Error! incorrect information, please enter new details");
                     return false;
                 }
             }
             else
             {
-                printfjs("alert('Error! please fill the missing fields");
+                die("Error! please fill the missing fields");
                 return false;
             }
         }
         else
         {
-           printfjs("alert('Error!");
+           die("Error!");
             return false;
         }
     }
