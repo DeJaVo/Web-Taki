@@ -27,7 +27,7 @@ class signup
                 }
                 $this->model->tm_insert_new_player($username,$password,$nickname);
                 //TODO : go to login
-
+                header('Refresh: 5; URL=http://localhost/login.html');
             }
             else
             {

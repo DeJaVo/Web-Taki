@@ -24,6 +24,7 @@ class login
                 if($this->model->tm_find_user_by_params($username,$password,$nickname))
                 {
                     //TODO: go to waiting room
+                    header('Refresh: 5; URL=http://localhost/waitingroom.html');
                     return true;
                 }
                 else
