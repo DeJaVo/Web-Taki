@@ -47,3 +47,7 @@ class login
     }
 
 }
+
+$model = new taki_model();
+$login = new login($model);
+$login->login_find_user_by_params();
