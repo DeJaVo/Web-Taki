@@ -98,13 +98,29 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_descrypt FROM players WHERE username ='$user'");
+        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$user'");
         $row = mysqli_fetch_array($result);
         mysqli_close($con);
-       return array ($row['username'],$row['pass_descrypt'],$row['nick_name']);
+       return array ($row['username'],$row['pass_decrypt'],$row['nick_name']);
     }
 
-
+    //Check User
+    public function check_user($username,$password,$nickname)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$username',pass_decrypt='$password',nick_name='$nickname'");
+        if(!$result)
+        {
+            return false;
+        }
+        mysqli_close($con);
+        return true;
+    }
 }
 
 
