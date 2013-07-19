@@ -7,7 +7,7 @@ class taki_model
 
     /*function create_account($data)
     {
-        create_database();
+
 
         if(isset($_POST['submit']))
         {
@@ -44,20 +44,36 @@ class taki_model
         }
     }*/
 
+    //C'tor
     public function taki_model()
     {
         $this->db= new data_base();
     }
 
-    function search_user()
+    //Search Player in DB
+    function search_user($str)
     {
-        $str='Sheira';
-        print_r($this->db->search_user($str));
+        if($this->db->search_user($str))
+        {
+            return true;
+        }
+        return false;
     }
 
+    //Insert New Player
     function insert_new_player()
     {
         $this->db->insert_new_player('Sheira','123456','123456');
+    }
+
+    //Check if user exist in DB, its nickname and password are matched
+    function check_user($username, $password,$nickname)
+    {
+        if($this->db->check_user($username,$password,$nickname))
+        {
+            return true;
+        }
+        return false;
     }
 
 }
