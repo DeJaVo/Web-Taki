@@ -37,3 +37,6 @@ class signup
     }
 }
 
+$model = new taki_model();
+$signup = new signup($model);
+$signup->signup_insert_new_user();

@@ -13,7 +13,7 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
             //TODO:deal with error
         }
-        $sql="CREATE DATABASE taki_db";
+        $sql="CREATE DATABASE IF NOT EXISTS taki_db";
         if (mysqli_query($con,$sql))
         {
             echo "Database taki_db created successfully<br>";
@@ -34,7 +34,7 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         // Create table
-        $sql="CREATE TABLE games
+        $sql="CREATE TABLE IF NOT EXISTS games
         (
             game_id  INT NOT NULL AUTO_INCREMENT,
             PRIMARY KEY(game_id),
@@ -57,7 +57,7 @@ class data_base
         //create Players Table
         //TODO:update average after each game
         //TODO: when entering new password use AES_ENCRYPT
-        $sql="CREATE TABLE players
+        $sql="CREATE TABLE IF NOT EXISTS players
 	    (
             username VARCHAR(200) NOT NULL,
             PRIMARY KEY(username),user_password BLOB,
