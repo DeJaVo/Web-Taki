@@ -9,7 +9,7 @@ class login
         $this->model=$model;
     }
 
-    public function search_user()
+    function login_find_user_by_params()
     {
         if(isset($_POST['submit']))
         {
@@ -21,7 +21,7 @@ class login
             if(!empty($username) && !empty($password) &&!empty($nickname))
             {
                 //search user in database
-                if($this->model->check_user($username,$password,$nickname))
+                if($this->model->tm_find_user_by_params($username,$password,$nickname))
                 {
                     //TODO: go to waiting room
                     return true;

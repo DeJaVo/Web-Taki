@@ -1,21 +1,45 @@
 //create account fields: username password nickname
-<? include("Taki.php")?>
 <?php
-$data = $_POST;
-$min_length = 5;
-if ( $data['username'] ) {
-    $username = mysql_real_escape_string($data['username']);
+include_once('TakiModel.php');
+
+class signup
+{
+    private $model;
+    public function signup($model)
+    {
+        $this->model=$model;
+    }
+
+    function signup_insert_new_user()
+    {
+        $min_length = 5;
+        $username = mysql_real_escape_string($_POST['username']);
+        $password = mysql_real_escape_string($_POST['password']);
+        $nickname = mysql_real_escape_string($_POST['nickname']);
+        if(!empty($username) && !empty($password) &&!empty($nickname))
+        {
+            if($this->model->tm_search_user_by_username($username))
+            {
+                $length = strlen($password);
+                if ($length < $min_length )
+                {
+                    die("Error! Please, Write a longer password (more than 5 chars)");
+                }
+                $this->model->tm_insert_new_player($username,$password,$nickname);
+                //TODO : go to login
+
+            }
+            else
+            {
+                die("Error! username already exists, please choose a different username");
+            }
+        }
+    }
 }
-if ( $data['password'] ) {
-    $pass = mysql_real_escape_string($data['password']);
-    $length = strlen($pass);
-    if ($length < $min_length )
-    {}
-        //TODO: deal with this case
-}
-if ( $data['nickname'] ) {
-    $nickname = mysql_real_escape_string($data['nickname']);
-}
+
+
+
+
 
 
 

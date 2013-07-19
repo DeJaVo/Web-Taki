@@ -3,7 +3,7 @@ include_once('DataBase.php');
 
 class taki_model
 {
-     private $db;
+    private $db;
 
     /*function create_account($data)
     {
@@ -51,9 +51,9 @@ class taki_model
     }
 
     //Search Player in DB
-    function search_user($str)
+    function tm_search_user_by_username($str)
     {
-        if($this->db->search_user($str))
+        if($this->db->db_search_user_by_username($str))
         {
             return true;
         }
@@ -61,15 +61,15 @@ class taki_model
     }
 
     //Insert New Player
-    function insert_new_player()
+    function tm_insert_new_player($username,$password,$nickname)
     {
-        $this->db->insert_new_player('Sheira','123456','123456');
+        $this->db->db_insert_new_player($username,$password,$nickname);
     }
 
     //Check if user exist in DB, its nickname and password are matched
-    function check_user($username, $password,$nickname)
+    function tm_find_user_by_params($username, $password,$nickname)
     {
-        if($this->db->check_user($username,$password,$nickname))
+        if($this->db->db_find_user_by_parms($username,$password,$nickname))
         {
             return true;
         }
