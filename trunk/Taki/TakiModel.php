@@ -36,4 +36,7 @@ class taki_model
         return false;
     }
 
+    function tm_update_player($username, $user_password ,$nick_name, $num_of_games, $num_of_wins, $num_of_loses,$average_num_of_cards_per_game) {
+        $this->db->db_update_player($username, $user_password ,$nick_name, $num_of_games, $num_of_wins, $num_of_loses,$average_num_of_cards_per_game);
+    }
 }
