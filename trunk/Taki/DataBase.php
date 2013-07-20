@@ -122,6 +122,19 @@ class data_base
         mysqli_close($con);
         return true;
     }
-}
 
+    //Insert new game
+    //TODO: calculate sum of turns and game start time and finish time
+    public function db_insert_new_game($game_id,$player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        mysqli_query($con,"INSERT INTO games ( game_id,playerA_id,playerB_id,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner) VALUES ('$game_id','$player_a','$player_b','$cardsA','$highest_num_of_cards_a','$cardsB,$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner')");
+        mysqli_close($con);
+    }
+}
 
