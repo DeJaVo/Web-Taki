@@ -100,8 +100,12 @@ class data_base
         }
         $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$user'");
         $row = mysqli_fetch_array($result);
+        $result = array();
+        foreach($row as $k => $v) {
+            array_push($result, $k, $v);
+        }
         mysqli_close($con);
-       return array ($row['username'],$row['pass_decrypt'],$row['nick_name']);
+       return $result;
     }
 
     //Check User
@@ -136,5 +140,17 @@ class data_base
         mysqli_query($con,"INSERT INTO games ( game_id,playerA_id,playerB_id,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner) VALUES ('$game_id','$player_a','$player_b','$cardsA','$highest_num_of_cards_a','$cardsB,$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner')");
         mysqli_close($con);
     }
+
+    public function db_update_player($username, $user_password ,$nick_name, $num_of_games, $num_of_wins, $num_of_loses,$average_num_of_cards_per_game) {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+
+        mysqli_query($con,"UPDATE players SET 'nickname'=$nick_name, 'num_of_games'=$num_of_games, 'num_of_wins'=$num_of_wins, 'num_of_loses'=$num_of_loses,'average_num_of_cards_per_game'=$average_num_of_cards_per_game WHERE 'username'=$username");
+        mysqli_close($con);
+    }
+
 }
 
