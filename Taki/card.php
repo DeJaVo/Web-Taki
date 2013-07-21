@@ -3,15 +3,31 @@ include_once('TakiModel.php');
 
 
 class card {
-    private $num;
+    const path = "\\www\\Taki\\TakiImages\\";
+    private $sign;
     private $color;
-    private $special_sign;
-    private $pic;
 
-    public function card($num, $col, $special_sign,$pic) {
-        $this->num= $num;
-        $this->color= $col;
-        $this->special_sign = $special_sign;
-        $this->pic = $pic;
+
+    public function card($sign, $color) {
+        $this->sign= $sign;
+        $this->color= $color;
+        $this->pic = self::path.$this->color."\\".$sign;
+    }
+
+    //getter
+    public function __get($property)
+    {
+        if(property_exists($this, $property)){
+             return $this->property;
+        }
+    }
+
+    //setter
+    public function __set($property, $value)
+    {
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
+        }
+        return $this;
     }
 }
