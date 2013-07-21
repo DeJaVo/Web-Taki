@@ -67,7 +67,7 @@ class game {
     }
 
     //Initialize all cards
-    private function game_init_all_cards() {
+    public function game_init_all_cards() {
         //creating all regular cards
         $i =1;
         for(;$i<=9;$i++){
@@ -109,7 +109,7 @@ class game {
     }
 
     //Update players record when game ends
-    private function game_ends () {
+    public function game_ends () {
         //update each player's record
         $a_data =$this->model->tm_search_user_by_username($this->player_a);
         list($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game) = $a_data;

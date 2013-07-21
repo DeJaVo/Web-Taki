@@ -153,5 +153,20 @@ class data_base
         mysqli_close($con);
     }
 
+    //Delete Game Record
+    public function db_delete_game_record($game_id)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_query($con,"SELECT * FROM games WHERE game_id='$game_id'");
+        if(!$result)
+        {
+            mysqli_query($con,"DELETE FROM games WHERE game_id='$game_id'");
+        }
+        mysqli_close($con);
+    }
 }
 
