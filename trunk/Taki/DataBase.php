@@ -42,7 +42,7 @@ class data_base
             playerB_id INT NOT NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
-            game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP
+            game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
         )";
         if (mysqli_query($con,$sql))
         {
@@ -109,7 +109,7 @@ class data_base
     }
 
     //Check User
-    public function db_find_user_by_parms($username,$password,$nickname)
+    public function db_find_user_by_params($username,$password,$nickname)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
@@ -149,7 +149,7 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
 
-        mysqli_query($con,"UPDATE players SET 'num_of_games'=$num_of_games, 'num_of_wins'=$num_of_wins, 'num_of_loses'=$num_of_loses,'average_num_of_cards_per_game'=$average_num_of_cards_per_game WHERE 'username'=$username");
+        mysqli_query($con,"UPDATE players SET num_of_games='$num_of_games', num_of_wins='$num_of_wins', num_of_loses='$num_of_loses',average_num_of_cards_per_game='$average_num_of_cards_per_game' WHERE username='$username'");
         mysqli_close($con);
     }
 
@@ -166,6 +166,56 @@ class data_base
         {
             mysqli_query($con,"DELETE FROM games WHERE game_id='$game_id'");
         }
+        mysqli_close($con);
+    }
+
+/*    //Find game data by player id
+    public function db_search_player_data_in_games_by_player_id($player_id)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_query($con,"SELECT * FROM games WHERE  (playerA_id!=playerB_id)&&(playerA_id='$player_id' ||  playerB_id='$player_id')");
+        $row = mysqli_fetch_array($result);
+        $result = array();
+        foreach($row as $k => $v) {
+            array_push($result, $k, $v);
+        }
+        mysqli_close($con);
+        return $result;
+    }*/
+
+    //Find game by game id
+    public function db_search_game_by_game_id($game_id)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_query($con,"SELECT * FROM games WHERE  game_id='$game_id'");
+        $row = mysqli_fetch_array($result);
+        $result = array();
+        foreach($row as $k => $v) {
+            array_push($result, $k, $v);
+        }
+        mysqli_close($con);
+        return (String)$result;
+    }
+
+
+    //Update Game record in games table
+    public function db_update_game($game_id,$cards_A,$highest_number_of_cards_A,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
+    {
+
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two ' WHERE game_id='$game_id'");
         mysqli_close($con);
     }
 }

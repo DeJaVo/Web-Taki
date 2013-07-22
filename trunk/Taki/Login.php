@@ -25,24 +25,20 @@ class login
                 {
                     //TODO: go to waiting room
                     header('Refresh: 5; URL=http://localhost/waitingroom.html');
-                    return true;
                 }
                 else
                 {
                     die("Error! incorrect information, please enter new details");
-                    return false;
                 }
             }
             else
             {
                 die("Error! please fill the missing fields");
-                return false;
             }
         }
         else
         {
            die("Error!");
-            return false;
         }
     }
 
