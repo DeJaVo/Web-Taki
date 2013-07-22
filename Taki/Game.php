@@ -6,6 +6,7 @@ include_once('card.php');
 class game {
 
     private $model;
+    private $game_id = 0 ;
     private $player_a = NULL;
     private $player_b = NULL;
     private $cards_a = NULL;                  //list of a's cards
@@ -20,18 +21,20 @@ class game {
     private $game_start_time = NULL;
     private $game_finish_time = NULL;
     private $all_cards = NULL;
+    private $sequential_two = 0;              //number of two's in a row
 
 
     //C'tor
     public function game($model) {
         $this->model = $model;
         $this->all_cards = array();
-        $this->cards_a - array();
-        $this->cards_b - array();
+        $this->cards_a = array();
+        $this->cards_b = array();
         $this->closed_cards= array();
-
     }
+
     //initialize a new game, and insert it into DB.
+    //TODO:initialize first open card randomly
     public  function game_starts ($player_a, $player_b) {
         $a_cards = array();
         $b_cards = array();
@@ -63,7 +66,7 @@ class game {
         $this->game_start_time = date("d:m:y h:i:s ");
 
         // insert new game to DB
-        $this->model->db->db_insert_new_game($this->player_a,$this->player_b,$this->cards_a,$this->highest_num_cards_a,$this->cards_b,$this->highest_num_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner);
+        $this->model->tm_insert_new_game($this->player_a,$this->player_b,$this->cards_a,$this->highest_num_cards_a,$this->cards_b,$this->highest_num_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner);
     }
 
     //Initialize all cards
@@ -134,4 +137,6 @@ class game {
         $this->model->tm_update_player($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
         //TODO: think about deleting the game record
     }
+
+
 }
