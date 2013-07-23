@@ -1,6 +1,9 @@
 <?php
 include_once('DataBase.php');
 
+if(!isset($_SESSION)){ session_start(); }
+
+
 class taki_model
 {
     private $db;
@@ -13,7 +16,12 @@ class taki_model
     //Search Player in DB
     public function tm_search_user_by_username($str)
     {
-        return $this->db->db_search_user_by_username($str);
+        $result=$this->db->db_search_user_by_username($str);
+        if($result)
+        {
+            return true;
+        }
+        return false;
     }
 
     //Insert New Player
@@ -25,7 +33,8 @@ class taki_model
     //Check if user exist in DB, its nickname and password are matched
     public function tm_find_user_by_params($username, $password,$nickname)
     {
-        if($this->db->db_find_user_by_params($username,$password,$nickname))
+        $result = $this->db->db_find_user_by_params($username,$password,$nickname);
+        if($result)
         {
             return true;
         }
