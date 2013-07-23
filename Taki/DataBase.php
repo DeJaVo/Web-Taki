@@ -1,4 +1,10 @@
 <?php
+require_once("member_site_config.php");
+if(!$config->check_login())
+{
+    header('URL=http://localhost/Taki/login.php');
+}
+
 class data_base
 {
     private $key = 'ASKSDFNSDFKEISDJAHDLDSDF1235UUUiidfsdf';
@@ -13,28 +19,31 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
             //TODO:deal with error
         }
-        $sql="CREATE DATABASE IF NOT EXISTS taki_db";
-        if (mysqli_query($con,$sql))
+        if (!mysqli_select_db($con,'taki_db'))
         {
-            echo "Database taki_db created successfully<br>";
-        }
-        else
-        {
-            //TODO: deal with error
-            echo "Error creating database: taki_db <br>" . mysqli_error($con)."<br>";
-        }
+            echo("<br>creating database!<br>");
+            $sql="CREATE DATABASE IF NOT EXISTS taki_db";
+            if (mysqli_query($con,$sql))
+            {
+                echo "Database taki_db created successfully<br>";
+            }
+            else
+            {
+                //TODO: deal with error
+                echo "Error creating database: taki_db <br>" . mysqli_error($con)."<br>";
+            }
 
-        /////////////////////Create Tables////////////////////
-        //create Games Table
-        //TODO: when game finishes we need to update game finish time
-        $con=mysqli_connect("","root","","taki_db");
-        // Check connection
-        if (mysqli_connect_errno())
-        {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
-        }
-        // Create table
-        $sql="CREATE TABLE IF NOT EXISTS games
+            /////////////////////Create Tables////////////////////
+            //create Games Table
+            //TODO: when game finishes we need to update game finish time
+            $con=mysqli_connect("","root","","taki_db");
+            // Check connection
+            if (mysqli_connect_errno())
+            {
+                echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+            }
+            // Create table
+            $sql="CREATE TABLE IF NOT EXISTS games
         (
             game_id  INT NOT NULL AUTO_INCREMENT,
             PRIMARY KEY(game_id),
@@ -44,34 +53,35 @@ class data_base
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
         )";
-        if (mysqli_query($con,$sql))
-        {
-            echo "table Games created successfully<br>";
-        }
-        else
-        {
-            echo "Error creating table: Games <br>" . mysqli_error($con);
-            //TODO: Deal with error
-        }
+            if (mysqli_query($con,$sql))
+            {
+                echo "table Games created successfully<br>";
+            }
+            else
+            {
+                echo "Error creating table: Games <br>" . mysqli_error($con);
+                //TODO: Deal with error
+            }
 
-        //create Players Table
-        //TODO:update average after each game
-        //TODO: when entering new password use AES_ENCRYPT
-        $sql="CREATE TABLE IF NOT EXISTS players
+            //create Players Table
+            //TODO:update average after each game
+            //TODO: when entering new password use AES_ENCRYPT
+            $sql="CREATE TABLE IF NOT EXISTS players
 	    (
             username VARCHAR(200) NOT NULL,
             PRIMARY KEY(username),user_password BLOB,
             nick_name TEXT, num_of_games INT DEFAULT '0', num_of_wins INT DEFAULT '0',
             num_of_loses INT DEFAULT '0',average_num_of_cards_per_game DOUBLE DEFAULT '0.0'
 	    )";
-        if (mysqli_query($con,$sql))
-        {
-            echo "table Players created successfully<br>";
-        }
-        else
-        {
-            echo "Error creating table: Players<br>" . mysqli_error($con)."<br>";
-            //TODO:deal with error
+            if (mysqli_query($con,$sql))
+            {
+                echo "table Players created successfully<br>";
+            }
+            else
+            {
+                echo "Error creating table: Players<br>" . mysqli_error($con)."<br>";
+                //TODO:deal with error
+            }
         }
         //close the connection
         mysqli_close($con);
@@ -101,11 +111,14 @@ class data_base
         $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$user'");
         $row = mysqli_fetch_array($result);
         $result = array();
-        foreach($row as $k => $v) {
-            array_push($result, $k, $v);
+        if(is_array($row))
+        {
+            foreach($row as $k => $v) {
+                array_push($result, $k, $v);
+            }
         }
         mysqli_close($con);
-       return $result;
+        return $result;
     }
 
     //Check User
@@ -117,7 +130,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$username'&& pass_decrypt='$password' && nick_name='$nickname'");
+        $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$username'AND AES_DECRYPT(user_password,'$this->key')='$password' AND nick_name='$nickname'");
         if(!$result)
         {
             mysqli_close($con);
@@ -169,23 +182,23 @@ class data_base
         mysqli_close($con);
     }
 
-/*    //Find game data by player id
-    public function db_search_player_data_in_games_by_player_id($player_id)
-    {
-        $con=mysqli_connect("","root","","taki_db");
-        if (mysqli_connect_errno())
+    /*    //Find game data by player id
+        public function db_search_player_data_in_games_by_player_id($player_id)
         {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
-        }
-        $result=mysqli_query($con,"SELECT * FROM games WHERE  (playerA_id!=playerB_id)&&(playerA_id='$player_id' ||  playerB_id='$player_id')");
-        $row = mysqli_fetch_array($result);
-        $result = array();
-        foreach($row as $k => $v) {
-            array_push($result, $k, $v);
-        }
-        mysqli_close($con);
-        return $result;
-    }*/
+            $con=mysqli_connect("","root","","taki_db");
+            if (mysqli_connect_errno())
+            {
+                echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+            }
+            $result=mysqli_query($con,"SELECT * FROM games WHERE  (playerA_id!=playerB_id)&&(playerA_id='$player_id' ||  playerB_id='$player_id')");
+            $row = mysqli_fetch_array($result);
+            $result = array();
+            foreach($row as $k => $v) {
+                array_push($result, $k, $v);
+            }
+            mysqli_close($con);
+            return $result;
+        }*/
 
     //Find game by game id
     public function db_search_game_by_game_id($game_id)
@@ -218,5 +231,7 @@ class data_base
         mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two ' WHERE game_id='$game_id'");
         mysqli_close($con);
     }
+
+
 }
 

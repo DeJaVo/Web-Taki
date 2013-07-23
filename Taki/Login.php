@@ -1,21 +1,42 @@
 <?php
 include_once('TakiModel.php');
+include_once('member_site_config.php');
 
 class login
 {
     private $model;
+    private $config;
 
     public function login($model) {
         $this->model=$model;
+        $this->config=new member_site_config();
     }
 
     function login_find_user_by_params()
     {
-        if(isset($_POST['submit']))
+        $submit = trim($_POST['submit']);
+        if(isset($submit))
         {
-            $username = mysql_real_escape_string($_POST['username']);
-            $password = mysql_real_escape_string($_POST['password']);
-            $nickname = mysql_real_escape_string($_POST['nickname']);
+            $username = mysql_real_escape_string(trim($_POST['username']));
+            $password = mysql_real_escape_string(trim($_POST['password']));
+            $nickname = mysql_real_escape_string(trim($_POST['nickname']));
+            if(empty($username))
+            {
+                $this->login_handle_error('UserName is empty, please fill username field');
+                return false;
+            }
+            if(empty($password))
+            {
+                $this->login_handle_error("Password is empty, please fill password field");
+                return false;
+            }
+            if(empty($nickname))
+            {
+                $this->login_handle_error("Nickname is empty, please fill nickname field");
+                return false;
+            }
+
+            if(!isset($_SESSION)){ session_start(); }
 
             //check to make sure that the username,password and nickname fields are not empty.
             if(!empty($username) && !empty($password) &&!empty($nickname))
@@ -23,23 +44,33 @@ class login
                 //search user in database
                 if($this->model->tm_find_user_by_params($username,$password,$nickname))
                 {
+                    echo("<br> Connecting.... <br>");
+                    $_SESSION[$this->config->get_login_session_var()] = $username;
                     //TODO: go to waiting room
-                    header('Refresh: 5; URL=http://localhost/waitingroom.html');
+                    header('Refresh: 5; URL=http://localhost/Taki/waitingroom.html');
                 }
                 else
                 {
-                    die("Error! incorrect information, please enter new details");
+                    $this->login_handle_error("Error! incorrect information, please enter new details");
                 }
             }
             else
             {
-                die("Error! please fill the missing fields");
+                $this->login_handle_error("Error! please fill the missing fields");
             }
         }
         else
         {
-           die("Error!");
+            $this->login_handle_error("Error!");
         }
+    }
+
+    //Handle_Error
+    private function login_handle_error($message)
+    {
+        echo "<SCRIPT>
+                alert('$message');
+            </SCRIPT>";
     }
 
 }
