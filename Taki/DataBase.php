@@ -131,7 +131,8 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$username'AND AES_DECRYPT(user_password,'$this->key')='$password' AND nick_name='$nickname'");
-        if(!$result)
+        $row = mysqli_fetch_array($result);
+        if(empty($row))
         {
             mysqli_close($con);
             return false;
