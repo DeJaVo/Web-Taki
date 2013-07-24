@@ -6,75 +6,110 @@ class login
 {
     private $model;
     private $config;
+    private $username;
+    private $password;
+    private $nickname;
 
-    public function login($model) {
+    public function login($model,$username,$password,$nickname) {
         $this->model=$model;
         $this->config=new member_site_config();
+        $this->username=$username;
+        $this->password=$password;
+        $this->nickname=$nickname;
     }
 
+    //Login
     function login_find_user_by_params()
     {
-        $submit = trim($_POST['submit']);
-        if(isset($submit))
+        if(!isset($_SESSION)){ session_start(); }
+
+        //check to make sure that the username,password and nickname fields are not empty.
+        if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
-            $username = mysql_real_escape_string(trim($_POST['username']));
-            $password = mysql_real_escape_string(trim($_POST['password']));
-            $nickname = mysql_real_escape_string(trim($_POST['nickname']));
-            if(empty($username))
+            //search user in database
+            if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
             {
-                $this->login_handle_error('UserName is empty, please fill username field');
-                return false;
-            }
-            if(empty($password))
-            {
-                $this->login_handle_error("Password is empty, please fill password field");
-                return false;
-            }
-            if(empty($nickname))
-            {
-                $this->login_handle_error("Nickname is empty, please fill nickname field");
-                return false;
-            }
-
-            if(!isset($_SESSION)){ session_start(); }
-
-            //check to make sure that the username,password and nickname fields are not empty.
-            if(!empty($username) && !empty($password) &&!empty($nickname))
-            {
-                //search user in database
-                if($this->model->tm_find_user_by_params($username,$password,$nickname))
-                {
-                    echo("<br> Connecting.... <br>");
-                    $_SESSION[$this->config->get_login_session_var()] = $username;
-                    //TODO: go to waiting room
-                    header('Refresh: 5; URL=http://localhost/Taki/waitingroom.html');
-                }
-                else
-                {
-                    $this->login_handle_error("Error! incorrect information, please enter new details");
-                }
+                echo("<br> Connecting.... <br>");
+                $_SESSION[$this->config->get_login_session_var()] = $this->username;
+                header('Refresh: 5; URL=http:../Taki/waitingroom.html');
             }
             else
             {
-                $this->login_handle_error("Error! please fill the missing fields");
+                $this->model->tm_handle_error("Error! please register first");
+                header('Refresh: 5; URL=../Taki/login.html');
             }
         }
         else
         {
-            $this->login_handle_error("Error!");
+            $this->model->tm_handle_error("Error! please fill the missing fields");
+            header('Refresh: 5; URL=../Taki/login.html');
         }
     }
 
-    //Handle_Error
-    private function login_handle_error($message)
+    //Signup
+    function signup_insert_new_user()
     {
-        echo "<SCRIPT>
-                alert('$message');
-            </SCRIPT>";
+        $min_length = 5;
+        if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
+        {
+            if(!$this->model->tm_search_user_by_username($this->username))
+            {
+                $length = strlen($this->password);
+                if ($length < $min_length )
+                {
+                    $this->model->tm_handle_error("Error! Please, Write a longer password (minimum 5 chars)");
+                    header('Refresh: 5; URL=../Taki/login.html');
+                }
+                $this->model->tm_insert_new_player($this->username,$this->password,$this->nickname);
+                header('Refresh: 5; URL=../Taki/login.html');
+            }
+            else
+            {
+                $this->model->tm_handle_error("Error! username already exists, please choose a different username");
+                header('Refresh: 5; URL=../Taki/login.html');
+            }
+        }
     }
-
 }
 
-$model = new taki_model();
-$login = new login($model);
-$login->login_find_user_by_params();
+if(isset($_POST['submit']))
+{
+    $submit = trim($_POST['submit']);
+    $model = new taki_model();
+    $username = mysql_real_escape_string(trim($_POST['username']));
+    $password = mysql_real_escape_string(trim($_POST['password']));
+    $nickname = mysql_real_escape_string(trim($_POST['nickname']));
+    $error =false;
+    if(empty($username))
+    {
+        $error=true;
+        $model->tm_handle_error('UserName is empty, please fill username field');
+        header('Refresh: 5;URL=../Taki/login.html');
+    }
+    if(empty($password))
+    {
+        $error=true;
+        $model->tm_handle_error("Password is empty, please fill password field");
+        header('Refresh: 5;URL=../Taki/login.html');
+    }
+    if(empty($nickname))
+    {
+        $error=true;
+        $model->tm_handle_error("Nickname is empty, please fill nickname field");
+        header('Refresh: 5;URL=../Taki/login.html');
+    }
+    $login = new login($model,$username,$password,$nickname);
+    if(!$error)
+    {
+        switch($submit)
+        {
+            case 'Submit':
+                $login->login_find_user_by_params();
+                break;
+            case 'Register':
+                $login->signup_insert_new_user();
+                break;
+        }
+    }
+}
+
