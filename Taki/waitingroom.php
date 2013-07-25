@@ -85,10 +85,22 @@ if (mysqli_connect_errno())
 {
     echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
 }
-$result=mysqli_query($con,"SELECT * FROM room");
-while($row2 = mysql_fetch_row($result)) {
+$result=mysqli_prepare($con, "SELECT * FROM room");
+if($result)
+{
+    mysqli_stmt_execute($result);
+    mysqli_stmt_store_result($result);
+    $num_of_rows=mysqli_stmt_num_rows($result);
+    mysqli_stmt_close($result);
+    mysqli_close($con);
+}
+else
+{
+    mysqli_close($con);
+}
+while($num_of_rows) {
     echo '<tr>';
-    foreach($row2 as $key=>$value) {
+    foreach($num_of_rows as $key=>$value) {
         echo '<td>',$value,'</td>';
     }
     echo '</tr>';
