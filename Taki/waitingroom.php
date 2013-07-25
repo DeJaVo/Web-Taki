@@ -1,4 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-----Meta----->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Online Taki waiting room</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Taki" />
+    <meta name="keywords" content="login form, psd, html, css3, tutorial" />
+    <meta name="M&M" content="Miki Mook" />
+    <!--Stylesheets-->
+    <link href="css/room.css" rel="stylesheet" type="text/css" />
+    <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
 <?php
+include_once('TakiModel.php');
 
 class waitingroom
 {
@@ -34,7 +52,7 @@ class waitingroom
                 $this->model->tm_handle_error("Fatal Error! when trying to start new game<br>please login and try again");
                 header('Refresh: 5; URL=../Taki/login.html');
             }
-            header('Refresh: 5; URL=../Taki/game.php');
+            //header('Refresh: 5; URL=../Taki/game.php');
         }
         else
         {
@@ -49,4 +67,37 @@ class waitingroom
 
 $room = new waitingroom();
 $room->wr_start_game();
+echo '<div class="heading">';
+echo '<title>Online Taki waiting room</title>';
+echo '</div>';
+echo '<form name="waiting-form" class="waiting-form" action="" method="post">';
+echo' <!--Header-->';
+echo'<div class="header">';
+echo '<h1>Waiting Room Form</h1>';
+echo '<span>Please be patience and wait for another user to login</span>
+    </div>
+    <!--END header-->';
+echo'<div class="content">';
+echo'<table cellspacing="0">';
+echo '<tr><th>User Name</th><th>Nick Name</th></tr>';
+$con=mysqli_connect("","root","","taki_db");
+if (mysqli_connect_errno())
+{
+    echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+}
+$result=mysqli_query($con,"SELECT * FROM room");
+while($row2 = mysql_fetch_row($result)) {
+    echo '<tr>';
+    foreach($row2 as $key=>$value) {
+        echo '<td>',$value,'</td>';
+    }
+    echo '</tr>';
+}
+echo '</table>';
 
+echo '</div>';
+?>
+
+</form>
+</body>
+</html>
