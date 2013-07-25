@@ -65,9 +65,9 @@ class taki_model
     }
 
     //Update game record
-    public function tm_update_game($game_id,$cards_A,$highest_number_of_cards_A,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
+    public function tm_update_game($game_id,$cards_a,$highest_number_of_cards_a,$cards_b,$highest_number_of_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
     {
-        $this->db->db_update_game($game_id,$cards_A,$highest_number_of_cards_A,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
+        $this->db->db_update_game($game_id,$cards_a,$highest_number_of_cards_a,$cards_b,$highest_number_of_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
     }
 
     //Insert new user to waiting room

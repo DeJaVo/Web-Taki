@@ -229,12 +229,12 @@ class data_base
             array_push($result, $k, $v);
         }
         mysqli_close($con);
-        return (String)$result;
+        return $result;
     }
 
 
     //Update Game record in games table
-    public function db_update_game($game_id,$cards_A,$highest_number_of_cards_A,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
+    public function db_update_game($game_id,$cards_A,$highest_number_of_cards_A,$cards_B,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
     {
 
         $con=mysqli_connect("","root","","taki_db");
@@ -242,7 +242,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two ' WHERE game_id='$game_id'");
+        mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',cards_B='$cards_B',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two ' WHERE game_id='$game_id'");
         mysqli_close($con);
     }
 
