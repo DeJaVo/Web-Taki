@@ -70,11 +70,39 @@ class taki_model
         $this->db->db_update_game($game_id,$cards_A,$highest_number_of_cards_A,$highest_number_of_cards_B,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
     }
 
+    //Insert new user to waiting room
+    public function tm_insert_user_to_room($username)
+    {
+        $result = $this->db->db_insert_user_to_room($username);
+        if($result)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    //Clear waiting room
+    public function tm_truncate_room()
+    {
+        $result = $this->db->db_truncate_room();
+        if($result)
+        {
+            return true;
+        }
+        return false;
+    }
     //Handle_Error
     public function tm_handle_error($message)
     {
         echo "<SCRIPT>
                 alert('$message');
             </SCRIPT>";
+    }
+
+    //Return number of rows in waiting room
+    public function tm_count_number_of_user_in_room()
+    {
+        $value=$this->db->db_count_number_of_user_in_room();
+        return $value;
     }
 }

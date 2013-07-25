@@ -1,18 +1,21 @@
 <?php
 include_once('TakiModel.php');
-include_once('member_site_config.php');
+
+/*
+1. if a new user click on submit (without registering first) the server wil throw an informative error and go back to login screen.
+2. if user fill in form and click on register , we insert its data in DB and go back to login screen.
+3. if user is registered and click on submit , we verify its details in DB and enter to waiting room
+ */
 
 class login
 {
     private $model;
-    private $config;
     private $username;
     private $password;
     private $nickname;
 
     public function login($model,$username,$password,$nickname) {
         $this->model=$model;
-        $this->config=new member_site_config();
         $this->username=$username;
         $this->password=$password;
         $this->nickname=$nickname;
@@ -21,16 +24,16 @@ class login
     //Login
     function login_find_user_by_params()
     {
-        if(!isset($_SESSION)){ session_start(); }
-
         //check to make sure that the username,password and nickname fields are not empty.
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
             //search user in database
             if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
             {
-                echo("<br> Connecting.... <br>");
-                $_SESSION[$this->config->get_login_session_var()] = $this->username;
+                if(!isset($_SESSION)){ session_start(); }
+                echo("Connecting.... <br>");
+                //TODO: think about encrypting username and game_id
+                $_SESSION['username'] = $this->username;
                 header('Refresh: 5; URL=http:../Taki/waitingroom.html');
             }
             else
@@ -76,6 +79,7 @@ if(isset($_POST['submit']))
 {
     $submit = trim($_POST['submit']);
     $model = new taki_model();
+    //TODO: fix use in mysql_real into mysqli_stmt also in DB
     $username = mysql_real_escape_string(trim($_POST['username']));
     $password = mysql_real_escape_string(trim($_POST['password']));
     $nickname = mysql_real_escape_string(trim($_POST['nickname']));

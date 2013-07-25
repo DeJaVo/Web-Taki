@@ -65,7 +65,6 @@ class data_base
 
             //create Players Table
             //TODO:update average after each game
-            //TODO: when entering new password use AES_ENCRYPT
             $sql="CREATE TABLE IF NOT EXISTS players
 	    (
             username VARCHAR(200) NOT NULL,
@@ -82,6 +81,20 @@ class data_base
                 echo "Error creating table: Players<br>" . mysqli_error($con)."<br>";
                 //TODO:deal with error
             }
+            $sql="CREATE TABLE IF NOT EXISTS room
+	    (
+             username VARCHAR(200) NOT NULL,PRIMARY KEY(username), nick_name TEXT
+	    )";
+            if (mysqli_query($con,$sql))
+            {
+                echo "table Room created successfully<br>";
+            }
+            else
+            {
+                echo "Error creating table: Room<br>" . mysqli_error($con)."<br>";
+                //TODO:deal with error
+            }
+
         }
         //close the connection
         mysqli_close($con);
@@ -234,5 +247,68 @@ class data_base
     }
 
 
+    //Insert new user to waiting room table
+    public function db_insert_user_to_room($username)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result = $this->db_search_user_by_username($username);
+        foreach($result as $k =>$v )
+        {
+            if($k== 'nick_name')
+            {
+                mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$v') ");
+                return true;
+            }
+        }
+        mysqli_close($con);
+        return false;
+    }
+
+    //Clear room
+    public function db_truncate_room()
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_query($con, "TRUNCATE room");
+        if($result)
+        {
+            mysqli_close($con);
+            return true;
+        }
+        mysqli_close($con);
+        return false;
+    }
+
+    //Count number of users in waiting room
+    public function db_count_number_of_user_in_room()
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_prepare($con, "SELECT * FROM room");
+        if($result)
+        {
+            mysqli_stmt_execute($result);
+            mysqli_stmt_store_result($result);
+            $num_of_rows=mysqli_stmt_num_rows($result);
+            mysqli_stmt_close($result);
+            mysqli_close($con);
+            return $num_of_rows;
+        }
+        mysqli_close($con);
+        return -1;
+    }
 }
 
