@@ -34,7 +34,7 @@ class login
                 echo("Connecting.... <br>");
                 //TODO: think about encrypting username and game_id
                 $_SESSION['username'] = $this->username;
-                header('Refresh: 5; URL=http:../Taki/waitingroom.html');
+                header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
             }
             else
             {
