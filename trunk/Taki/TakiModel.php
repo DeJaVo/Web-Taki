@@ -3,6 +3,11 @@ include_once('DataBase.php');
 
 if(!isset($_SESSION)){ session_start(); }
 
+if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
+
+    header ('URL=../Taki/login.html');
+}
+
 
 class taki_model
 {
@@ -17,11 +22,7 @@ class taki_model
     public function tm_search_user_by_username($str)
     {
         $result=$this->db->db_search_user_by_username($str);
-        if($result)
-        {
-            return true;
-        }
-        return false;
+        return $result;
     }
 
     //Insert New Player
@@ -61,7 +62,7 @@ class taki_model
     //Take card from deck
     public function tm_search_game_by_game_id($game_id)
     {
-        $this->db->db_search_game_by_game_id($game_id);
+        return $this->db->db_search_game_by_game_id($game_id);
     }
 
     //Update game record

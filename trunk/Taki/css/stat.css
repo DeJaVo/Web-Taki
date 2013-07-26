@@ -60,13 +60,14 @@ table {
     width:70%;
     margin:5% auto 0;
     border-radius:5px;
+
 }
 
 /*******************
-WAITING ROOM FORM
+STAT ROOM FORM
 *******************/
 
-.waiting-form {
+.stat-form {
     width: 300px;
     margin: 0 auto;
     position: relative;
@@ -83,11 +84,11 @@ WAITING ROOM FORM
 HEADER
 *******************/
 
-.waiting-form .header {
-    padding: 40px 30px 30px 30px;
+.stat-form .header {
+    padding: 60px 100px 60px 60px;
 }
 
-.waiting-form .header h1 {
+.stat-form .header h1 {
     font-family: 'Bree Serif', serif;
     font-weight: 300;
     font-size: 28px;
@@ -97,7 +98,7 @@ HEADER
     margin-bottom: 10px;
 }
 
-.waiting-form .header span {
+.stat-form .header span {
     font-size: 11px;
     line-height: 16px;
     color: #678889;
@@ -108,12 +109,12 @@ HEADER
 CONTENT
 *******************/
 
-.waiting-form .content {
+.stat-form .content {
     padding: 0 20px 30px 30px  ;
 }
 
 /* Input field */
-.waiting-form .content .input {
+.stat-form .content .input {
     width: 188px;
     padding: 15px 25px;
 
@@ -131,12 +132,12 @@ CONTENT
 }
 
 
-.waiting-form .content .input:hover {
+.stat-form .content .input:hover {
     background: #dfe9ec;
     color: #414848;
 }
 
-.waiting-form .content .input:focus {
+.stat-form .content .input:focus {
     background: #dfe9ec;
     color: #414848;
 
@@ -155,6 +156,7 @@ table {
     width:70%;
     margin:5% auto 0;
     border-radius:5px;
+
 }
 
 th, td {padding:18px 28px 18px; text-align:center; }
@@ -168,3 +170,5 @@ tr.odd-row td {background:#f6f6f6;}
 td.first, th.first {text-align:left}
 
 td.last {border-right:none;}
+
+

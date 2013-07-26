@@ -1,8 +1,11 @@
 <?php
 require_once("member_site_config.php");
-if(!$config->check_login())
-{
-    header('URL=http://localhost/Taki/login.php');
+
+if(!isset($_SESSION)){ session_start(); }
+
+if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
+
+    header ('URL=../Taki/login.html');
 }
 
 class data_base
@@ -121,15 +124,15 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result = mysqli_query($con,"SELECT *,AES_DECRYPT(user_password,'$this->key') AS pass_decrypt FROM players WHERE username ='$user'");
-        $row = mysqli_fetch_array($result);
+        $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$user'");
+       /* $row = mysqli_fetch_array($result);
         $result = array();
         if(is_array($row))
         {
             foreach($row as $k => $v) {
                 array_push($result, $k, $v);
             }
-        }
+        }*/
         mysqli_close($con);
         return $result;
     }
@@ -223,11 +226,11 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result=mysqli_query($con,"SELECT * FROM games WHERE  game_id='$game_id'");
-        $row = mysqli_fetch_array($result);
-        $result = array();
+        //$row = mysqli_fetch_array($result);
+     /*   $result = array();
         foreach($row as $k => $v) {
             array_push($result, $k, $v);
-        }
+        }*/
         mysqli_close($con);
         return $result;
     }
