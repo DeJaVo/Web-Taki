@@ -25,11 +25,13 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
         function load_waiting_room(str)
         {
             var xmlhttp;
+            <!-- username is empty , don't do anything-->
             if (str=="")
             {
                 document.getElementById("txtHint").innerHTML="";
                 return;
             }
+            <!-- Create HTTP request for ajax. -->
             if (window.XMLHttpRequest)
             {// code for IE7+, Firefox, Chrome, Opera, Safari
                 xmlhttp=new XMLHttpRequest();
@@ -65,6 +67,7 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
 <!--END header-->
 <div class="content">
     <script type="text/javascript" language="JavaScript">
+        <!--Hard coded searching Dvir -->
         load_waiting_room('dvir');
     </script>
     <div id="txtHint"></div>
