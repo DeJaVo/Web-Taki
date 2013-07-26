@@ -260,13 +260,11 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result = $this->db_search_user_by_username($username);
-        foreach($result as $k =>$v )
+
+        while($row = mysqli_fetch_array($result))
         {
-            if($k== 'nick_name')
-            {
-                mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$v') ");
+                mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$row[nick_name]') ");
                 return true;
-            }
         }
         mysqli_close($con);
         return false;
