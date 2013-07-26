@@ -25,15 +25,17 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
 </head>
 <body>
 <div class="heading">
-    <title>Online Taki Statistics Page</title>
+    <title>Statistics Page</title>
 </div>
 <form name="stat-form" class="stat-form" action="" method="post">
     <!--Header-->
+
     <div class="header">
         <h1>Statistics Page</h1>
     </div>
     <!--END header-->
 </form>
+
 <?php
 class stat
 {
@@ -64,6 +66,7 @@ class stat
     {
         //$username=$$_SESSION['username'];
         $result =$this->stat_results('1');
+        echo "<div id=wrapper>";
         echo "<table cellspacing='0'>
 <tr><th>Game ID</th><th>PlayerA ID</th><th>PlayerB ID</th><th>Highest Number Of Cards A</th>
 <th>Highest Number Of Cards B</th><th>Sum of Turns</th><th>Winner</th><th>Game Start Time</th><th>Game Finish Time</th></tr>";
@@ -82,8 +85,10 @@ class stat
             echo "</tr>";
         }
         echo "</table>";
-        $row = mysqli_fetch_array($result);
+
+        //$row = mysqli_fetch_array($result);
         $this->stat_display_user_stat('dvir');
+        $this->stat_display_user_stat('sheira');
         //$this->stat_results_per_player($row['playerA_id']);
         //$this->stat_results_per_player($row['playerB_id']);
     }
@@ -91,8 +96,6 @@ class stat
     public function stat_display_user_stat($username)
     {
         $result = $this->stat_results_per_player($username);
-        $row = mysqli_fetch_array($result);
-        print_r($row);
         echo "<table cellspacing='0'>
 <tr><th>UserName</th><th>Num Of Games</th><th>Num Of Wins</th><th>Num Of Loses</th>
 <th>Average Num Of Cards Per Game </th>";
@@ -114,6 +117,6 @@ $stat = new stat();
 $stat->stat_display();
 ?>
 
-
+</div>
 </body>
 </html>
