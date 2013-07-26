@@ -55,7 +55,8 @@ class login
         $min_length = 5;
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
-            if(!$this->model->tm_search_user_by_username($this->username))
+            $result = $this->model->tm_search_user_by_username($this->username);
+            if($result!=null)
             {
                 $length = strlen($this->password);
                 if ($length < $min_length )
