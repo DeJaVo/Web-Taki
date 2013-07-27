@@ -106,4 +106,9 @@ class taki_model
         $value=$this->db->db_count_number_of_user_in_room();
         return $value;
     }
+
+    //returns all players waiting in waiting roo,
+    public function tm_all_users_in_room () {
+        return $this->db->db_all_users_in_room();
+    }
 }

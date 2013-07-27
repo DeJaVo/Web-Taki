@@ -34,6 +34,12 @@ class login
                 echo("Connecting.... <br>");
                 //TODO: think about encrypting username and game_id
                 $_SESSION['username'] = $this->username;
+                $result = $this->model->tm_insert_user_to_room($this->username);
+                if(!$result)
+                {
+                    $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
+                    header('Refresh: 5; URL=../Taki/login.html');
+                }
                 header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
             }
             else
