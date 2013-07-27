@@ -1,6 +1,10 @@
-<?php include("header.php"); ?>
+<html>
+<body>
     <div class="mainContent">
-        <h1>Header in here</h1>
-        <p>Paragraph in here</p>
+        <h1>Go to Login h1>
+
     </div>
-<?php include("footer.php"); ?>
+<?php header("Location: login.html");?>
+
+</body>
+</html>
