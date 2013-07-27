@@ -50,8 +50,8 @@ class data_base
         (
             game_id  INT NOT NULL AUTO_INCREMENT,
             PRIMARY KEY(game_id),
-            playerA_id INT NOT NULL,
-            playerB_id INT NOT NULL,
+            usernameA VARCHAR(200) NOT NULL,
+            usernameB VARCHAR(200) NOT NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
@@ -310,6 +310,34 @@ class data_base
         }
         mysqli_close($con);
         return -1;
+    }
+
+    //Return all user in room table
+    public function db_all_users_in_room()
+    {
+        $result= array();
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $stmt=mysqli_prepare($con, "SELECT username,nick_name FROM room");
+        if($stmt)
+        {
+            mysqli_stmt_execute($stmt);
+            //$user = array();
+            mysqli_stmt_bind_result($stmt,$username,$nickname);
+            while ( mysqli_stmt_fetch($stmt)) {
+                //list($user_name, $nick_name)=$user;
+                //$pair= array($user_name, $nick_name);
+                array_push($result, $username,$nickname);
+            }
+            mysqli_stmt_close($stmt);
+            mysqli_close($con);
+            return $result;
+        }
+        mysqli_close($con);
     }
 }
 

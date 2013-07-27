@@ -64,11 +64,12 @@ class stat
     //Display game stat
     public function stat_display()
     {
+        //TODO: fix hard coded call
         //$username=$$_SESSION['username'];
         $result =$this->stat_results('1');
         echo "<div id=wrapper>";
         echo "<table cellspacing='0'>
-<tr><th>Game ID</th><th>PlayerA ID</th><th>PlayerB ID</th><th>Highest Number Of Cards A</th>
+<tr><th>Game ID</th><th>User Name A</th><th>User Name B</th><th>Highest Number Of Cards A</th>
 <th>Highest Number Of Cards B</th><th>Sum of Turns</th><th>Winner</th><th>Game Start Time</th><th>Game Finish Time</th></tr>";
         while($row = mysqli_fetch_array($result))
         {
@@ -85,7 +86,7 @@ class stat
             echo "</tr>";
         }
         echo "</table>";
-
+           //TODO: fix hard coded call
         //$row = mysqli_fetch_array($result);
         $this->stat_display_user_stat('dvir');
         $this->stat_display_user_stat('sheira');
