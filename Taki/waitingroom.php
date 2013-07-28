@@ -2,11 +2,7 @@
 include_once('TakiModel.php');
 
 if(!isset($_SESSION)){ session_start(); }
-
-if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-
-    header ("URL=../Taki/login.html'");
-}
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 class waitingroom
 {
@@ -14,9 +10,9 @@ class waitingroom
     private $list_of_waiting_players = NULL;
 
     private function check_user ($user_name) {
-        foreach ($this->list_of_waiting_players as $key) {
-            //list($name, $nick_name) = $pair;
-            if ($user_name==$key) return 1;
+        foreach ($this->list_of_waiting_players as $pair ) {
+            list($name, $nick_name) = $pair;
+            if ($user_name==$name) return 1;
         }
         return 0;
     }
@@ -31,75 +27,48 @@ class waitingroom
     public function wr_start_game()
     {
         //if number of pairs > 1 and session[username] is one of the pairs call to start game.
+        $users_string= "";
         $num_of_players = count($this->list_of_waiting_players);
         if($num_of_players<2)
         {
-            //dont to anything
+            echo "";
         }
         else if ($num_of_players==2) {
             if($this->check_user($_SESSION['username'])) {
-                //start game
-                $result =$this->model->tm_truncate_room();
-                if(!$result)
-                {
-                    $this->model->tm_handle_error("Fatal Error! when trying to start new game<br>please login and try again");
-                    header('Refresh: 5; URL=../Taki/login.html');
+                //remove users from waiting room table
+                foreach($this->list_of_waiting_players as $pair) {
+                    list($user_name, $nick_name)=$pair;
+                    $users_string=$users_string." ".$user_name;
+                    $success =$this->model->tm_remove_user_from_room($user_name);
+                    if (!$success) {
+                        //error while removing users from room table
+                        echo "Error";
+                    }
                 }
-                header('Refresh: 5;URL=../Taki/Game.php',true,302);
+                echo "start_new_game".$users_string;
             }
-            else{
-                $this->model->tm_handle_error("Fatal Error!<br>please login and try again");
-                header('Refresh: 5; URL=../Taki/login.html');
-            }
-
         }
-
-      /*  $result = $this->model->tm_count_number_of_user_in_room();
-        if($result==0)
-        {
-            $this->wr_enter_room();
-        }
-        else if($result==1)
-        {
-            $result =$this->model->tm_truncate_room();
-            if(!$result)
-            {
-                $this->model->tm_handle_error("Fatal Error! when trying to start new game<br>please login and try again");
-                header('Refresh: 5; URL=../Taki/login.html');
-            }
-            header('Refresh: 5;URL=../Taki/Game.php');
-        }
-        else
-        {
-            $this->model->tm_handle_error("Fatal Error!<br>please login and try again");
-            header('Refresh: 5; URL=../Taki/login.html');
-        }*/
-
     }
 
-    public function wr_display()
+    public function wr_display_table()
     {
         $this->list_of_waiting_players =  $this->model->tm_all_users_in_room();
-
-        //print_r($this->list_of_waiting_players);
-        //$result =  $this->model->tm_search_user_by_username('dvir');
         echo "<table cellspacing='0'>
 <tr><th>User Name</th><th>Nick Name</th></tr>";
-        echo "<tr>";
-        foreach ($this->list_of_waiting_players as $key ) {
-            //list($user_name ,$nick_name)= $pair;
 
-            echo "<td>" . $key . "</td>";
-            //echo "<td>" . $key . "</td>";
-
+        foreach ($this->list_of_waiting_players as $pair ) {
+            list($username ,$nickname)= $pair;
+            echo "<tr>";
+            echo "<td>" . $username . "</td>";
+            echo "<td>" . $nickname . "</td>";
+            echo "</tr>";
         }
-        echo "</tr>";
+
         echo "</table>";
     }
 
 }
-//$q=$_POST['username'];
 $room = new waitingroom();
-$room->wr_display();
+$room->wr_display_table();
 $room->wr_start_game();
 

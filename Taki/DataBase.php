@@ -2,11 +2,7 @@
 require_once("member_site_config.php");
 
 if(!isset($_SESSION)){ session_start(); }
-
-if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-
-    header ('URL=../Taki/login.html');
-}
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 class data_base
 {
@@ -271,7 +267,7 @@ class data_base
     }
 
     //Clear room
-    public function db_truncate_room()
+    public function db_remove_user_from_room($user_name)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
@@ -279,9 +275,10 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result=mysqli_query($con, "TRUNCATE room");
-        if($result)
+        $stmt=mysqli_prepare($con, "DELETE FROM room WHERE username = '$user_name'");
+        if($stmt)
         {
+            mysqli_stmt_execute($stmt);
             mysqli_close($con);
             return true;
         }
@@ -326,12 +323,10 @@ class data_base
         if($stmt)
         {
             mysqli_stmt_execute($stmt);
-            //$user = array();
             mysqli_stmt_bind_result($stmt,$username,$nickname);
             while ( mysqli_stmt_fetch($stmt)) {
-                //list($user_name, $nick_name)=$user;
-                //$pair= array($user_name, $nick_name);
-                array_push($result, $username,$nickname);
+                $pair= array($username, $nickname);
+                array_push($result, $pair);
             }
             mysqli_stmt_close($stmt);
             mysqli_close($con);
