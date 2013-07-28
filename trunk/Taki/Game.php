@@ -2,6 +2,8 @@
 
 include_once('TakiModel.php');
 include_once('card.php');
+if(!isset($_SESSION)){ session_start(); }
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 class game {
 
@@ -518,7 +520,8 @@ class game {
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
 //take game id saved in cookie or session + take command
-$model = new taki_model();
+$command=$_POST['command'];
+/*$model = new taki_model();
 $game = new game($game_id,$model, $command);
 $result = 0;
 
@@ -526,13 +529,13 @@ $result = 0;
 //TODO:: take out all necessary parameters before calling the command
 // if move was legal - game data will be updated accordingly and result will set to 1;
 switch ($game->$command) {
-    case 'Draw_Cards' :
+    case 'draw_cards' :
         $result=$game->game_draw_cards();
         break;
-    case 'Put_Down_Cards' :
+    case 'put_down_cards' :
        $result= $game->game_put_down_cards($cards);
         break;
-    case 'Start_new_Game' :
+    case 'start_new_game' :
         $result = $game->game_starts($player_a, $player_b);
         break;
     default :
@@ -546,5 +549,6 @@ if($result==0) {
         $game->game_ends();
     }
     return $game->game_return_game_data();
-}
+}*/
 //TODO: think about deleting the game record if game ended
+//TODO: when retrieving game record , do it according to the user name saved in the session.

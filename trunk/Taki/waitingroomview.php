@@ -1,12 +1,6 @@
 <?php
 if(!isset($_SESSION)){ session_start(); }
-
-if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-
-    header ('URL=../Taki/login.html');
-}
-//$expire=time()+60;
-//setcookie("username", $_SESSION['username'], $expire);
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 ?>
 
 <!DOCTYPE html>
@@ -27,12 +21,6 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
         function load_waiting_room()
         {
             var xmlhttp;
-        /*    <!--Check if str is empty , if it is do not do anything -->
-            if (str=="")
-            {
-               // document.getElementById("txtHint").innerHTML="";
-                return;
-            }*/
             <!-- create ajax Http request  for latest supported browsers-->
             if (window.XMLHttpRequest)
             {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -53,39 +41,25 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
                 }
             }
             xmlhttp.open("POST","../Taki/waitingroom.php",true);
-            //var length =str.length;
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            //xmlhttp.setRequestHeader("Content-length", 'length');
             xmlhttp.setRequestHeader("Connection", "close");
             xmlhttp.send();
-            //xmlhttp.send("username="+str);
-            //var username = getCookie("username");
-            setTimeout('load_waiting_room()',10000);
+
+            //document.writeln( xmlhttp.responseText.value);
+            if (xmlhttp.responseText=="") {
+                //document.writeln("entered first if");
+                setTimeout('load_waiting_room()',3000);
+            } else if (xmlhttp.responseText=="error") {
+                alert("Fatal Error! when trying to start new game<br>please login and try again");
+                window.location="../Taki/login.html";
+            } else {
+                xmlhttp.open("POST","../Taki/Game.php",true);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.setRequestHeader("Connection", "close");
+                xmlhttp.send("command="+xmlhttp.responseText);
+                window.location="../Taki/gameview.php";
+            }
         }
-        /*function getCookie(c_name)
-        {
-            var c_value = document.cookie;
-            var c_start = c_value.indexOf(" " + c_name + "=");
-            if (c_start == -1)
-            {
-                c_start = c_value.indexOf(c_name + "=");
-            }
-            if (c_start == -1)
-            {
-                c_value = null;
-            }
-            else
-            {
-                c_start = c_value.indexOf("=", c_start) + 1;
-                var c_end = c_value.indexOf(";", c_start);
-                if (c_end == -1)
-                {
-                    c_end = c_value.length;
-                }
-                c_value = unescape(c_value.substring(c_start,c_end));
-            }
-            return c_value;
-        }*/
     </script>
 </head>
 <body>
@@ -103,7 +77,6 @@ if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
     <!--TODO: Fix hard coded call-->
 <div class="content">
     <script type="text/javascript" language="JavaScript">
-        //var username = getCookie("username");
         load_waiting_room();
     </script>
     <div id="txtHint"></div>

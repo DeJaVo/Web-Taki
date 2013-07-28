@@ -2,11 +2,7 @@
 include_once('TakiModel.php');
 
 if(!isset($_SESSION)){ session_start(); }
-
-if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-
-    header ('URL=../Taki/login.html');
-}
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 ?>
 <!DOCTYPE html>
 <html>

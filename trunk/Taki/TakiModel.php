@@ -2,11 +2,7 @@
 include_once('DataBase.php');
 
 if(!isset($_SESSION)){ session_start(); }
-
-if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-
-    header ('URL=../Taki/login.html');
-}
+if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 
 class taki_model
@@ -83,9 +79,9 @@ class taki_model
     }
 
     //Clear waiting room
-    public function tm_truncate_room()
+    public function tm_remove_user_from_room($user_name)
     {
-        $result = $this->db->db_truncate_room();
+        $result = $this->db->db_remove_user_from_room($user_name);
         if($result)
         {
             return true;
