@@ -21,6 +21,13 @@ class taki_model
         return $result;
     }
 
+    //Search Player by nickname in DB
+    public function tm_search_user_by_nickname($str)
+    {
+        $result=$this->db->db_search_user_by_nickname($str);
+        return $result;
+    }
+
     //Insert New Player
     public function tm_insert_new_player($username,$password,$nickname)
     {
