@@ -11,7 +11,7 @@ class game {
     private $game_id = 0 ;
     private $player_a = NULL;
     private $player_b = NULL;
-    private $cards_a = NULL;                                            //list of a's cards
+    private $cards_a = NULL;                                         //list of a's cards
     private $cards_b = NULL;                                            // list of b's cards
     private $highest_num_cards_a = 0;
     private $highest_num_cards_b = 0;
@@ -28,9 +28,8 @@ class game {
 
 
     private function game_get_cards_data ($card_str) {
-        list($dir1,$dir2,$dir3,$sign,$col)=explode("\\",$card_str,5);
-        $col=explode(".",$col,-1);
-        return array($dir1, $dir2, $dir3, $sign, $col);
+        list($sign,$col)=explode(" ",$card_str,2);
+        return array($sign, $col);
     }               //gets a string of card path and split it into sections, to understand it's color and sign.
     private function change_turn () {
         if ($this->turn==1) {
@@ -77,15 +76,15 @@ class game {
         $last_sign = NULL;
         $color_was_changed = 0;
         //get first card data
-        list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($cards[0]);
+        list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
 
         //if last open card color is different than this taki card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
         foreach ($cards as $card) {
-            list($dir,$dir,$dir,$c_sign,$c_col)=$this->game_get_cards_data($card);
+            list($c_sign,$c_col)=$this->game_get_cards_data($card);
             if(($c_col == $col)&& !$color_was_changed) {
                 $last_sign=$c_sign;
                 continue;
@@ -109,9 +108,9 @@ class game {
         if(count($cards)>1) {return 0;}
 
         //get first card data
-        list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($cards[0]);
+        list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
@@ -127,9 +126,9 @@ class game {
         if(count($cards)>1) {return 0;}
 
         //get first card data
-        list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($cards[0]);
+        list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
@@ -137,9 +136,9 @@ class game {
     }
     private function check_plus($player_id,$cards) {
         //get first card data
-        list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($cards[0]);
+        list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
@@ -147,7 +146,7 @@ class game {
                 //TODO: Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
                 //TODO: animate the card pulling from the deck.
             } else {
-                list($dir,$dir,$dir,$c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
+                list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
                 if((($c_sign>=1) && ($c_sign<=9)) && (count($cards)==2)) {
                     return 1;
                 }
@@ -188,9 +187,9 @@ class game {
     }
     private function check_number($cards) {
         //get first card data
-        list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($cards[0]);
+        list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
@@ -200,9 +199,9 @@ class game {
     private function game_init_all_cards() {
         //creating all regular cards
         $i =1;
-        for(;$i<=9;$i++){
+        for(;$i<=8;$i++){
             foreach(array('red', 'blue', 'yellow', 'green') as $color) {
-                $card = new card('$i', $color);
+                $card = new card($i, $color);
                 array_push($this->all_cards, $card->__get('pic'));
             }
         }
@@ -250,29 +249,30 @@ class game {
         $this->closed_cards= array();
         //TODO:find the game id through the player , search for a game record where player is one of the players
         $game_data=$this->model->tm_search_game_by_user_name($user_name);
-        list($this->$game_id,$this->$cards_a,$this->$highest_number_of_cards_a,$this->$cards_b,$this->$highest_number_of_cards_b,$this->$last_open_card,$$this->closed_cards,$this->$turn,$this->$sum_of_turns,$this->$winner,$this->$game_start_time,$this->$game_finish_time,$this->$sequential_two)=$game_data;
+        list($this->game_id,$this->cards_a,$this->highest_number_of_cards_a,$this->cards_b,$this->highest_number_of_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time,$this->game_finish_time,$this->sequential_two)=$game_data;
         return;
     }                //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
         $b_cards = array();
-        $this->$player_a = $player_a;
-        $this->$player_b = $player_b;
+        $this->player_a = $player_a;
+        $this->player_b = $player_b;
+
 
         //initialize all cards
         $this->game_init_all_cards();
         //initialize a's cards
         foreach (array_rand($this->all_cards, 8) as $k) {
             $a_card = $this->all_cards[$k];
-            array_push($this->cards_a, $a_card);
-            array_push($a_cards,$a_card);
+            $this->cards_a[]= $a_card;
+            $a_cards[]=$a_card;
         }
         $t_cards = array_diff($this->all_cards, $a_cards);
         //initialize b's cards
         foreach (array_rand($t_cards, 8) as $k) {
             $b_card = $this->all_cards[$k];
-            array_push($this->cards_b, $b_card);
-            array_push($b_cards,$b_card);
+            $this->cards_b[] =$b_card;
+            $b_cards[]=$b_card;
         }
         //initialize closed cards
         $this->closed_cards= array_diff($t_cards, $b_cards);
@@ -288,9 +288,8 @@ class game {
 
         //initialize start time
         $this->game_start_time = date("d:m:y h:i:s ");
-
         // insert new game to DB
-        $this->model->tm_insert_new_game($this->player_a,$this->player_b,$this->cards_a,$this->highest_num_cards_a,$this->cards_b,$this->highest_num_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner);
+        $this->model->tm_insert_new_game($this->player_a,$this->player_b,implode(",",$this->cards_a),$this->highest_num_cards_a,implode(",",$this->cards_b),$this->highest_num_cards_b,$this->last_open_card,implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner, $this->sequential_two);
         return 1;
     }            //initialize a new game, and insert it into DB.
     public function game_ends () {
@@ -324,7 +323,7 @@ class game {
         $taken_cards = array();
         //if last open card was plus-2 card- check how many twos were piled up.
         //else take only one card
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         if ($l_sign==2) {
             $num_of_cards= $this->sequential_two*2;
             $this->sequential_two=0;
@@ -354,15 +353,15 @@ class game {
         return 1;
     }
     public function game_return_game_data() {
-        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&cards_a=".$this->cards_a."&cards_b=".$this->cards_b."&highest_num_cards_a=".$this->highest_num_cards_a."&highest_num_cards_b=".$this->highest_num_cards_b."&last_open_card=".$this->last_open_card."&closed_cards=".$this->closed_cards."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".$this->all_cards."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
+        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&cards_a=".implode(",",$this->cards_a)."&cards_b=".implode(",",$this->cards_b)."&highest_num_cards_a=".$this->highest_num_cards_a."&highest_num_cards_b=".$this->highest_num_cards_b."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".implode(",",$this->all_cards)."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
         $first_card= $this->game_get_cards_data($cards[0]);
-        list($dir1, $dir2, $dir3,$sign,$col)=$first_card;
+        list($sign,$col)=$first_card;
 
         //if last open card is a plus-two - check if the player chose a plus two card, if he did- play the turn, else return error.
-        list($dir, $dir, $dir,$l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         if ($l_sign==2) {
             if ($sign !=2) {
                 //TODO: deal with error. you must choose a two.
@@ -492,8 +491,10 @@ $model = new taki_model();
 $game = new game($model, $user_name);
 
 $line = explode(" ", $command);
+$playerA = $line[3];
+$playerB =  $line[4];
 if ($line[0] == 'start') {
-    $result=$game->game_starts($line[3], $line[4]);
+    $result=$game->game_starts($playerA, $playerB);
 } elseif ($line[0]== 'draw') {
     $result=$game->game_draw_cards();
 } elseif ($line[0]== 'put') {
@@ -509,7 +510,7 @@ if($result==0) {
         $game->game_ends();
     }
 }
-return $game->game_return_game_data();
+echo $game->game_return_game_data();
 
 //TODO: think about deleting the game record if game ended
 //TODO: when retrieving game record , do it according to the user name saved in the session.

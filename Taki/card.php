@@ -3,7 +3,7 @@ include_once('TakiModel.php');
 
 
 class card {
-    const path = "\\www\\Taki\\TakiImages\\";
+
     private $sign;
     private $color;
     private $pic;
@@ -11,7 +11,7 @@ class card {
     public function card($sign, $color) {
         $this->sign= $sign;
         $this->color= $color;
-        $this->pic = self::path.$sign."\\".$this->color.'jpg';
+        $this->pic =$sign." ".$this->color;
     }
 
     //getter

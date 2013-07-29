@@ -44,10 +44,10 @@ class data_base
             // Create table
             $sql="CREATE TABLE IF NOT EXISTS games
         (
-            game_id  INT NOT NULL AUTO_INCREMENT,
+            game_id  MEDIUMINT NOT NULL AUTO_INCREMENT  ,
             PRIMARY KEY(game_id),
-            usernameA VARCHAR(200) NOT NULL,
-            usernameB VARCHAR(200) NOT NULL,
+            usernameA VARCHAR(200) NULL,
+            usernameB VARCHAR(200) NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
@@ -121,14 +121,14 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$user'");
-       /* $row = mysqli_fetch_array($result);
-        $result = array();
-        if(is_array($row))
-        {
-            foreach($row as $k => $v) {
-                array_push($result, $k, $v);
-            }
-        }*/
+        /* $row = mysqli_fetch_array($result);
+         $result = array();
+         if(is_array($row))
+         {
+             foreach($row as $k => $v) {
+                 array_push($result, $k, $v);
+             }
+         }*/
         mysqli_close($con);
         return $result;
     }
@@ -155,7 +155,7 @@ class data_base
 
     //Insert new game
     //TODO: calculate sum of turns and game start time and finish time
-    public function db_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner)
+    public function db_insert_new_game($usernameA,$usernameB,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
@@ -163,7 +163,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"INSERT INTO games ( playerA_id,playerB_id,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner) VALUES ('$player_a','$player_b','$cardsA','$highest_num_of_cards_a','$cardsB','$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner')");
+        mysqli_query($con,"INSERT INTO games ( usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner,sequential_two) VALUES ('$usernameA','$usernameB','$cardsA','$highest_num_of_cards_a','$cardsB','$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner','$sequential_two')");
         mysqli_close($con);
     }
 
@@ -223,10 +223,10 @@ class data_base
         }
         $result=mysqli_query($con,"SELECT * FROM games WHERE  game_id='$game_id'");
         //$row = mysqli_fetch_array($result);
-     /*   $result = array();
-        foreach($row as $k => $v) {
-            array_push($result, $k, $v);
-        }*/
+        /*   $result = array();
+           foreach($row as $k => $v) {
+               array_push($result, $k, $v);
+           }*/
         mysqli_close($con);
         return $result;
     }
@@ -259,8 +259,8 @@ class data_base
 
         while($row = mysqli_fetch_array($result))
         {
-                mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$row[nick_name]') ");
-                return true;
+            mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$row[nick_name]') ");
+            return true;
         }
         mysqli_close($con);
         return false;
@@ -344,13 +344,13 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result=mysqli_query($con,"SELECT * FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'");
-        //$row = mysqli_fetch_array($result);
+        $row = mysqli_fetch_array($result);
         /*   $result = array();
            foreach($row as $k => $v) {
                array_push($result, $k, $v);
            }*/
         mysqli_close($con);
-        return $result;
+        return $row;
     }
 }
 
