@@ -50,9 +50,9 @@ class taki_model
     }
 
     //Insert new game record
-    public function tm_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner)
+    public function tm_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two)
     {
-        $this->db->db_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner);
+        $this->db->db_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two);
     }
 
     //Take card from deck
@@ -63,7 +63,7 @@ class taki_model
 
     public function tm_search_game_by_user_name($user_name)
     {
-        return $this->db->db_search_game_by_game_id($user_name);
+        return $this->db->db_search_game_by_user_name($user_name);
     }
 
     //Update game record
@@ -112,4 +112,5 @@ class taki_model
     public function tm_all_users_in_room () {
         return $this->db->db_all_users_in_room();
     }
+
 }
