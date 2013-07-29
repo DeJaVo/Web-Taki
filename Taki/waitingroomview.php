@@ -18,10 +18,9 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     <link href="css/room.css" rel="stylesheet" type="text/css" />
     <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
     <script>
-        function load_waiting_room()
+        var xmlhttp;
+        function load_f(url,arg,cfunc)
         {
-            var xmlhttp;
-            <!-- create ajax Http request  for latest supported browsers-->
             if (window.XMLHttpRequest)
             {// code for IE7+, Firefox, Chrome, Opera, Safari
                 xmlhttp=new XMLHttpRequest();
@@ -31,56 +30,72 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
             {// code for IE6, IE5
                 xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
             }
-            <!--run function if request is request finished and response is ready and her state is "OK" -->
-
-            xmlhttp.onreadystatechange=function()
+            xmlhttp.onreadystatechange=cfunc;
+            xmlhttp.open('POST',url,true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.send("arg="+arg);
+        }
+        function print_wr()
+        {
+            load_f("../Taki/waitingroom.php",1,function()
             {
                 if (xmlhttp.readyState==4 && xmlhttp.status==200)
                 {
-                    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                    document.getElementById("table").innerHTML=xmlhttp.responseText;
+                    check_start_game();
                 }
-            }
-            xmlhttp.open("POST","../Taki/waitingroom.php",true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.setRequestHeader("Connection", "close");
-            xmlhttp.send();
+            });
+        }
+        function check_start_game()
+        {
+            load_f("../Taki/waitingroom.php",0,function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    if(xmlhttp.responseText=="OK") {window.location.href="../Taki/gameview.php"; }
+                    else if(xmlhttp.responseText=="Stay") {setTimeout(print_wr(),3000);}
+                    else if(xmlhttp.responseText=="Error")
+                    {
+                        alert("Fatal Error! when trying to start new game<br>please login and try again");
+                        window.location.href="../Taki/login.html";
+                    }
+                    else
+                    {
+                        start_new_game(xmlhttp.responseText);
+                    }
 
-            //document.writeln( xmlhttp.responseText.value);
-            if (xmlhttp.responseText=="") {
-                //document.writeln("entered first if");
-                setTimeout('load_waiting_room()',3000);
-            } else if (xmlhttp.responseText=="error") {
-                alert("Fatal Error! when trying to start new game<br>please login and try again");
-                window.location="../Taki/login.html";
-            } else {
-                xmlhttp.open("POST","../Taki/Game.php",true);
-                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xmlhttp.setRequestHeader("Connection", "close");
-                xmlhttp.send("command="+xmlhttp.responseText);
-                window.location="../Taki/gameview.php";
-            }
+                }
+            });
+        }
+        function start_new_game(command)
+        {
+            load_f("../Taki/Game.php",command,function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    //clearInterval(myVar);
+                    window.location.href="../Taki/gameview.php";
+                }
+            });
         }
     </script>
 </head>
 <body>
-<div class="heading">
-    <title>Online Taki waiting room</title>
-</div>
 <form name="waiting-form" class="waiting-form">
+    <!--Header-->
+    <div class="header">
+        <h1>Waiting Room Form</h1>
+        <span>Please be patience and wait for another user to login</span>
+    </div>
+    <!--END header-->
 
-<!--Header-->
-<div class="header">
-    <h1>Waiting Room Form</h1>
-    <span>Please be patience and wait for another user to login</span>
-</div>
-<!--END header-->
     <!--TODO: Fix hard coded call-->
-<div class="content">
-    <script type="text/javascript" language="JavaScript">
-        load_waiting_room();
-    </script>
-    <div id="txtHint"></div>
-</div>
+    <div class="content">
+        <script type="text/javascript" language="JavaScript">
+            print_wr();
+        </script>
+        <div id="table"></div>
+    </div>
 </form>
 </body>
 </html>

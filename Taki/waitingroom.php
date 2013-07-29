@@ -20,7 +20,7 @@ class waitingroom
     public function waitingroom()
     {
         $this->model=new taki_model();
-        $this->list_of_waiting_players = array();
+        $this->list_of_waiting_players = $this->model->tm_all_users_in_room();
     }
 
     //Start game
@@ -29,9 +29,14 @@ class waitingroom
         //if number of pairs > 1 and session[username] is one of the pairs call to start game.
         $users_string= "";
         $num_of_players = count($this->list_of_waiting_players);
-        if($num_of_players<2)
+        //We assume that if there are no players in room ,the opponent already started a new game
+        if($num_of_players==0)
         {
-            echo "";
+            echo "OK";
+        }
+        else if($num_of_players<2)
+        {
+            echo "Stay";
         }
         else if ($num_of_players==2) {
             if($this->check_user($_SESSION['username'])) {
@@ -45,14 +50,13 @@ class waitingroom
                         echo "Error";
                     }
                 }
-                echo "start_new_game".$users_string;
+                echo "start new game".$users_string;
             }
         }
     }
 
     public function wr_display_table()
     {
-        $this->list_of_waiting_players =  $this->model->tm_all_users_in_room();
         echo "<table cellspacing='0'>
 <tr><th>User Name</th><th>Nick Name</th></tr>";
 
@@ -68,7 +72,16 @@ class waitingroom
     }
 
 }
+$bool = $_POST['arg'];
 $room = new waitingroom();
-$room->wr_display_table();
-$room->wr_start_game();
+if($bool)
+{
+    $room->wr_display_table();
+}
+else
+{
+    $room->wr_start_game();
+}
+
+
 
