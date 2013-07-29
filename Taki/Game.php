@@ -197,11 +197,6 @@ class game {
         //if player selected more than one card its illegal.
         if(count($cards)>1) {return 0;}
     }
-    private function game_search_game_record() {
-        $game_data=$this->model->tm_search_game_by_game_id($this->game_id);
-        list($this->$game_id,$this->$cards_a,$this->$highest_number_of_cards_a,$this->$cards_b,$this->$highest_number_of_cards_b,$this->$last_open_card,$$this->closed_cards,$this->$turn,$this->$sum_of_turns,$this->$winner,$this->$game_start_time,$this->$game_finish_time,$this->$sequential_two)=$game_data;
-        return;
-    }
     private function game_init_all_cards() {
         //creating all regular cards
         $i =1;
@@ -254,7 +249,9 @@ class game {
         $this->cards_b = array();
         $this->closed_cards= array();
         //TODO:find the game id through the player , search for a game record where player is one of the players
-        // $this->game_id=
+        $game_data=$this->model->tm_search_game_by_user_name($user_name);
+        list($this->$game_id,$this->$cards_a,$this->$highest_number_of_cards_a,$this->$cards_b,$this->$highest_number_of_cards_b,$this->$last_open_card,$$this->closed_cards,$this->$turn,$this->$sum_of_turns,$this->$winner,$this->$game_start_time,$this->$game_finish_time,$this->$sequential_two)=$game_data;
+        return;
     }                //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
@@ -322,37 +319,8 @@ class game {
 
         $this->game_start_time = date("d:m:y h:i:s ");
     }                                  //Update players record when game ends
-   /* public function game_handle_plus_two($game_id) {
-        $this->game_search_game_record($this->game_id);
-        if($this->turn==0) {
-            $cards=$this->cards_a;
-            $player = $this->player_a;
-        } else {
-            $cards=$this->cards_b;
-            $player = $this->player_b;
-        }
-        $two_plus_cards=$this->search_two_plus_cards($player);
-        if(count($two_plus_cards)==0) {
-            //take 2 cards from deck;
-            $this->game_draw_cards($player,2);
-            $this->change_turn();
-            $this->incr_turns_count();
-            $this->update_db();
-            return 1;
-        }
-        if(count($two_plus_cards)>1) {
-            return 0;
-        }
-        //play the turn automatically
-        $this->remove_cards($player,$two_plus_cards);
-        $this->change_turn();
-        $this->incr_turns_count();
-        $this->sequential_two=$this->sequential_two++;
-        $this->update_db();
-        return 1;
-    }*/
+
     public function game_draw_cards() {
-        $this->game_search_game_record($this->game_id);
         $taken_cards = array();
         //if last open card was plus-2 card- check how many twos were piled up.
         //else take only one card
@@ -390,7 +358,6 @@ class game {
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
-        $this->game_search_game_record($this->game_id);
         $first_card= $this->game_get_cards_data($cards[0]);
         list($dir1, $dir2, $dir3,$sign,$col)=$first_card;
 
@@ -501,8 +468,6 @@ class game {
         }
     }
     public function game_did_game_end() {
-        $this->game_search_game_record($this->game_id);
-
         if (count($this->cards_a)==0) {
             //a wons
             $this->winner==$this->player_a;
