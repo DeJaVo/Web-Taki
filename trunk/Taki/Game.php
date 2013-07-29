@@ -520,8 +520,8 @@ class game {
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
 //take game id saved in cookie or session + take command
-$command=$_POST['command'];
-/*$model = new taki_model();
+$command=$_POST['arg'];
+$model = new taki_model();
 $game = new game($game_id,$model, $command);
 $result = 0;
 
@@ -549,6 +549,6 @@ if($result==0) {
         $game->game_ends();
     }
     return $game->game_return_game_data();
-}*/
+}
 //TODO: think about deleting the game record if game ended
 //TODO: when retrieving game record , do it according to the user name saved in the session.
