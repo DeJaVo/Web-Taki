@@ -247,14 +247,14 @@ class game {
         }
     }                        //Initialize all cards
 
-    public function game($game_id,$model,$command) {
+    public function game($model,$user_name) {
         $this->model = $model;
         $this->all_cards = array();
         $this->cards_a = array();
         $this->cards_b = array();
         $this->closed_cards= array();
-        $this->game_id= $game_id;
-        $this->command= $command;
+        //TODO:find the game id through the player , search for a game record where player is one of the players
+        // $this->game_id=
     }                //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
@@ -521,34 +521,30 @@ class game {
 }
 //take game id saved in cookie or session + take command
 $command=$_POST['arg'];
-$model = new taki_model();
-$game = new game($game_id,$model, $command);
+$user_name = $_SESSION['username'];
 $result = 0;
+$model = new taki_model();
+$game = new game($model, $user_name);
 
-//TODO:: if game id is not defined- create a new game- needs to players!!!!!!!!!!!!!
-//TODO:: take out all necessary parameters before calling the command
-// if move was legal - game data will be updated accordingly and result will set to 1;
-switch ($game->$command) {
-    case 'draw_cards' :
-        $result=$game->game_draw_cards();
-        break;
-    case 'put_down_cards' :
-       $result= $game->game_put_down_cards($cards);
-        break;
-    case 'start_new_game' :
-        $result = $game->game_starts($player_a, $player_b);
-        break;
-    default :
-        //todo: handle error
-        break;
+$line = explode(" ", $command);
+if ($line[0] == 'start') {
+    $result=$game->game_starts($line[3], $line[4]);
+} elseif ($line[0]== 'draw') {
+    $result=$game->game_draw_cards();
+} elseif ($line[0]== 'put') {
+    $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
+} else {
+    //todo: handle error;
 }
+//if move was legal - game data will be updated accordingly and result will set to 1;
 if($result==0) {
     //TODO: deal with error - exit with error -illegal move
 } else {
     if($game->game_did_game_end()) {
         $game->game_ends();
     }
-    return $game->game_return_game_data();
 }
+return $game->game_return_game_data();
+
 //TODO: think about deleting the game record if game ended
 //TODO: when retrieving game record , do it according to the user name saved in the session.
