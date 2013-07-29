@@ -61,6 +61,11 @@ class taki_model
         return $this->db->db_search_game_by_game_id($game_id);
     }
 
+    public function tm_search_game_by_user_name($user_name)
+    {
+        return $this->db->db_search_game_by_game_id($user_name);
+    }
+
     //Update game record
     public function tm_update_game($game_id,$cards_a,$highest_number_of_cards_a,$cards_b,$highest_number_of_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
     {

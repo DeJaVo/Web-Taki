@@ -334,5 +334,23 @@ class data_base
         }
         mysqli_close($con);
     }
+
+    //Find game by game id
+    public function db_search_game_by_user_name($user_name)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result=mysqli_query($con,"SELECT * FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'");
+        //$row = mysqli_fetch_array($result);
+        /*   $result = array();
+           foreach($row as $k => $v) {
+               array_push($result, $k, $v);
+           }*/
+        mysqli_close($con);
+        return $result;
+    }
 }
 
