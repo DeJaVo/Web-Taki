@@ -121,17 +121,26 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$user'");
-        /* $row = mysqli_fetch_array($result);
-         $result = array();
-         if(is_array($row))
-         {
-             foreach($row as $k => $v) {
-                 array_push($result, $k, $v);
-             }
-         }*/
+        $row = mysqli_fetch_array($result);
         mysqli_close($con);
-        return $result;
+        return $row;
     }
+
+    // Search user by nickname
+    public function db_search_user_by_nickname($nickname)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result = mysqli_query($con,"SELECT * FROM players WHERE nick_name ='$nickname'");
+        $row = mysqli_fetch_array($result);
+        mysqli_close($con);
+        return $row;
+    }
+
 
     //Check User
     public function db_find_user_by_params($username,$password,$nickname)
@@ -257,13 +266,8 @@ class data_base
         }
         $result = $this->db_search_user_by_username($username);
 
-        while($row = mysqli_fetch_array($result))
-        {
-            mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$row[nick_name]') ");
-            return true;
-        }
+            mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$result[nick_name]') ");
         mysqli_close($con);
-        return false;
     }
 
     //Clear room

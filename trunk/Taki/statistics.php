@@ -88,16 +88,13 @@ class stat
         echo "<table cellspacing='0'>
 <tr><th>UserName</th><th>Num Of Games</th><th>Num Of Wins</th><th>Num Of Loses</th>
 <th>Average Num Of Cards Per Game </th>";
-        while($row = mysqli_fetch_array($result))
-        {
-            echo "<tr>";
-            echo "<td>" . $row['username'] . "</td>";
-            echo "<td>" . $row['num_of_games'] . "</td>";
-            echo "<td>" . $row['num_of_wins'] . "</td>";
-            echo "<td>" . $row['num_of_loses'] . "</td>";
-            echo "<td>" . $row['average_num_of_cards_per_game'] . "</td>";
-            echo "</tr>";
-        }
+        echo "<tr>";
+        echo "<td>" . $result['username'] . "</td>";
+        echo "<td>" . $result['num_of_games'] . "</td>";
+        echo "<td>" . $result['num_of_wins'] . "</td>";
+        echo "<td>" . $result['num_of_loses'] . "</td>";
+        echo "<td>" . $result['average_num_of_cards_per_game'] . "</td>";
+        echo "</tr>";
         echo "</table>";
         //Delete game record
         $this->model->tm_delete_game_record($this->game_id);

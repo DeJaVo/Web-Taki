@@ -35,7 +35,7 @@ class login
                 //TODO: think about encrypting username and game_id
                 $_SESSION['username'] = $this->username;
                 $result = $this->model->tm_insert_user_to_room($this->username);
-                if(!$result)
+                if(!empty($result))
                 {
                     $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
                     header('Refresh: 5; URL=../Taki/login.html');
@@ -61,8 +61,9 @@ class login
         $min_length = 5;
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
-            $result = $this->model->tm_search_user_by_username($this->username);
-            if(!empty($result))
+            $result1 = $this->model->tm_search_user_by_username($this->username);
+            $result2 =  $this->model->tm_search_user_by_nickname($this->nickname);
+            if(empty($result1) && empty($result2))
             {
                 $length = strlen($this->password);
                 if ($length < $min_length )
@@ -75,7 +76,7 @@ class login
             }
             else
             {
-                $this->model->tm_handle_error("Error! username already exists, please choose a different username");
+                $this->model->tm_handle_error("Error! username or nickname already exists, please choose a different username");
                 header('Refresh: 5; URL=../Taki/login.html');
             }
         }
