@@ -39,7 +39,7 @@ class game {
     }
     private function incr_turns_count () {$this->sum_of_turns++;}
     private function update_db() {
-        $this->model->tm_update_game($this->game_id,$this->cards_a, $this->highest_num_cards_a, $this->cards_b, $this->highest_num_cards_b,$this->last_open_card, $this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time);
+        $this->model->tm_update_game($this->game_id,implode(",",$this->cards_a), $this->highest_num_cards_a, implode(",",$this->cards_b), $this->highest_num_cards_b,$this->last_open_card, implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time, $this->sequential_two);
     }
     private function swap_cards(){
         $temp=$this->cards_a;
@@ -58,20 +58,6 @@ class game {
             }
         }
     }
-   /* private function search_two_plus_cards($player) {
-        $twos = array();
-        if ($this->player_a==$player) {
-            $cards=$this->cards_a;
-        } else {
-            $cards=$this->cards_b;
-        }
-
-        foreach($cards as $card) {
-            list($dir1, $dir2, $dir3,$sign,$col)=$this->game_get_cards_data($card);
-            if ($sign == 2) {array_push($twos,$card);}
-        }
-        return $twos;
-    }*/
     private function check_taki($cards) {
         $last_sign = NULL;
         $color_was_changed = 0;
@@ -249,9 +235,12 @@ class game {
         $this->closed_cards= array();
         //TODO:find the game id through the player , search for a game record where player is one of the players
         $game_data=$this->model->tm_search_game_by_user_name($user_name);
+        $game_data['cards_A']=explode(",",$game_data['cards_A']);
+        $game_data['cards_b']=explode(",",$game_data['cards_B']);
+        $game_data['closed_cards']=explode(",",$game_data['closed_cards']);
         list($this->game_id,$this->cards_a,$this->highest_number_of_cards_a,$this->cards_b,$this->highest_number_of_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time,$this->game_finish_time,$this->sequential_two)=$game_data;
         return;
-    }                //C'tor
+    }                       //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
         $b_cards = array();
