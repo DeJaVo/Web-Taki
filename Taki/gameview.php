@@ -3,15 +3,19 @@ if(!isset($_SESSION)){ session_start(); }
 if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 ?>
 <!DOCTYPE html>
+<link href="css/game.css" rel="stylesheet" type="text/css" />
+<link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
 <html>
 <body>
-<div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
-    <div style="width:100%; height:33%; background-color:lightgreen;"></div>
-    <div style="width:100%; height:33%; background-color:green;">
-        <div style=" position: relative;top: 15%;left: 33%; width:25%%;height:80%;border:1px solid #000;">
-            <img src="TakiImages/back/Back.jpg" alt="back" height="150" width="150""></div>
+<div class="outline">
+    <div class="top"></div>
+    <div class="middle">
+        <div class="deck"></div>
+        <div class="last-open"></div>
     </div>
-    <div style="width:100%; height:33%; background-color:lightgreen;;"></div>
+    <div class="bottom">
+        <button onclick="surrender()" class="surrender">Surrender</button>
+    </div>
 </div>
 </body>
 </html>
