@@ -332,8 +332,8 @@ class game {
         }
         foreach (array_rand($this->closed_cards, $num_of_cards) as $k) {
             $card = $this->$this->closed_cards[$k];
-            array_push($players_cards, $card);
-            array_push($taken_cards,$card);
+            $players_cards[]= $card;
+            $taken_cards[]=$card;
             $this->turn=0;
         }
         $this->sum_of_turns++;

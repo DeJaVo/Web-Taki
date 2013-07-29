@@ -188,7 +188,7 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result=mysqli_query($con,"SELECT * FROM games WHERE game_id='$game_id'");
-        if(!$result)
+        if(!empty($result))
         {
             mysqli_query($con,"DELETE FROM games WHERE game_id='$game_id'");
         }

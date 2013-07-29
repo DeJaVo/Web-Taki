@@ -90,7 +90,6 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     </div>
     <!--END header-->
 
-    <!--TODO: Fix hard coded call-->
     <div class="content">
         <script type="text/javascript" language="JavaScript">
             print_wr();
