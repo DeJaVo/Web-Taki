@@ -341,8 +341,19 @@ class game {
         $this->model->tm_update_game($this->game_id,$this->cards_a, $this->highest_num_cards_a, $this->cards_b, $this->highest_num_cards_b,$this->last_open_card, $this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time);
         return 1;
     }
+
     public function game_return_game_data() {
-        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&cards_a=".implode(",",$this->cards_a)."&cards_b=".implode(",",$this->cards_b)."&highest_num_cards_a=".$this->highest_num_cards_a."&highest_num_cards_b=".$this->highest_num_cards_b."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".implode(",",$this->all_cards)."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
+        $my_cards = array();
+        if($_SESSION['username']==$this->player_a)
+        {
+            $my_cards = $this->cards_a;
+        }
+        else if ($_SESSION['username']==$this->player_b)
+        {
+            $my_cards = $this->cards_b;
+
+        }
+        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".implode(",",$this->all_cards)."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
@@ -432,7 +443,7 @@ class game {
                         unset($this->cards_b[array_search($cards, $this->cards_b)]);
                         $this->turn=0;
                     }
-                    $new_card="\\$dir1\\$dir2\\$dir3\\$sign\\$new_col.jpg";
+                    $new_card="$sign $new_col";
                     $this->last_open_card=$new_card;
                     $this->change_turn();
                     $this->incr_turns_count();
