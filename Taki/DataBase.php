@@ -93,7 +93,23 @@ class data_base
                 echo "Error creating table: Room<br>" . mysqli_error($con)."<br>";
                 //TODO:deal with error
             }
-
+            $sql="CREATE TABLE IF NOT EXISTS admins
+	    (
+             username VARCHAR(200) NOT NULL,PRIMARY KEY(username),user_password BLOB, nick_name TEXT
+	    )";
+            if (mysqli_query($con,$sql))
+            {
+                echo "table Room created successfully<br>";
+            }
+            else
+            {
+                echo "Error creating table: Room<br>" . mysqli_error($con)."<br>";
+                //TODO:deal with error
+            }
+            $username = 'admin';
+            $password = '12345';
+            $nickname = 'admin';
+            mysqli_query($con,"INSERT INTO admins (username, user_password, nick_name) VALUES ('$username', AES_ENCRYPT('$password','$this->key'), '$nickname')");
         }
         //close the connection
         mysqli_close($con);
@@ -152,6 +168,26 @@ class data_base
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
         $result = mysqli_query($con,"SELECT * FROM players WHERE username ='$username'AND AES_DECRYPT(user_password,'$this->key')='$password' AND nick_name='$nickname'");
+        $row = mysqli_fetch_array($result);
+        if(empty($row))
+        {
+            mysqli_close($con);
+            return false;
+        }
+        mysqli_close($con);
+        return true;
+    }
+
+    //Find Admin
+    public function db_find_admin_by_params($username,$password,$nickname)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $result = mysqli_query($con,"SELECT * FROM admins WHERE username ='$username'AND AES_DECRYPT(user_password,'$this->key')='$password' AND nick_name='$nickname'");
         $row = mysqli_fetch_array($result);
         if(empty($row))
         {
@@ -339,7 +375,7 @@ class data_base
         mysqli_close($con);
     }
 
-    //Find game by game id
+    //Find game by user name
     public function db_search_game_by_user_name($user_name)
     {
         $con=mysqli_connect("","root","","taki_db");
@@ -356,5 +392,32 @@ class data_base
         mysqli_close($con);
         return $row;
     }
+
+    //Return all user in room table
+    public function db_all_active_games()
+    {
+        $result= array();
+        $con=mysqli_connect("","root","","taki_db");
+        // Check connection
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $stmt=mysqli_prepare($con, "SELECT game_id,usernameA,usernameB,highest_number_of_cards_A,highest_number_of_cards_B,turn,sum_of_turns,winner, game_start_time,game_finish_time FROM games");
+        if($stmt)
+        {
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt,$game_id,$usernameA,$usernameB,$highest_number_of_cards_A,$highest_number_of_cards_B,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time);
+            while ( mysqli_stmt_fetch($stmt)) {
+                $list= array($game_id,$usernameA,$usernameB,$highest_number_of_cards_A,$highest_number_of_cards_B,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time);
+                array_push($result, $list);
+            }
+            mysqli_stmt_close($stmt);
+            mysqli_close($con);
+            return $result;
+        }
+        mysqli_close($con);
+    }
+
 }
 
