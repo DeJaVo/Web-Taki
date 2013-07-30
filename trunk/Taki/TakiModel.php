@@ -115,9 +115,23 @@ class taki_model
         return $value;
     }
 
-    //returns all players waiting in waiting roo,
+    //returns all players waiting in waiting room
     public function tm_all_users_in_room () {
         return $this->db->db_all_users_in_room();
     }
 
+    //Finds admin by parameters
+    public function tm_find_admin_by_params($username,$password,$nickname)
+    {
+        $result=$this->db->db_find_admin_by_params($username,$password,$nickname);
+        if($result)
+        {
+            return true;
+        }
+        return false;
+    }
+    //returns all active games
+    public function tm_all_active_games(){
+        return $this->db->db_all_active_games();
+    }
 }

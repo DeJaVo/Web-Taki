@@ -27,25 +27,33 @@ class login
         //check to make sure that the username,password and nickname fields are not empty.
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
-            //search user in database
-            if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
+            //Administrator login
+            if(!$this->model->tm_find_admin_by_params($this->username,$this->password,$this->nickname))
             {
-                if(!isset($_SESSION)){ session_start(); }
-                echo("Connecting.... <br>");
-                //TODO: think about encrypting username and game_id
-                $_SESSION['username'] = $this->username;
-                $result = $this->model->tm_insert_user_to_room($this->username);
-                if(!empty($result))
+                //search user in database
+                if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
                 {
-                    $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
+                    if(!isset($_SESSION)){ session_start(); }
+                    echo("Connecting.... <br>");
+                    //TODO: think about encrypting username and game_id
+                    $_SESSION['username'] = $this->username;
+                    $result = $this->model->tm_insert_user_to_room($this->username);
+                    if(!empty($result))
+                    {
+                        $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
+                        header('Refresh: 5; URL=../Taki/login.html');
+                    }
+                    header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
+                }
+                else
+                {
+                    $this->model->tm_handle_error("Error! please register first");
                     header('Refresh: 5; URL=../Taki/login.html');
                 }
-                header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
             }
             else
             {
-                $this->model->tm_handle_error("Error! please register first");
-                header('Refresh: 5; URL=../Taki/login.html');
+                header('Refresh: 5;URL=http:../Taki/activegames.php');
             }
         }
         else
@@ -61,6 +69,11 @@ class login
         $min_length = 5;
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
+            if(($this->username=='admin')&&($this->nickname=='admin'))
+            {
+                $this->model->tm_handle_error("Error! username or nickname already exists, please choose a different username");
+                header('Refresh: 5; URL=../Taki/login.html');
+            }
             $result1 = $this->model->tm_search_user_by_username($this->username);
             $result2 =  $this->model->tm_search_user_by_nickname($this->nickname);
             if(empty($result1) && empty($result2))
@@ -76,7 +89,7 @@ class login
             }
             else
             {
-                $this->model->tm_handle_error("Error! username or nickname already exists, please choose a different username");
+                $this->model->tm_handle_error("Error! username or nickname already exist, please choose a different username");
                 header('Refresh: 5; URL=../Taki/login.html');
             }
         }

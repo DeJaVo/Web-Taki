@@ -233,13 +233,14 @@ class game {
         $this->cards_a = array();
         $this->cards_b = array();
         $this->closed_cards= array();
-        //TODO:find the game id through the player , search for a game record where player is one of the players
         $game_data=$this->model->tm_search_game_by_user_name($user_name);
-        $game_data['cards_A']=explode(",",$game_data['cards_A']);
-        $game_data['cards_b']=explode(",",$game_data['cards_B']);
-        $game_data['closed_cards']=explode(",",$game_data['closed_cards']);
+        if(!empty($game_data)) {
+            $game_data['cards_A']=explode(",",$game_data['cards_A']);
+            $game_data['cards_B']=explode(",",$game_data['cards_B']);
+            $game_data['closed_cards']=explode(",",$game_data['closed_cards']);
         list($this->game_id,$this->cards_a,$this->highest_number_of_cards_a,$this->cards_b,$this->highest_number_of_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time,$this->game_finish_time,$this->sequential_two)=$game_data;
-        return;
+        }
+            return;
     }                       //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
