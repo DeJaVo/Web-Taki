@@ -17,91 +17,264 @@ body {
     top: 0;
     right: 0;
     bottom: 0;
+}.top {
+     box-sizing: border-box;
+     -moz-box-sizing: border-box;
+     background-color: #DDDDDD;
+     width: 1200px;
+     height: 221px;
+     opacity: 1;
+ }
+
+.middle {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 1200px;
+    height: 331px;
+    opacity: 1;
 }
 
-.top {
-    width:100%;
-    height:33%;
-}
-
-.middle
-{
-    width:100%;
-    height:34%;
-}
-.bottom
-{
-    width:100%;
-    height:33%;
-}
-
-
-/*******************
-        CARDS
-*******************/
-
-.deck
-{
-    position: absolute;
-    top: 15%;
-    left: 20%;
-    width:25%;
-    height:80%;
-    background: url('../TakiImages/back/Back.jpg') left fixed no-repeat;
-}
-
-.last-open
-{
-    position: absolute;
-    top: 15%;
-    right: 20%;
-    width:25%;
-    height:80%;
-    background: url('../TakiImages/back/Back.jpg') center center fixed no-repeat;
-    
-}
-
-/*******************
-     BUTTONS
-*******************/
-
-.bottom.surrender:hover
-{
-    background: #3f9db8;
-    border: 1px solid rgba(256,256,256,0.75);
-
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-}
-
-.bottom.surrender:focus
-{
-    position: relative;
-    bottom: -1px;
-
-    background: #56c2e1;
-
-    box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+.bottom {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 1200px;
+    height: 290px;
+    opacity: 0.54;
 }
 
 
-.bottom.surrender
-{
-    position: absolute;
-    left:10px;
-    bottom:10px;
-    display: block;
-    float: right;
-    padding: 18px;
-    margin-right: 50px;
-
-    background: none;
-    border: 1px;
-    cursor: pointer;
-
-    font-family:  serif;
-    font-weight: 300;
-    font-size: 10px;
-    color: #414848;
-    text-shadow: 0px 1px 0 rgba(256,256,256,0.5)
-
+.player0 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 952px;
+    height: 276px;
+    opacity: 1;
 }
+
+.surrender {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 124px;
+    height: 55px;
+    opacity: 1;
+    box-shadow: 0px 0px 16px #E8E8E8 inset, 0px -0px 16px #000000 inset;
+    -webkit-box-shadow: 0px 0px 16px #E8E8E8 inset, 0px -0px 16px #000000 inset;
+    -moz-box-shadow: 0px 0px 16px #E8E8E8 inset, 0px -0px 16px #000000 inset;
+    -ms-box-shadow: 0px 0px 16px #E8E8E8 inset, 0px -0px 16px #000000 inset;
+    -o-box-shadow: 0px 0px 16px #E8E8E8 inset, 0px -0px 16px #000000 inset;
+}
+
+.deck {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-position-x: 14px, 0;
+    background-repeat: no-repeat;
+    width: 152px;
+    height: 200px;
+    opacity: 1;
+    border: 1px solid #000000;
+    box-shadow: 0px 0px 34px 0px #000000 inset;
+    -webkit-box-shadow: 0px 0px 34px 0px #000000 inset;
+    -moz-box-shadow: 0px 0px 34px 0px #000000 inset;
+    -ms-box-shadow: 0px 0px 34px 0px #000000 inset;
+    -o-box-shadow: 0px 0px 34px 0px #000000 inset;
+}
+
+.last_open_card {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    width: 138px;
+    height: 207px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+
+.c1 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+
+.c2 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+.c3 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+.c4 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+.c5 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+
+.c6 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+
+.c7 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    width: 110px;
+    height: 152px;
+    opacity: 1;
+    border: 1px solid #000000;
+}
+
+.name0 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 138px;
+    height: 69px;
+    opacity: 1;
+    box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -webkit-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -moz-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -ms-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -o-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+}
+
+.color {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 200px;
+    height: 200px;
+    opacity: 0.39;
+}
+
+.color1 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 55px;
+    height: 55px;
+    opacity: 1;
+}
+
+.color2 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 55px;
+    height: 55px;
+    opacity: 1;
+}
+
+.color3 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 55px;
+    height: 55px;
+    opacity: 1;
+}
+
+.color4 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 55px;
+    height: 55px;
+    opacity: 1;
+}
+
+.name1 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #DDDDDD;
+    width: 138px;
+    height: 69px;
+    opacity: 1;
+    box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -webkit-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -moz-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -ms-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+    -o-box-shadow: 0px 0px 20px #FFFFFF inset, 0px -0px 20px #000000 inset;
+}
+
