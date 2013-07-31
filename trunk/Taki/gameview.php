@@ -11,9 +11,11 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <body>
 <div id="header">
 </div>
-<div id="left">
-</div>
 <div id="center">
+    <div id="deck">
+    </div>
+    <div id="open_cards">
+    </div>
 </div>
 <div id="footer">
     <div id="my_name">stam katov</div>
