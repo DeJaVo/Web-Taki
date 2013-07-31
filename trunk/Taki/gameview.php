@@ -16,9 +16,9 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <div id="center">
 </div>
 <div id="footer">
+    <div id="my_name">stam katov</div>
     <div id="my_hand"></div>
     <div id="surrender">Surrender :(</div>
-    <div id="my_name">stam katov</div>
 </div>
 </body>
 </html>
