@@ -444,12 +444,9 @@ class game {
                         unset($this->cards_b[array_search($cards, $this->cards_b)]);
                         $this->turn=0;
                     }
-                    $new_card="$sign $new_col";
-                    $this->last_open_card=$new_card;
-                    $this->change_turn();
-                    $this->incr_turns_count();
-                    $this->update_db();
-                    return 1;
+
+                    $this->last_open_card=$cards;
+                    return 3;
                 }
                 return 0;
             default :
@@ -465,6 +462,17 @@ class game {
                     }
                 }
                 return 0;
+        }
+    }
+    public function game_change_color($new_col) {
+        list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+        if($l_sign=='change_col') {
+            $new_card="$l_sign $new_col";
+            $this->last_open_card=$new_card;
+            $this->change_turn();
+            $this->incr_turns_count();
+            $this->update_db();
+            return 1;
         }
     }
     public function game_did_game_end() {
@@ -518,6 +526,8 @@ if ($line[0] == 'start') {
 } elseif ($line[0]=='surrender') {
     $game->game_surrender($user);
     $result=6;
+} elseif ($line[0]=='change') {
+    $result=$game->game_change_color($line[2]);
 } else {
     //todo: handle error;
 }
