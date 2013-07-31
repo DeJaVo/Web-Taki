@@ -24,12 +24,13 @@ body{
 
 #deck{
     position: absolute;
+    border-radius: 10px;
+    -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
     left: 30%;
     top: 2%;
-    min-width: 200px;
-    max-width: 200px;
     width:200px;
-    height:95%;
+    height:280px;
     border: 1px solid;
     border-color: black;
     background: url('../TakiImages/back/Back.jpg') center  no-repeat;
@@ -37,12 +38,13 @@ body{
 }
 #open_cards{
     position: absolute;
-    min-width: 200px;
-    max-width: 200px;
+    border-radius: 10px;
+    -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
     left: 55%;
     top: 2%;
     width:200px;
-    height:95%;
+    height:280px;
     border: 1px solid;
     border-color: black;
     background-color: #ffffff;
@@ -64,8 +66,9 @@ body{
     position: absolute;
     background-color: #d3d3d3;
     bottom: 0;
-    width: 10%;
-    height: 20%;
+    left: 0;
+    width: 90px;
+    height: 40px;
     text-align: center;
     text-decoration-color: black;
     opacity: 1;
@@ -101,7 +104,9 @@ body{
 }
 #colors
 {
+    visibility:hidden;
     position: absolute;
+    border-radius: 10px;
     top: 5%;
     right: 5%;
     width: 15%;
@@ -148,4 +153,40 @@ body{
     width: 30%;
     height: 30%;
     background: forestgreen;
+}
+
+.card
+{
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    width: 150px;
+    height: 220px;
+    border-radius: 10px;
+    background: #fff;
+    -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+}
+
+.card:hover {
+    cursor: pointer;
+}
+
+/*GROW*/
+.grow > .card {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.grow > .card:hover {
+    -webkit-box-shadow: 1px 1px 7px rgba(0,0,0,0.9);
+    box-shadow: 1px 1px 7px rgba(0,0,0,0.9);
+    -webkit-transform: scale(1.05,1.05);
+    -moz-transform: scale(1.05,1.05);
+    -o-transform: scale(1.05,1.05);
+    -ms-transform: scale(1.05,1.05);
+    transform: scale(1.05,1.05);
 }

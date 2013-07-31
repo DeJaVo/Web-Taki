@@ -7,6 +7,22 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <html>
 <head>
     <title>Taki</title>
+    <script type='text/javascript'>
+
+        // Configures the init() function to be called after the document is loaded.
+        window.onload = init;
+        function init()
+        {
+            setInterval(game_loop,33);
+        }
+
+        function game_loop()
+        {
+            //call logic
+            //update css
+        }
+
+    </script>
 </head>
 <body>
 <div id="header">
@@ -27,7 +43,12 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 </div>
 <div id="footer">
     <div id="my_name">stam katov</div>
-    <div id="my_hand"></div>
+    <div id="my_hand">
+        <div class="hand grow">
+            <div class="card">
+            </div>
+        </div>
+    </div>
     <button id="surrender">Surrender :(</button>
 </div>
 </body>
