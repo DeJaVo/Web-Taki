@@ -8,18 +8,18 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 class game {
     //TODO: when closed cards == 0 , reest closed cards
     private $model;
-    private $game_id = 0 ;
-    private $player_a = NULL;
-    private $player_b = NULL;
+    public  $game_id = 0 ;
+    public $player_a = NULL;
+    public $player_b = NULL;
     private $cards_a = NULL;                                         //list of a's cards
     private $cards_b = NULL;                                            // list of b's cards
     private $highest_num_cards_a = 0;
     private $highest_num_cards_b = 0;
     private $last_open_card = NULL;
     private $closed_cards = NULL;                                       //list of closed cards
-    private $turn = NULL;                                               // whose turn is it
+    public  $turn = NULL;                                               // whose turn is it
     private $sum_of_turns = 0;
-    private $winner = NULL;                                             // by id/username
+    public $winner = NULL;                                             // by id/username
     private $game_start_time = NULL;
     private $game_finish_time = NULL;
     private $all_cards = NULL;
@@ -306,7 +306,8 @@ class game {
         $num_of_games++;
         $this->model->tm_update_player($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
 
-        $this->game_start_time = date("d:m:y h:i:s ");
+        $this->game_id=0;
+        $this->game_finish_time = date("d:m:y h:i:s ");
     }                                  //Update players record when game ends
 
     public function game_draw_cards() {
@@ -352,7 +353,6 @@ class game {
         else if ($_SESSION['username']==$this->player_b)
         {
             $my_cards = $this->cards_b;
-
         }
         return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".implode(",",$this->all_cards)."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
     }
@@ -478,18 +478,33 @@ class game {
             $this->winner==$this->player_b;
             return 1;
         }
+        if($this->winner!=NULL) {return 1;}
         return 0;
+    }
+    public function game_surrender($user) {
+        if($user==$this->player_a) {
+            $this->winner=$this->player_b;
+        } else {
+            $this->winner=$this->player_a;
+        }
     }
     //when changing color, we change the card path. according to the color chosen by the user we set the new card path.
     //if the player has more than one plus-two cards, we dont do anything and return. if he has only one, we do it automatically.
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
-//take game id saved in cookie or session + take command
 $command=$_POST['arg'];
-$user_name = $_SESSION['username'];
+$user = $_SESSION['username'];
 $result = 0;
 $model = new taki_model();
-$game = new game($model, $user_name);
+$game = new game($model, $user);
+if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1))) {
+    //TODO:: deal with error- not you turn~~~
+}
+elseif (($game->winner!=NULL) || ($game->game_id == 0)) {
+    //in case the game already ended
+    if($user==$game->winner) {$result = 6;}
+    if ($user== $game->winner) {$result=5;}
+}
 
 $line = explode(" ", $command);
 $playerA = $line[3];
@@ -500,18 +515,32 @@ if ($line[0] == 'start') {
     $result=$game->game_draw_cards();
 } elseif ($line[0]== 'put') {
     $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
+} elseif ($line[0]=='surrender') {
+    $game->game_surrender($user);
+    $result=6;
 } else {
     //todo: handle error;
 }
+
 //if move was legal - game data will be updated accordingly and result will set to 1;
+//server returns:
+//0 - internal error
+//1 - illegal move
+//2 - ok new-game-status
+//3 - change color
+//4 - game-ended game-finish-status
+//5 - player lost
+//6 - player wins
 if($result==0) {
-    //TODO: deal with error - exit with error -illegal move
-} else {
+    echo "1";
+} elseif ($result==1) {
     if($game->game_did_game_end()) {
         $game->game_ends();
+        echo "4 $game->game_return_game_data()";
+    } else {
+        echo "2 $game->game_return_game_data()";
     }
+} else {
+    echo "$result";
 }
-echo $game->game_return_game_data();
 
-//TODO: think about deleting the game record if game ended
-//TODO: when retrieving game record , do it according to the user name saved in the session.
