@@ -11,6 +11,7 @@ body{
 }
 
 #header{
+    position: relative;
     width:100%;
     height:33%;
     background: green;
@@ -25,16 +26,20 @@ body{
 
 #deck{
     position: absolute;
-    margin-left: 30%;
-    margin-top: 1%;
+    left: 30%;
+    top: 2%;
+    min-width: 200px;
+    max-width: 200px;
     width:200px;
     height:95%;
     background: yellow;
 }
 #open_cards{
     position: absolute;
-    margin-left: 60%;
-    margin-top: 1%;
+    min-width: 200px;
+    max-width: 200px;
+    left: 55%;
+    top: 2%;
     width:200px;
     height:95%;
     background: yellow;
@@ -75,4 +80,76 @@ body{
     text-align: center;
     text-decoration-color: black;
     opacity: 1;
+}
+
+#op_name
+{
+    position: absolute;
+    top: 0;
+    background-color: red;
+    width: 10%;
+    height: 20%;
+    text-align: center;
+    text-decoration-color: black;
+    opacity: 1;
+}
+
+#op_hand
+{
+    position: absolute;
+    margin-left: 10%;
+    width: 90%;
+    height: 100%;
+    background: gray;
+    opacity: 1;
+}
+#colors
+{
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 15%;
+    height: 40%;
+    background: whitesmoke;
+    opacity: 1;
+}
+
+#red
+{
+    position: absolute;
+    top: 10%;
+    right: 15%;
+    width: 30%;
+    height: 30%;
+    background: red;
+}
+
+#yellow
+{
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 30%;
+    height: 30%;
+    background: yellow;
+}
+
+#blue
+{
+    position: absolute;
+    bottom: 10%;
+    left: 15%;
+    width: 30%;
+    height: 30%;
+    background: dodgerblue;
+}
+
+#green
+{
+    position: absolute;
+    bottom: 10%;
+    right: 15%;
+    width: 30%;
+    height: 30%;
+    background: forestgreen;
 }
