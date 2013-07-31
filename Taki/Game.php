@@ -6,7 +6,7 @@ if(!isset($_SESSION)){ session_start(); }
 if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 class game {
-
+    //TODO: when closed cards == 0 , reest closed cards
     private $model;
     private $game_id = 0 ;
     private $player_a = NULL;
