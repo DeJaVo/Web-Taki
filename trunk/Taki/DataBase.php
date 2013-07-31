@@ -44,14 +44,14 @@ class data_base
             // Create table
             $sql="CREATE TABLE IF NOT EXISTS games
         (
-            game_id  MEDIUMINT NOT NULL AUTO_INCREMENT  ,
+            game_id  MEDIUMINT NOT NULL AUTO_INCREMENT ,
             PRIMARY KEY(game_id),
             usernameA VARCHAR(200) NULL,
             usernameB VARCHAR(200) NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
-        )";
+        )AUTO_INCREMENT =1";
             if (mysqli_query($con,$sql))
             {
                 echo "table Games created successfully<br>";
@@ -244,7 +244,7 @@ class data_base
         public function db_search_player_data_in_games_by_player_id($player_id)
         {
             $con=mysqli_connect("","root","","taki_db");
-            if (mysqli_connect_errno())
+            if (mysq//////nbmbnmbvggdsfsdli_connect_errno())
             {
                 echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
             }
@@ -403,7 +403,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $stmt=mysqli_prepare($con, "SELECT game_id,usernameA,usernameB,highest_number_of_cards_A,highest_number_of_cards_B,turn,sum_of_turns,winner, game_start_time,game_finish_time FROM games");
+        $stmt=mysqli_prepare($con, "SELECT game_id,usernameA,usernameB,highest_number_of_cards_A,highest_number_of_cards_B,turn,sum_of_turns,winner, game_start_time,game_finish_time FROM games WHERE game_id > 0");
         if($stmt)
         {
             mysqli_stmt_execute($stmt);

@@ -27,24 +27,32 @@ class login
         //check to make sure that the username,password and nickname fields are not empty.
         if(!empty($this->username) && !empty($this->password) &&!empty($this->nickname))
         {
-            //Administrator login
+
             if(!$this->model->tm_find_admin_by_params($this->username,$this->password,$this->nickname))
             {
                 //search user in database
                 if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
                 {
-                    if(!isset($_SESSION)){ session_start(); }
-                    echo("Connecting.... <br>");
-                    //TODO: think about encrypting username and game_id
-                    //TODO: html escaping
-                    $_SESSION['username'] = $this->username;
-                    $result = $this->model->tm_insert_user_to_room($this->username);
-                    if(!empty($result))
+                    if(!$this->model->tm_search_game_by_user_name($this->username))
                     {
-                        $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
+                        if(!isset($_SESSION)){ session_start(); }
+                        echo("Connecting.... <br>");
+                        //TODO: think about encrypting username and game_id
+                        //TODO: html escaping
+                        $_SESSION['username'] = $this->username;
+                        $result = $this->model->tm_insert_user_to_room($this->username);
+                        if(!empty($result))
+                        {
+                            $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
+                            header('Refresh: 5; URL=../Taki/login.html');
+                        }
+                        header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
+                    }
+                    else
+                    {
+                        $this->model->tm_handle_error("Error! user already plays in an active game");
                         header('Refresh: 5; URL=../Taki/login.html');
                     }
-                    header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
                 }
                 else
                 {
@@ -52,7 +60,7 @@ class login
                     header('Refresh: 5; URL=../Taki/login.html');
                 }
             }
-            else
+            else//Administrator login
             {
                 header('Refresh: 5;URL=http:../Taki/activegames.php');
             }

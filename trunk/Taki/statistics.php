@@ -97,7 +97,7 @@ class stat
         echo "</tr>";
         echo "</table>";
         //Delete game record
-        $this->model->tm_delete_game_record($this->game_id);
+        //$this->model->tm_delete_game_record($this->game_id);
     }
 }
 
