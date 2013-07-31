@@ -44,10 +44,10 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <div id="footer">
     <div id="my_name">stam katov</div>
     <div id="my_hand">
-        <div class="hand grow">
+
             <div class="card">
             </div>
-        </div>
+
     </div>
     <button id="surrender">Surrender :(</button>
 </div>
