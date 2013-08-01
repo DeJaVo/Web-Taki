@@ -49,6 +49,19 @@ function parse_string(str) {
 
 
 var xmlhttp;
+// Configures the init() function to be called after the document is loaded.
+window.onload = init;
+function init()
+{
+    setInterval(game_loop,33);
+}
+
+function game_loop()
+{
+    //call logic
+    //update css
+}
+
 function load_f(url,arg,cfunc)
 {
     if (window.XMLHttpRequest)
@@ -67,9 +80,15 @@ function load_f(url,arg,cfunc)
 }
 
 //Activate Colors Menu
-function activate_color_menu()
+function visible_color_menu()
 {
     document.getElementById("colors").visibility="visible";
+}
+
+//Activate Colors Menu
+function hide_color_menu()
+{
+    document.getElementById("colors").visibility="hidden";
 }
 
 
@@ -112,5 +131,78 @@ function on_surrender()
         }
 
     });
+}
+//Display my cards (removes and adds cards)
+function display_my_hand_cards(cards,action)
+{
+    var path = "../Taki/TakiImages/";
+    var element = document.getElementById("my_hand");
+    var length = cards.length;
+    if(action==1) //Add cards to my hand
+    {
+        for(var i= 0; i<length; i++)
+        {
+            var div = document.createElement("div");
+            div.className = "card";
+            var card_array = cards[i].split(" ");
+            var image = path + card_array[0] +"/"+card_array[1]+".jpg";
+            div.style["background-image"]="url(\'"+image +"\')";
+            div.style["background-size"] = "contain";
+            div.style["background-repeat"]="no-repeat";
+            div.style["background-position"]="center";
+            div.title =card_array[0]+" "+card_array[1];
+            element.appendChild(div);
+        }
+    }
+    if(action==0)//remove Add cards from my hand
+    {
+        var child = element.getElementsByTagName("div");
+        for(var j= 0; j<length; j++)
+        {
+            for(var k=0; k<child.length;k++)
+            {
+                var child_title = child[k].getAttribute("title");
+                if(cards[j]==child_title)
+                {
+                    element.removeChild(child[k]);
+                }
+            }
+        }
+    }
+}
+
+//Display opponent cards (removes and adds cards)
+function display_op_hand_cards(num_of_cards)
+{
+    var path = "../Taki/TakiImages/back/Back.jpg";
+    var element = document.getElementById("op_hand");
+    var count = element.getElementsByTagName("div").length;
+
+    if(num_of_cards<0){
+
+        num_of_cards = Math.abs(num_of_cards);
+        if(count>num_of_cards)
+        {
+            while(num_of_cards)
+            {
+                var child = element.getElementsByTagName("div");
+                element.removeChild(child.item(0));
+                num_of_cards--;
+            }
+        }
+    }
+    else if(num_of_cards>0)
+    {
+        for(var i= count; i<count+num_of_cards; i++)
+        {
+            var div = document.createElement("div");
+            div.className = "card";
+            div.style["background-image"]="url(\'"+path +"\')";
+            div.style["background-size"] = "contain";
+            div.style["background-repeat"]="no-repeat";
+            div.style["background-position"]="center";
+            element.appendChild(div);
+        }
+    }
 }
 
