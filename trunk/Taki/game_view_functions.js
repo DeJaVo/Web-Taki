@@ -151,7 +151,7 @@ function game_get_state() {
 
 
 var xmlhttp;
-function load_f(url,arg,cfunc)
+function post_f(url,arg,cfunc)
 {
     if (window.XMLHttpRequest)
     {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -294,3 +294,16 @@ function display_op_hand_cards(num_of_cards)
     }
 }
 
+// Return change color (color_name)
+// turn on got input
+function on_color()
+{
+     got_input=1;
+    return "change color ";
+}
+
+//return draw cards
+function on_deck()
+{
+
+}
