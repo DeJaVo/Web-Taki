@@ -66,6 +66,10 @@ body{
 }
 #surrender
 {
+    font-family: cursive;
+    font-style: normal;
+    font-weight: bold;
+    font-size:medium;
     position: absolute;
     background-color: #d3d3d3;
     bottom: 0;
@@ -75,6 +79,19 @@ body{
     text-align: center;
     text-decoration-color: black;
     opacity: 1;
+}
+
+#play
+{
+    font-family: cursive;
+    border-radius: 10px;
+    font-style: normal;
+    font-weight: bold;
+    position: absolute;
+    width: 40px;
+    height: 30px;
+    top: 20%;
+    left: 46%;
 }
 
 #my_name
