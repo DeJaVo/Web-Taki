@@ -354,7 +354,7 @@ class game {
         {
             $my_cards = $this->cards_b;
         }
-        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&all_cards=".implode(",",$this->all_cards)."&sequential_two=".$this->sequential_two."&last_command=".$this->command;
+        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
@@ -500,38 +500,62 @@ class game {
     //if the player has more than one plus-two cards, we dont do anything and return. if he has only one, we do it automatically.
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
+
+
 $command=$_POST['arg'];
 $user = $_SESSION['username'];
 $result = 0;
 $model = new taki_model();
 $game = new game($model, $user);
-if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1))) {
-    //TODO:: deal with error- not you turn~~~
-}
-elseif (($game->winner!=NULL) || ($game->game_id == 0)) {
+
+if (($game->winner!=NULL) || ($game->game_id == 0)) {
     //in case the game already ended
-    if($user==$game->winner) {$result = 6;}
-    if ($user== $game->winner) {$result=5;}
-}
-
-$line = explode(" ", $command);
-$playerA = $line[3];
-$playerB =  $line[4];
-if ($line[0] == 'start') {
-    $result=$game->game_starts($playerA, $playerB);
-} elseif ($line[0]== 'draw') {
-    $result=$game->game_draw_cards();
-} elseif ($line[0]== 'put') {
-    $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
-} elseif ($line[0]=='surrender') {
-    $game->game_surrender($user);
-    $result=6;
-} elseif ($line[0]=='change') {
-    $result=$game->game_change_color($line[2]);
+    if($user==$game->winner) { echo "6";}
+    if ($user!= $game->winner) { echo "5";}
 } else {
+    $line = explode(" ", $command);
+    if ($line[0] == 'start') {
+        $playerA = $line[3];
+        $playerB =  $line[4];
+        $result=$game->game_starts($playerA, $playerB);
+    } elseif ($line[0]== 'draw') {
+        $result=$game->game_draw_cards();
+    } elseif ($line[0]== 'put') {
+        $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
+    } elseif ($line[0]=='surrender') {
+        $game->game_surrender($user);
+        $result=6;
+    } elseif ($line[0]=='change') {
+        $result=$game->game_change_color($line[2]);
+    } elseif ($line[0]=='turn') {
+        if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1))) {
+            //in case it's not you turn
+            $result=8;
+        } else {
+            $game_data=$game->game_return_game_data();
+            $result ="7";
+        }
+    } elseif($line[0]== 'print') {
+        $result= $game->game_return_game_data();
+    } else {
     //todo: handle error;
-}
+    }
 
+    if($result==0) {
+        echo "1";
+    } elseif ($result==1) {
+        if($game->game_did_game_end()) {
+            $game->game_ends();
+            $game_data=$game->game_return_game_data();
+            echo "4 $game_data";
+        } else {
+            $game_data=$game->game_return_game_data();
+            echo "2 $game_data";
+        }
+    } else {
+        echo "$result";
+    }
+}
 //if move was legal - game data will be updated accordingly and result will set to 1;
 //server returns:
 //0 - internal error
@@ -539,18 +563,8 @@ if ($line[0] == 'start') {
 //2 - ok new-game-status
 //3 - change color
 //4 - game-ended game-finish-status
-//5 - player lost
-//6 - player wins
-if($result==0) {
-    echo "1";
-} elseif ($result==1) {
-    if($game->game_did_game_end()) {
-        $game->game_ends();
-        echo "4 $game->game_return_game_data()";
-    } else {
-        echo "2 $game->game_return_game_data()";
-    }
-} else {
-    echo "$result";
-}
+//5 - You Lost
+//6 - You Win
+//7 - Your turn
+//8 - Not your turn
 

@@ -10,8 +10,67 @@
 //deactivate player ui
 //activate color menu
 
+//data structures we use:
+//1. structure of new game state- game after move- returned from server
+//2. current game state
+//3. list of cards player selects
 
-function game_state(param_list)
+//server returns:
+//0 - internal error
+//1 - illegal move
+//2 - ok new-game-status
+//3 - change color
+//4 - game-ended game-finish-status
+//5 - You Lost
+//6 - You Win
+//7 - Your turn
+//8 - Not your turn
+
+var game_end = 0;
+var got_input = 0;
+var chosen_cards;
+var curr_game;
+var new_game;
+
+
+function game_start() {
+    var game_params=game_get_state();                   //at first we want to get the game start state
+    draw_board(game_params);                            //draw for the first time the board
+    update_curr_game(game_params);                      //update current game state
+    disable_UI();                                       //deactivate all board
+    game_loop();                                        //enter loop
+}
+
+function game_loop() {
+    while (game_end == 0) {
+        if(my_turn()) {
+            var game_params=game_get_state();               //???set interval for getting the game current status???
+            draw_board(game_params);
+            update_curr_game(game_params);
+            enable_UI();                                    //deactivate the player's board according to the turn
+        }
+        while (got_input == 0) {
+                                                            //wait for input
+        }
+        var move= build_move();                             //build a command string to the server
+        var answer=send_move_request(move);                 //send request to the server
+        switch (answer[0]) {
+            case 1: {illegal_move();break;}
+            case 2: {legal_move(answer[1]);break;}
+            case 3: {change_col();break;}
+            case 4: {game_ended(answer[1]);break;}
+        }
+        got_input=0;
+        //if the server answered OK
+        //animate the move saved before
+        // save the new state as current state
+        //else - alert illegal move - draw gui according to last state- wait for input again.
+    }
+}
+
+//game_state object will hold last data the returned from server.
+//game_state fields: game_id, player_a player_b my_cards last_open_card closed_cards sum_of_turns winner game_start_time game_finish_Tine sequential_two
+function game_new_state(param_list)
 {
     for(var i= 0;i<param_list.length;i=i+2)
     {
@@ -20,16 +79,44 @@ function game_state(param_list)
         this[key]= val;
     }
 }
+function send_move_request(move) {
+    post_f("../Taki/Game.php",move,function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            var answer= new Array();
+            var result= xmlhttp.responseText;
+            var num= result.charAt(0);
+            answer.push(num);
+            if((num==2)||(num==4)) {
+                var params=result.slice(2,result.length-1);
+                answer.push(params);
+            }
+            return answer;
+        }
+    });
+}
+
+function my_turn() {
+    post_f("../Taki/Game.php","turn check",function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            //if result == 8 ==> not my turn
+            //if result == 7  ==> my turn (result is build of "7 game-params"
+            var result = xmlhttp.responseText;
+            var num = result.charAt(0);
+            if(num=="8") {
+                return 0;
+            }
+            if(num==7) {
+                return 1;
+            }
+        }
+    });
+}
 
 //parse a str representing the server's answer
-//server returns:
-//0 - internal error
-//1 - illegal move
-//2 - ok new-game-status
-//3 - change color
-//4 - game-ended game-finish-status
-//5 - player lost
-//6 - player wins
 function parse_string(str) {
     var params_array= new Array();
     var result= str.charAt(0);
@@ -45,23 +132,25 @@ function parse_string(str) {
     }
     return params_array;
 }
+//update the cuur_game struct AND update the UI
+function update_curr_game(game_params) {
+    //TODO:should update the cuur_game struct AND update the UI
+}
+//gets the last state of the game.
+function game_get_state() {
+    post_f("../Taki/Game.php","print game",function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            //get current game params
+            return (parse_string(xmlhttp.responseText));
+        }
+    });
+}
 
 
 
 var xmlhttp;
-// Configures the init() function to be called after the document is loaded.
-window.onload = init;
-function init()
-{
-    setInterval(game_loop,33);
-}
-
-function game_loop()
-{
-    //call logic
-    //update css
-}
-
 function load_f(url,arg,cfunc)
 {
     if (window.XMLHttpRequest)
@@ -91,7 +180,6 @@ function hide_color_menu()
     document.getElementById("colors").visibility="hidden";
 }
 
-
 //Disable UI elements
 function disable_UI()
 {
@@ -116,7 +204,7 @@ function enable_UI()
 function on_surrender()
 {
 
-    load_f("../Taki/Game.php","surrender",function()
+    post_f("../Taki/Game.php","surrender",function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
