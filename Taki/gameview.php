@@ -7,22 +7,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <html>
 <head>
     <title>Taki</title>
-    <script type='text/javascript'>
-
-        // Configures the init() function to be called after the document is loaded.
-        window.onload = init;
-        function init()
-        {
-            setInterval(game_loop,33);
-        }
-
-        function game_loop()
-        {
-            //call logic
-            //update css
-        }
-
-    </script>
+    <script type='text/javascript'src='../Taki/game_view_functions.js'></script>
 </head>
 <body>
 <div id="header">
@@ -35,15 +20,15 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     </div>
 </div>
 <div id="center">
-    <div id="deck">
+    <div id="deck" onclick="on_deck()">
     </div>
     <div id="open_cards">
     </div>
     <div id="colors">
-        <button id="red" onclick=""></button>
-        <button id="yellow" onclick=""></button>
-        <button id="green" onclick=""></button>
-        <button id="blue" onclick=""></button>
+        <button id="red" onclick="on_color()"></button>
+        <button id="yellow" onclick="on_color()"></button>
+        <button id="green" onclick="on_color()"></button>
+        <button id="blue" onclick="on_color()"></button>
     </div>
 </div>
 <div id="footer">
