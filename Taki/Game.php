@@ -349,12 +349,14 @@ class game {
         if($_SESSION['username']==$this->player_a)
         {
             $my_cards = $this->cards_a;
+            $opp_num_cards= count($this->cards_b);
         }
         else if ($_SESSION['username']==$this->player_b)
         {
             $my_cards = $this->cards_b;
+            $opp_num_cards= count($this->cards_a);
         }
-        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&last_open_card=".$this->last_open_card."&closed_cards=".implode(",",$this->closed_cards)."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
+        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&opp_num_cards=".$opp_num_cards."&last_open_card=".$this->last_open_card."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
