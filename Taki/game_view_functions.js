@@ -315,3 +315,15 @@ function on_deck()
     got_input=1;
     return "draw cards";
 }
+
+//Display last open card
+function display_last_open(card)
+{
+    var path = "../Taki/TakiImages/";
+    var image = path + card[0] +"/"+card[1]+".jpg";
+    var element = document.getElementById("open_cards");
+    element.style["background-image"]="url(\'"+image +"\')";
+    element.style["background-size"] = "contain";
+    element.style["background-repeat"]="no-repeat";
+    element.style["background-position"]="center";
+}

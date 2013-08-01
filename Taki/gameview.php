@@ -20,15 +20,16 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     </div>
 </div>
 <div id="center">
-    <div id="deck" onclick="on_deck()">
+    <div id="deck" onclick="on_deck();">
     </div>
+    <button id="play" onclick="on_put_down_click();">Play</button>
     <div id="open_cards">
     </div>
     <div id="colors">
-        <button id="red" onclick="on_color()"></button>
-        <button id="yellow" onclick="on_color()"></button>
-        <button id="green" onclick="on_color()"></button>
-        <button id="blue" onclick="on_color()"></button>
+        <button id="red" onclick="on_color('red');"></button>
+        <button id="yellow" onclick="on_color('yellow');"></button>
+        <button id="green" onclick="on_color('green');"></button>
+        <button id="blue" onclick="on_color('blue');"></button>
     </div>
 </div>
 <div id="footer">
@@ -37,11 +38,11 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
         <script>
             var array = ["five blue","six red","six red","six red","six red","six red","six red"];
             display_my_hand_cards(array,1);
-            var r_array = ["five blue"];
+            var r_array = ["six red"];
             display_my_hand_cards(r_array,0);
         </script>
     </div>
-    <button id="surrender">Surrender :(</button>
+    <button id="surrender">Surrender</button>
 </div>
 </body>
 </html>
