@@ -1,14 +1,14 @@
 //functions we need:
-//on_surrender
+//on_surrender    V
 //on_put_down_cards    //animate the movement only if turn is legal
-//on_deck
-//on_color
+//on_deck   V
+//on_color  V
 //on_card select/unselect
 //parse_answer    // if answer is illegal/fatal error/etc...                                       V
 //build string to server
-//activate player ui
-//deactivate player ui
-//activate color menu
+//activate player ui      V
+//deactivate player ui     V
+//activate color menu      V
 
 //data structures we use:
 //1. structure of new game state- game after move- returned from server
@@ -239,11 +239,13 @@ function display_my_hand_cards(cards,action)
             div.style["background-repeat"]="no-repeat";
             div.style["background-position"]="center";
             div.title =card_array[0]+" "+card_array[1];
+            div.setAttribute('onclick',"on_card_click()");
             element.appendChild(div);
         }
     }
     if(action==0)//remove Add cards from my hand
     {
+        var removed =0;
         var child = element.getElementsByTagName("div");
         for(var j= 0; j<length; j++)
         {
@@ -253,6 +255,11 @@ function display_my_hand_cards(cards,action)
                 if(cards[j]==child_title)
                 {
                     element.removeChild(child[k]);
+                    removed++;
+                    if(removed==length)
+                    {
+                        return;
+                    }
                 }
             }
         }
@@ -296,14 +303,15 @@ function display_op_hand_cards(num_of_cards)
 
 // Return change color (color_name)
 // turn on got input
-function on_color()
+function on_color(color)
 {
      got_input=1;
-    return "change color ";
+    return "change color "+color;
 }
 
 //return draw cards
 function on_deck()
 {
-
+    got_input=1;
+    return "draw cards";
 }
