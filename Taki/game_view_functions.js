@@ -138,6 +138,7 @@ function game_loop() {
                 break;}
         }
         got_input=0;
+        command="";
         //if the server answered OK
         //animate the move saved before
         // save the new state as current state
