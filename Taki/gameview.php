@@ -13,10 +13,6 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <div id="header">
     <div id="op_name"></div>
     <div id="op_hand">
-        <script>
-            display_op_hand_cards(5);
-            display_op_hand_cards(-3);
-        </script>
     </div>
 </div>
 <div id="center">
@@ -33,16 +29,13 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     </div>
 </div>
 <div id="footer">
-    <div id="my_name">Dvir</div>
+    <div id="my_name"></div>
     <div id="my_hand">
-        <script>
-            var array = ["five blue","six red","six red","six red","six red","six red","six red"];
-            display_my_hand_cards(array,1);
-            var r_array = ["six red"];
-            display_my_hand_cards(r_array,0);
-        </script>
     </div>
-    <button id="surrender">Surrender</button>
+    <button id="surrender" onclick="on_surrender()">Surrender</button>
 </div>
+<script>
+    game_start();
+</script>
 </body>
 </html>

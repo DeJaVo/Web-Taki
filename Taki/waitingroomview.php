@@ -74,7 +74,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
                 if (xmlhttp.readyState==4 && xmlhttp.status==200)
                 {
                     //clearInterval(myVar);
-                    document.getElementById("table").innerHTML=xmlhttp.responseText;
+                    //document.getElementById("table").innerHTML=xmlhttp.responseText;
                     window.location.href="../Taki/gameview.php";
                 }
             });

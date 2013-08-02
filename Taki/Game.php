@@ -8,7 +8,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 class game {
     //TODO: when closed cards == 0 , reest closed cards
     private $model;
-    public  $game_id = 0 ;
+    public  $game_id = NULL ;
     public $player_a = NULL;
     public $player_b = NULL;
     private $cards_a = NULL;                                         //list of a's cards
@@ -19,7 +19,7 @@ class game {
     private $closed_cards = NULL;                                       //list of closed cards
     public  $turn = NULL;                                               // whose turn is it
     private $sum_of_turns = 0;
-    public $winner = NULL;                                             // by id/username
+    public $winner = 9999;                                             // by id/username
     private $game_start_time = NULL;
     private $game_finish_time = NULL;
     private $all_cards = NULL;
@@ -75,8 +75,8 @@ class game {
                 $last_sign=$c_sign;
                 continue;
             } elseif ($last_sign== $c_sign) {
-                    $color_was_changed=1;
-                    continue;
+                $color_was_changed=1;
+                continue;
             } else {
                 return 0;
 
@@ -128,48 +128,48 @@ class game {
         //if last open card color is different than this card color then turn is not legal.
         if ($l_col!= $col) {return 0;}
 
-            if (count($cards)==1) {
-                //TODO: Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
-                //TODO: animate the card pulling from the deck.
-            } else {
-                list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
-                if((($c_sign>=1) && ($c_sign<=9)) && (count($cards)==2)) {
+        if (count($cards)==1) {
+            //TODO: Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
+            //TODO: animate the card pulling from the deck.
+        } else {
+            list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
+            if((($c_sign>=1) && ($c_sign<=9)) && (count($cards)==2)) {
+                return 1;
+            }
+            if($c_sign=='king') {
+                if ($this->game_put_down_cards($player_id,array_slice($cards,1))) {
+                    $this->change_turn();
                     return 1;
                 }
-                if($c_sign=='king') {
-                    if ($this->game_put_down_cards($player_id,array_slice($cards,1))) {
-                        $this->change_turn();
-                        return 1;
-                    }
-                }
-                if($c_sign=='taki') {
-                    if ($this->check_taki(array_slice($cards,1))) {
-                        $this->change_turn();
-                        return 1;
-                    }
-                }
-                if($c_sign=='change_cards') {
-                    if($this->check_change_cards(array_slice($cards,1))) {
-                        $this->swap_cards();
-                        $this->change_turn();
-                        return 1;
-                    }
-                }
-                if($c_sign=='change_dir') {
-                    if($this->check_change_dir(array_slice($cards,1))) {
-                        $this->change_turn();
-                        return 1;
-                    }
-                }
-                if($c_sign=='stop') {
-                    if($this->check_stop(array_slice($cards,1))) {
-                     return 1;
-                    }
-                }
-                if($c_sign=='plus') {
-                    return $this->check_plus($player_id,array_slice($cards,1));
+            }
+            if($c_sign=='taki') {
+                if ($this->check_taki(array_slice($cards,1))) {
+                    $this->change_turn();
+                    return 1;
                 }
             }
+            if($c_sign=='change_cards') {
+                if($this->check_change_cards(array_slice($cards,1))) {
+                    $this->swap_cards();
+                    $this->change_turn();
+                    return 1;
+                }
+            }
+            if($c_sign=='change_dir') {
+                if($this->check_change_dir(array_slice($cards,1))) {
+                    $this->change_turn();
+                    return 1;
+                }
+            }
+            if($c_sign=='stop') {
+                if($this->check_stop(array_slice($cards,1))) {
+                    return 1;
+                }
+            }
+            if($c_sign=='plus') {
+                return $this->check_plus($player_id,array_slice($cards,1));
+            }
+        }
     }
     private function check_number($cards) {
         //get first card data
@@ -227,35 +227,47 @@ class game {
         }
     }                        //Initialize all cards
 
-    public function game($model,$user_name) {
-        $this->model = $model;
+    public function game($user_name) {
+        $this->model = new taki_model();
         $this->all_cards = array();
         $this->cards_a = array();
         $this->cards_b = array();
         $this->closed_cards= array();
         $game_data=$this->model->tm_search_game_by_user_name($user_name);
-        if(!empty($game_data)) {
+        if(!empty($game_data['game_id'])) {
             $game_data['cards_A']=explode(",",$game_data['cards_A']);
             $game_data['cards_B']=explode(",",$game_data['cards_B']);
             $game_data['closed_cards']=explode(",",$game_data['closed_cards']);
-        list($this->game_id,$this->cards_a,$this->highest_number_of_cards_a,$this->cards_b,$this->highest_number_of_cards_b,$this->last_open_card,$this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time,$this->game_finish_time,$this->sequential_two)=$game_data;
+            $this->game_id= $game_data['game_id'];
+            $this->player_a=$game_data['usernameA'];
+            $this->player_b=$game_data['usernameB'];
+            $this->cards_a= $game_data['cards_A'];
+            $this->cards_b= $game_data['cards_B'];
+            $this->highest_number_of_cards_a=$game_data['highest_number_of_cards_A'];
+            $this->highest_number_of_cards_b=$game_data['highest_number_of_cards_B'];
+            $this->last_open_card=$game_data['last_open_card'];
+            $this->closed_cards=$game_data['closed_cards'];
+            $this->turn=$game_data['turn'];
+            $this->sum_of_turns=$game_data['sum_of_turns'];
+            $this->winner=$game_data['winner'];
+            $this->game_start_time=$game_data['game_start_time'];
+            $this->game_finish_time=$game_data['game_finish_time'];
+            $this->sequential_two=$game_data['sequential_two'];
         }
-            return;
+        return;
     }                       //C'tor
     public function game_starts ($player_a, $player_b) {
         $a_cards = array();
         $b_cards = array();
         $this->player_a = $player_a;
         $this->player_b = $player_b;
-
-
         //initialize all cards
         $this->game_init_all_cards();
         //initialize a's cards
         foreach (array_rand($this->all_cards, 8) as $k) {
             $a_card = $this->all_cards[$k];
-            $this->cards_a[]= $a_card;
-            $a_cards[]=$a_card;
+            array_push($this->cards_a, $a_card);
+            array_push($a_cards,$a_card);
         }
         $t_cards = array_diff($this->all_cards, $a_cards);
         //initialize b's cards
@@ -307,7 +319,8 @@ class game {
         $this->model->tm_update_player($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
 
         $this->game_id=0;
-        $this->game_finish_time = date("d:m:y h:i:s ");
+        $this->game_finish_time = date("d:m:y h:i:s");
+        $this->update_db();
     }                                  //Update players record when game ends
 
     public function game_draw_cards() {
@@ -345,18 +358,20 @@ class game {
     }
 
     public function game_return_game_data() {
-        $my_cards = array();
-        if($_SESSION['username']==$this->player_a)
+        $username =$_SESSION['username'];
+        if($username==$this->player_a)
         {
             $my_cards = $this->cards_a;
             $opp_num_cards= count($this->cards_b);
         }
-        else if ($_SESSION['username']==$this->player_b)
+        else
         {
             $my_cards = $this->cards_b;
             $opp_num_cards= count($this->cards_a);
         }
-        return "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".implode(",",$my_cards)."&opp_num_cards=".$opp_num_cards."&last_open_card=".$this->last_open_card."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
+       $my_cards = implode(",",$my_cards);
+        $str = "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".$my_cards."&opp_num_cards=".$opp_num_cards."&last_open_card=".$this->last_open_card."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
+        return $str;
     }
     public function game_put_down_cards($cards) {
         if ($this->turn==0) {$player_id=$this->player_a;} else {$player_id=$this->player_b;}
@@ -371,7 +386,7 @@ class game {
                 return 0;
             } else {
                 if(count($cards)>1) {
-                //TODO error- you can choose only one plus-two card;
+                    //TODO error- you can choose only one plus-two card;
                     return 0;
                 }
                 $this->change_turn();
@@ -434,7 +449,7 @@ class game {
                     $this->update_db();
                     return 1;
                 }
-               return 0;
+                return 0;
             case 'change_col':
                 if($this->check_change_col($cards)) {
                     //Todo:: ask for color from user
@@ -478,17 +493,20 @@ class game {
         }
     }
     public function game_did_game_end() {
-        if (count($this->cards_a)==0) {
+
+        if (empty($this->cards_a)) {
             //a wons
-            $this->winner==$this->player_a;
+            $this->winner=$this->player_a;
             return 1;
         }
-        if (count($this->cards_b)==0) {
+        if (empty($this->cards_b)) {
             //b wons
-            $this->winner==$this->player_b;
+            $this->winner=$this->player_b;
             return 1;
         }
-        if($this->winner!=NULL) {return 1;}
+        if(($this->winner==0) || ($this->winner==1)) {
+            return 1;
+        }
         return 0;
     }
     public function game_surrender($user) {
@@ -502,60 +520,101 @@ class game {
     //if the player has more than one plus-two cards, we dont do anything and return. if he has only one, we do it automatically.
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
-
-
 $command=$_POST['arg'];
 $user = $_SESSION['username'];
-$result = 0;
-$model = new taki_model();
-$game = new game($model, $user);
 
-if (($game->winner!=NULL) || ($game->game_id == 0)) {
+$result = 0;
+$game = new game($user);
+
+//|| ($game->game_id == 0)
+if (($game->winner==0)||($game->winner==1) )
+{
     //in case the game already ended
-    if($user==$game->winner) { echo "6";}
-    if ($user!= $game->winner) { echo "5";}
-} else {
+    if($user==$game->winner)
+    {
+        echo "6";
+    }
+    if ($user!= $game->winner)
+    {
+        echo "5";
+    }
+}
+
+else
+{
     $line = explode(" ", $command);
-    if ($line[0] == 'start') {
-        $playerA = $line[3];
-        $playerB =  $line[4];
-        $result=$game->game_starts($playerA, $playerB);
-    } elseif ($line[0]== 'draw') {
-        $result=$game->game_draw_cards();
-    } elseif ($line[0]== 'put') {
-        $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
-    } elseif ($line[0]=='surrender') {
-        $game->game_surrender($user);
-        $result=6;
-    } elseif ($line[0]=='change') {
-        $result=$game->game_change_color($line[2]);
-    } elseif ($line[0]=='turn') {
-        if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1))) {
-            //in case it's not you turn
-            $result=8;
-        } else {
-            $game_data=$game->game_return_game_data();
-            $result ="7";
-        }
-    } elseif($line[0]== 'print') {
-        $result= $game->game_return_game_data();
-    } else {
-    //todo: handle error;
+    switch($line[0])
+    {
+        case 'start':
+            $playerA = $line[3];
+            $playerB =  $line[4];
+            $result=$game->game_starts($playerA, $playerB);
+            break;
+        case 'draw':
+            $result=$game->game_draw_cards();
+            break;
+        case 'put':
+            $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
+            break;
+        case 'surrender':
+            $game->game_surrender($user);
+            $result=6;
+            break;
+        case 'change':
+            $result=$game->game_change_color($line[2]);
+            break;
+        case 'turn':
+            if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1)))
+            {
+                //in case it's not you turn
+                $result=8;
+                break;
+            }
+            else
+            {
+                $game_data=$game->game_return_game_data();
+                $result =7;
+                break;
+            }
+        case 'print':
+            //$result= $game->game_return_game_data();
+            $result=1;
+            break;
+        default:
+            //todo: handle error;
+            break;
     }
 
-    if($result==0) {
-        echo "1";
-    } elseif ($result==1) {
-        if($game->game_did_game_end()) {
-            $game->game_ends();
-            $game_data=$game->game_return_game_data();
-            echo "4 $game_data";
-        } else {
-            $game_data=$game->game_return_game_data();
-            echo "2 $game_data";
-        }
-    } else {
-        echo "$result";
+    switch($result)
+    {
+        case 0:
+            if(is_string($result))
+            {
+                echo $result;
+            }
+            else
+            {
+                echo "1";
+            }
+
+            break;
+        case 1:
+            if($game->game_did_game_end())
+            {
+                $game->game_ends();
+                $game_data=$game->game_return_game_data();
+                echo "4"." ".$game_data;
+                break;
+            }
+            else
+            {
+                $game_data=$game->game_return_game_data();
+                echo "2"." ".$game_data;
+                break;
+            }
+         default:
+             echo $result;
+
     }
 }
 //if move was legal - game data will be updated accordingly and result will set to 1;
