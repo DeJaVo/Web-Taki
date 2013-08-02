@@ -25,14 +25,37 @@
 //6 - You Win
 //7 - Your turn
 //8 - Not your turn
-
+var params_array= new Array();
 var game_end = 0;
-var got_input = 0;
-var command;
+var my_interval = null;
+//var got_input = 0;
+//var command;
 var chosen_cards= new Array();
 var curr_game = {'game_id': 0 ,'player_a': null, 'player_b': null ,'my_cards':new Array(), 'opp_num_cards':0,'last_open_card': null, 'turn':-1, 'sum_of_turns': 0, 'winner': 999, 'game_start_time': null, 'game_finish_Time': null, 'sequential_two':0};
 //var new_game = new Object();
 
+function server_answer( answer) {
+    switch (parseInt(answer)) {
+        case 1: //illegal_move();
+            chosen_cards= new Array();
+            break;
+        case 2:
+            draw_board();
+            update_game_object();
+            my_interval=setInterval(my_turn(),3000);
+            break;
+        case 3:
+            disable_UI();
+            visible_color_menu();
+            break;
+        case 4:
+            draw_board();
+            update_game_object();
+            disable_UI();
+            check_who_wins();
+            break;
+    }
+}
 
 function on_card_click(card) {
     //if the card is already in the chosen card- remove it, else add it.
@@ -48,30 +71,32 @@ function on_card_click(card) {
 }
 function on_put_down_click() {
     //take all chosen cards and prepare a string command to the server
-    var cmd= "";
-    cmd= cmd+"put down cards";
+    var cmd ="put down cards ";
     for(var i=0;i<chosen_cards.length;i++) {
         cmd= cmd.concat(chosen_cards[i]);
     }
-    got_input=1;
-    command= cmd;
+    //got_input=1;
+    //command= cmd;
+    var answer=send_move_request(cmd);
+    return server_answer(answer);
 }
 //game_params is a list of key-val
-function draw_board(game_params) {
+function draw_board() {
     //game_state fields: game_id, player_a player_b my_cards opp_num_cards last_open_card sum_of_turns winner game_start_time game_finish_Tine sequential_two
     //compare game_params to curr_game for deciding what should be updated
     //document.writeln(game_params['my_cards']);
 
-    if(!(curr_game['my_cards']== game_params['my_cards'])) {
-        var cards_group= intersection3(curr_game['my_cards'],game_params['my_cards']);
+    if(!(curr_game['my_cards']== params_array['my_cards'])) {
+        var splitted_params_array = params_array['my_cards'].split(",");
+        var cards_group= intersection3(curr_game['my_cards'],splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
         display_my_hand_cards(to_be_removed,0);
         display_my_hand_cards(to_be_added,1);
     }
-    if(curr_game['opp_num_cards']!= game_params['opp_num_cards']) {
-        var num_old=curr_game['opp_num_cards'].length;
-        var num_new = game_params['opp_num_cards'].length;
+    if(curr_game['opp_num_cards'].toString()!= params_array['opp_num_cards']) {
+        var num_old=curr_game['opp_num_cards'];
+        var num_new = params_array['opp_num_cards'];
         if(num_old>num_new){
             //remove opp cards
             display_op_hand_cards(num_old-num_new);
@@ -80,10 +105,10 @@ function draw_board(game_params) {
             display_op_hand_cards(num_new-num_old);
         }else {};
     }
-    if(curr_game['last_open_card']!= game_params['last_open_card']) {
-        display_last_opened_card(game_params['last_open_card']);
+    if(curr_game['last_open_card']!= params_array['last_open_card']) {
+        display_last_opened_card(params_array['last_open_card']);
     }
-    if(curr_game['sum_of_turns']!= game_params['sum_of_turns']) {
+    if(curr_game['sum_of_turns']!= params_array['sum_of_turns']) {
     }
 }
 function intersection3(arr1, arr2) {
@@ -94,63 +119,33 @@ function intersection3(arr1, arr2) {
         if (arr1.indexOf(arr2[i]) !== -1) {
             mid.push(arr1[i]);
         } else {
-            left.push(arr2[i]);
+            right.push(arr2[i]);
         }
     }
     for(var i = 0; i< arr1.length; i++){
         if(mid.indexOf(arr1[i]) == -1) {
-            right.push(arr1[i]);
+            left.push(arr1[i]);
         }
     }
     var results= new Array();
-    return results.push(left,mid,right);
+    results.push(left,mid,right);
+    return results;
 }
 function game_start() {
-    var game_params=game_get_state();                   //at first we want to get the game start state
-    var num =game_params.length;
-    document.writeln(num.toString());
-    draw_board(game_params);                            //draw for the first time the board
-    update_game_object(curr_game,game_params);          //update current game state
+    game_get_state();                   //at first we want to get the game start state
+    draw_board();                            //draw for the first time the board
+    update_game_object();          //update current game state
+    draw_names();
     disable_UI();                                       //deactivate all board
-    game_loop();                                        //enter loop
+    my_interval=setInterval(my_turn(),5000);                                        //enter loop
+}
+function draw_names() {
+    var my_name = curr_game['player_a'];
+    var op_name = curr_game['player_b'];
+    document.getElementById("my_name").innerHTML= my_name;
+    document.getElementById("op_name").innerHTML= op_name;
 }
 
-function game_loop() {
-    while (game_end == 0) {
-        if(my_turn()) {
-            var game_params=game_get_state();               //???set interval for getting the game current status???
-            draw_board(game_params);
-            update_game_object(curr_game,game_params);
-            enable_UI();                                    //deactivate the player's board according to the turn
-        }
-        while (got_input == 0) {}                              //wait for input
-        var answer=send_move_request(command);                 //send request to the server
-        switch (answer[0]) {
-            case 1: //illegal_move();
-                break;
-            case 2:
-                draw_board(answer[1]);
-                update_game_object(curr_game,answer[1]);
-                break;
-            case 3:
-                disable_UI();
-                visible_color_menu();
-                break;
-            case 4:
-                draw_board(answer[1]);
-                update_game_object(curr_game,answer[1]);
-                disable_UI();
-                check_who_wins();
-                break;
-        }
-        got_input=0;
-        command="";
-        //if the server answered OK
-        //animate the move saved before
-        // save the new state as current state
-        //else - alert illegal move - draw gui according to last state- wait for input again.
-    }
-}
 function check_who_wins() {
     post_f("../Taki/Game.php","",function()
     {
@@ -172,28 +167,38 @@ function check_who_wins() {
     });
 }
 
-function update_game_object(obj,param_list) {
-    for(var i= 0;i<param_list.length;i=i+2)
-    {
-        var key = param_list[i];
-        var val = param_list[i+1];
-        obj[key]= val;
-    }
+function update_game_object() {
+    curr_game['game_id']=params_array['game_id'];
+    curr_game['player_a']=params_array['player_a'];
+    curr_game['player_b']=params_array['player_b'];
+    curr_game['my_cards']=params_array['my_cards'];
+    curr_game['opp_num_cards']=params_array['opp_num_cards'];
+    curr_game['last_open_card']=params_array['last_open_card'];
+    curr_game['turn']=params_array['turn'];
+    curr_game['sum_of_turns']=params_array['sum_of_turns'];
+    curr_game['winner']=params_array['winner'];
+    curr_game['game_start_time']=params_array['game_start_time'];
+    curr_game['game_finish_time']=params_array['game_finish_time'];
+    curr_game['sequential_two']=params_array['sequential_two'];
+
+    /*    for(var i= 0;i<params_array;i=i+2)
+     {
+     var key = params_array[i];
+     var val = params_array[i+1];
+     curr_game[key]= val;
+     }*/
 }
 function send_move_request(move) {
     post_f("../Taki/Game.php",move,function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
-            var answer= new Array();
             var result= xmlhttp.responseText;
-            var num= result.charAt(0);
-            answer.push(num);
-            if((num==2)||(num==4)) {
+            if((result.charAt(0)==2)||(result.charAt(0)==4)) {
                 var params=result.slice(2,result.length-1);
-                answer.push(params);
+                parse_string(params);
             }
-            return answer;
+            return result.charAt(0);
         }
         return -1;
 
@@ -201,6 +206,7 @@ function send_move_request(move) {
 }
 
 function my_turn() {
+    clearInterval(my_interval);
     post_f("../Taki/Game.php","turn check",function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
@@ -210,20 +216,31 @@ function my_turn() {
             var result = xmlhttp.responseText;
             var num = result.charAt(0);
             if(num=="8") {
-                return 0;
+                my_interval=setInterval(my_turn(),5000);
+                var elem1 =document.getElementById("my_name");
+                elem1.style.color="whitesmoke";
+                var elem2 =document.getElementById("op_name");
+                elem2.style.color="yellow";
             }
             if(num==7) {
-                return 1;
+                game_get_state();
+                draw_board();
+                update_game_object();
+                enable_UI();
+                var elem1 =document.getElementById("my_name");
+                elem1.style.color="yellow";
+                var elem2 =document.getElementById("op_name");
+                elem2.style.color="whitesmoke";
             }
         }
-        return -1;
+
     });
 }
 
 //parse a str representing the server's answer
 //game_state fields: game_id, player_a player_b my_cards opp_num_cards last_open_card //turn sum_of_turns winner game_start_time game_finish_Tine sequential_two
 function parse_string(str) {
-    var params_array= new Array();
+
     var values= new Array();
     var result= str.charAt(0);
     if ((result == 0) ||(result==1) || (result==3) || (result==5) || (result==6))
@@ -240,29 +257,29 @@ function parse_string(str) {
         var val=key_val[1];
         values.push(val);
     }
-    params_array['game_id']=values[0];
+    params_array['game_id']=parseInt(values[0]);
     params_array['player_a']=values[1];
     params_array['player_b']=values[2];
     params_array['my_cards']=values[3];
-    params_array['opp_num_cards']=values[4];
+    params_array['opp_num_cards']=parseInt(values[4]);
     params_array['last_open_card']=values[5];
-    params_array['turn']=values[6];
-    params_array['sum_of_turns']=values[7];
-    params_array['winner']=values[8];
+    params_array['turn']=parseInt(values[6]);
+    params_array['sum_of_turns']=parseInt(values[7]);
+    params_array['winner']=parseInt(values[8]);
     params_array['game_start_time']=values[9];
     params_array['game_finish_time']=values[10];
-    params_array['sequential_two']=values[11];
+    params_array['sequential_two']=isNaN(parseInt(values[11]))? 0:parseInt(values[11]);
     return params_array;
 }
 
 //gets the last state of the game.
 function game_get_state() {
-    post_f("../Taki/Game.php","print game",function(success )
+    post_f("../Taki/Game.php","print game",function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
             //get current game params
-                parse_string(xmlhttp.responseText);
+            parse_string(xmlhttp.responseText);
         }
     });
 }
@@ -282,7 +299,7 @@ function post_f(url,arg,cfunc)
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange=cfunc;
-    xmlhttp.open('POST',url,true);
+    xmlhttp.open('POST',url,false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.send("arg="+arg);
 }
@@ -357,7 +374,7 @@ function display_my_hand_cards(cards,action)
             div.style["background-repeat"]="no-repeat";
             div.style["background-position"]="center";
             div.title =card_array[0]+" "+card_array[1];
-            div.setAttribute('onclick',"on_card_click()");
+            div.setAttribute('onclick',"on_card_click(\'"+card_array[0]+" "+card_array[1]+"\')");
             element.appendChild(div);
         }
     }
@@ -423,22 +440,27 @@ function display_op_hand_cards(num_of_cards)
 // turn on got input
 function on_color(color)
 {
-     got_input=1;
-    command= "change color "+color;
+    //got_input=1;
+    var cmd= "change color "+color;
+    var answer=send_move_request(cmd);
+    return server_answer(answer);
 }
 
 //return draw cards
 function on_deck()
 {
-    got_input=1;
-    command= "draw cards";
+    //got_input=1;
+    var cmd= "draw cards";
+    var answer=send_move_request(cmd);
+    return server_answer(answer);
 }
 
 //Display last open card
 function  display_last_opened_card(card)
 {
     var path = "../Taki/TakiImages/";
-    var image = path + card[0] +"/"+card[1]+".jpg";
+    var card_array = card.split(" ");
+    var image = path + card_array[0] +"/"+card_array[1]+".jpg";
     var element = document.getElementById("open_cards");
     element.style["background-image"]="url(\'"+image +"\')";
     element.style["background-size"] = "contain";
