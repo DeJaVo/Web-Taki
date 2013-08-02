@@ -33,7 +33,8 @@ class login
                 //search user in database
                 if($this->model->tm_find_user_by_params($this->username,$this->password,$this->nickname))
                 {
-                    if(!$this->model->tm_search_game_by_user_name($this->username))
+                    $array= $this->model->tm_search_game_by_user_name($this->username);
+                    if(empty($array['game_id']))
                     {
                         if(!isset($_SESSION)){ session_start(); }
                         echo("Connecting.... <br>");

@@ -49,7 +49,7 @@ class data_base
             usernameA VARCHAR(200) NULL,
             usernameB VARCHAR(200) NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
-            last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '0',
+            last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '9999',
             game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
         )AUTO_INCREMENT =1";
             if (mysqli_query($con,$sql))
@@ -302,7 +302,7 @@ class data_base
         }
         $result = $this->db_search_user_by_username($username);
 
-            mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$result[nick_name]') ");
+        mysqli_query($con, "INSERT INTO room (username,nick_name) VALUES ('$username', '$result[nick_name]') ");
         mysqli_close($con);
     }
 
@@ -376,21 +376,41 @@ class data_base
     }
 
     //Find game by user name
-    public function db_search_game_by_user_name($user_name)
+   /* public function db_search_game_by_user_name($user_name)
     {
         $con=mysqli_connect("","root","","taki_db");
         if (mysqli_connect_errno())
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $result=mysqli_query($con,"SELECT * FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'");
-        $row = mysqli_fetch_array($result);
-        /*   $result = array();
-           foreach($row as $k => $v) {
-               array_push($result, $k, $v);
-           }*/
+        $stmt=mysqli_prepare($con,"SELECT game_id,usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B,highest_number_of_cards_B,  last_open_card,closed_cards,turn,sum_of_turns,winner,game_start_time,game_finish_time,sequential_two  FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'");
+        if($stmt)
+        {
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt,$game_id,$usernameA,$usernameB,$cards_A,$highest_number_of_cards_A,$cards_B,$highest_number_of_cards_B,$last_open_card,$closed_cards ,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
+            mysqli_fetch_assoc($stmt);
+               $list =array('game_id'=>$game_id,'usernameA'=>$usernameA,'usernameB'=>$usernameB,'cards_A'=>$cards_A,'highest_number_of_cards_A'=>$highest_number_of_cards_A,'cards_B'=>$cards_B,'highest_number_of_cards_B'=>$highest_number_of_cards_B,'last_open_card'=>$last_open_card,'closed_cards'=>$closed_cards ,'turn'=>$turn,'sum_of_turns'=>$sum_of_turns,'winner'=>$winner,'game_start_time'=>$game_start_time,'game_finish_time'=>$game_finish_time,'sequential_two'=>$sequential_two);
+        mysqli_stmt_close($stmt);
         mysqli_close($con);
-        return $row;
+            return $list;
+        }
+    }*/
+
+    public function db_search_game_by_user_name($user_name) {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        $query= "SELECT game_id,usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B,highest_number_of_cards_B,  last_open_card,closed_cards,turn,sum_of_turns,winner,game_start_time,game_finish_time,sequential_two  FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'";
+        if ($result = mysqli_query($con, $query)) {
+            $row = mysqli_fetch_assoc($result);
+            $list=array('game_id'=>$row['game_id'],'usernameA'=>$row['usernameA'],'usernameB'=>$row['usernameB'],'cards_A'=>$row['cards_A'],'highest_number_of_cards_A'=>$row['highest_number_of_cards_A'],'cards_B'=>$row['cards_B'],'highest_number_of_cards_B'=>$row['highest_number_of_cards_B'],'last_open_card'=>$row['last_open_card'],'closed_cards'=>$row['closed_cards'],'turn'=>$row['turn'],'sum_of_turns'=>$row['sum_of_turns'],'winner'=>$row['winner'],'game_start_time'=>$row['game_start_time'],'game_finish_time'=>$row['game_finish_time'],'sequential_two'=>$row['sequential_two']);
+            mysqli_close($con);
+            return $list;
+        }
+        mysqli_close($con);
+        return 0;
     }
 
     //Return all user in room table
