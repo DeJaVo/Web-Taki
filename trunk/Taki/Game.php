@@ -31,6 +31,18 @@ class game {
         list($sign,$col)=explode(" ",$card_str,2);
         return array($sign, $col);
     }               //gets a string of card path and split it into sections, to understand it's color and sign.
+
+    public function cvt_brk_crd_to_str($broken_cards) {
+        //converts an array of broken cards to an array of fix cards
+        //a[0] = five, a[1]= red ===> a[0] "five red"
+        $result= array();
+        for($i=0;$i< count($broken_cards);) {
+            $card_str=$broken_cards[$i]." ".$broken_cards[$i+1];
+            array_push($result,$card_str);
+            $i=$i+2;
+        }
+        return $result;
+    }
     private function change_turn () {
         if ($this->turn==1) {
             $this->turn=0;
@@ -266,18 +278,23 @@ class game {
         //initialize a's cards
         foreach (array_rand($this->all_cards, 8) as $k) {
             $a_card = $this->all_cards[$k];
+            unset($this->all_cards[$k]);
             array_push($this->cards_a, $a_card);
-            array_push($a_cards,$a_card);
+            //array_push($a_cards,$a_card);
         }
-        $t_cards = array_diff($this->all_cards, $a_cards);
+        //$t_cards = array_diff($this->all_cards, $a_cards);
         //initialize b's cards
-        foreach (array_rand($t_cards, 8) as $k) {
+        foreach (array_rand($this->all_cards, 8) as $k) {
             $b_card = $this->all_cards[$k];
-            $this->cards_b[] =$b_card;
-            $b_cards[]=$b_card;
+            unset($this->all_cards[$k]);
+            array_push($this->cards_b, $b_card);
+            //$b_cards[]=$b_card;
         }
         //initialize closed cards
-        $this->closed_cards= array_diff($t_cards, $b_cards);
+        //$this->closed_cards= array_diff($t_cards, $b_cards);
+        $this->closed_cards=array_values($this->all_cards);
+        $this->all_cards=array();
+        $this->game_init_all_cards();
 
         //initialize first open card randomly
         $ok = 0;
@@ -345,22 +362,32 @@ class game {
             $players_cards = $this->cards_a;
             $count = sizeof($this->cards_a)+ $num_of_cards;
             if($count > $this->highest_num_cards_a) {$this->highest_num_cards_a= $count;}
-            $this->turn=1;
         } else {
             $players_cards = $this->cards_b;
             $count = sizeof($this->cards_b)+ $num_of_cards;
             if($count > $this->highest_num_cards_b) {$this->highest_num_cards_b= $count;}
-            $this->turn=0;
         }
-        foreach (array_rand($this->closed_cards, $num_of_cards) as $k) {
-            $card = $this->$this->closed_cards[$k];
-            $players_cards[]= $card;
-            $taken_cards[]=$card;
+        for($i=0;$i<$num_of_cards;$i++) {
+            $k = array_rand($this->closed_cards,1);
+            $card = $this->closed_cards[$k];
+            array_push($players_cards, $card);
+            //array_push($taken_cards,$card);
+            unset($this->closed_cards[$k]);
+        }
+        if($this->turn == 0) {
+            $this->cards_a=array();
+            $this->cards_a=$players_cards;
+            $this->turn=1;
+        } else {
+            $this->cards_b=array();
+            $this->cards_b=$players_cards;
             $this->turn=0;
         }
         $this->sum_of_turns++;
-        $this->closed_cards = array_diff($this->closed_cards, $taken_cards);
-        $this->model->tm_update_game($this->game_id,$this->cards_a, $this->highest_num_cards_a, $this->cards_b, $this->highest_num_cards_b,$this->last_open_card, $this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time);
+        //$this->closed_cards = array_diff($this->closed_cards, $taken_cards);
+        $this->closed_cards=array_values($this->closed_cards);
+        $this->update_db();
+        //$this->model->tm_update_game($this->game_id,$this->cards_a, $this->highest_num_cards_a, $this->cards_b, $this->highest_num_cards_b,$this->last_open_card, $this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time);
         return 1;
     }
 
@@ -483,6 +510,7 @@ class game {
                         $this->incr_turns_count();
                         $this->remove_cards($player_id,$cards);
                         $this->update_db();
+                        return 1;
                     }
                 }
                 return 0;
@@ -561,7 +589,9 @@ else
             $result=$game->game_draw_cards();
             break;
         case 'put':
-            $result=$game->game_put_down_cards(array_slice($line,3,(count($line)-1)));
+            $broken_cards=array_slice($line,3,(count($line)-1));
+            $cards=$game->cvt_brk_crd_to_str($broken_cards);
+            $result=$game->game_put_down_cards($cards);
             break;
         case 'surrender':
             $game->game_surrender($user);
@@ -624,6 +654,7 @@ else
 
     }
 }
+
 //if move was legal - game data will be updated accordingly and result will set to 1;
 //server returns:
 //0 - internal error
