@@ -15,6 +15,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     <meta name="description" content="Taki" />
     <meta name="keywords" content="login form, psd, html, css3, tutorial" />
     <meta name="M&M" content="Miki Mook" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" >
     <!--Stylesheets-->
     <link href="css/stat.css" rel="stylesheet" type="text/css" />
     <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />

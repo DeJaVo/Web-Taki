@@ -6,6 +6,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 <link href="css/game.css" rel="stylesheet" type="text/css" />
 <html>
 <head>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" >
     <title>Taki</title>
     <script type='text/javascript'src='../Taki/game_view_functions.js'></script>
 </head>
