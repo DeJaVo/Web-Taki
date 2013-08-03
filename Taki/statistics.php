@@ -62,7 +62,7 @@ class stat
     //Display game stat
     public function stat_display()
     {
-        $username=$_SESSION['username'];
+        $username=$this->model->get_decrypted($_SESSION['username']);
         $result =$this->stat_results($username);
         $this->game_id=$result['game_id'];
         echo "<div id=wrapper>";
