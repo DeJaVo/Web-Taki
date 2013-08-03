@@ -45,31 +45,31 @@ class login
                         if(!empty($result))
                         {
                             $this->model->tm_handle_error("Error! entering to waiting room, please login and try again");
-                            header('Refresh: 5; URL=../Taki/login.html');
+                            header('Refresh: 1; URL=../Taki/login.html');
                         }
-                        header('Refresh: 5; URL=http:../Taki/waitingroomview.php');
+                        header('Refresh: 1; URL=http:../Taki/waitingroomview.php');
                     }
                     else
                     {
                         $this->model->tm_handle_error("Error! user already plays in an active game");
-                        header('Refresh: 5; URL=../Taki/login.html');
+                        header('Refresh: 1; URL=../Taki/login.html');
                     }
                 }
                 else
                 {
                     $this->model->tm_handle_error("Error! please register first");
-                    header('Refresh: 5; URL=../Taki/login.html');
+                    header('Refresh: 1; URL=../Taki/login.html');
                 }
             }
             else//Administrator login
             {
-                header('Refresh: 5;URL=http:../Taki/activegames.php');
+                header('Refresh: 1;URL=http:../Taki/activegames.php');
             }
         }
         else
         {
             $this->model->tm_handle_error("Error! please fill the missing fields");
-            header('Refresh: 5; URL=../Taki/login.html');
+            header('Refresh: 1; URL=../Taki/login.html');
         }
     }
 
@@ -82,7 +82,7 @@ class login
             if(($this->username=='admin')&&($this->nickname=='admin'))
             {
                 $this->model->tm_handle_error("Error! username or nickname already exists, please choose a different username");
-                header('Refresh: 5; URL=../Taki/login.html');
+                header('Refresh: 1; URL=../Taki/login.html');
             }
             $result1 = $this->model->tm_search_user_by_username($this->username);
             $result2 =  $this->model->tm_search_user_by_nickname($this->nickname);
@@ -92,15 +92,15 @@ class login
                 if ($length < $min_length )
                 {
                     $this->model->tm_handle_error("Error! Please, Write a longer password (minimum 5 chars)");
-                    header('Refresh: 5; URL=../Taki/login.html');
+                    header('Refresh: 1; URL=../Taki/login.html');
                 }
                 $this->model->tm_insert_new_player($this->username,$this->password,$this->nickname);
-                header('Refresh: 5; URL=../Taki/login.html');
+                header('Refresh: 1; URL=../Taki/login.html');
             }
             else
             {
                 $this->model->tm_handle_error("Error! username or nickname already exist, please choose a different username");
-                header('Refresh: 5; URL=../Taki/login.html');
+                header('Refresh: 1; URL=../Taki/login.html');
             }
         }
     }
@@ -119,19 +119,19 @@ if(isset($_POST['submit']))
     {
         $error=true;
         $model->tm_handle_error('UserName is empty, please fill username field');
-        header('Refresh: 5;URL=../Taki/login.html');
+        header('Refresh: 1;URL=../Taki/login.html');
     }
     if(empty($password))
     {
         $error=true;
         $model->tm_handle_error("Password is empty, please fill password field");
-        header('Refresh: 5;URL=../Taki/login.html');
+        header('Refresh: 1;URL=../Taki/login.html');
     }
     if(empty($nickname))
     {
         $error=true;
         $model->tm_handle_error("Nickname is empty, please fill nickname field");
-        header('Refresh: 5;URL=../Taki/login.html');
+        header('Refresh: 1;URL=../Taki/login.html');
     }
     $login = new login($model,$username,$password,$nickname);
     if(!$error)

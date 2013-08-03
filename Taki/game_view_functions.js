@@ -42,7 +42,7 @@ function server_answer( answer) {
         case 2:
             draw_board();
             update_game_object();
-           setTimeout(my_turn(),3000);
+           setTimeout(my_turn(),6000);
             break;
         case 3:
             disable_UI();
@@ -217,7 +217,7 @@ function my_turn() {
                 elem1.style.color="whitesmoke";
                 var elem2 =document.getElementById("op_name");
                 elem2.style.color="yellow";
-               setTimeout(my_turn(),3000);
+               setTimeout(my_turn(),6000);
             }
             if(num==7) {
                 game_get_state();
@@ -295,9 +295,10 @@ function post_f(url,arg,cfunc)
     {// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xmlhttp.onreadystatechange=cfunc;
+    //alert("!!!!!");
     xmlhttp.open('POST',url,false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange=cfunc;
     xmlhttp.send("arg="+arg);
 }
 
@@ -540,7 +541,7 @@ function animate(card, delta_x, delta_y)
     }
     else
     {
-        setTimeout(function(){ animate(card,5, 8); }, 33);
+        setTimeout(function(){ animate(card,5, 8); }, 50);
     }
 }
 

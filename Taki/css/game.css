@@ -37,6 +37,11 @@ body{
     background-size: contain;
     background-color: #ffffff;
 }
+
+#deck:hover
+{
+    cursor: pointer;
+}
 #open_cards{
     position: absolute;
     border-radius: 10px;
