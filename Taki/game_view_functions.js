@@ -1,19 +1,7 @@
-//functions we need:
-//on_surrender    V
-//on_put_down_cards   V
-//on_deck   V
-//on_color  V
-//on_card select/unselect  V
-//parse_answer    // if answer is illegal/fatal error/etc...   V
-//build string to server
-//activate player ui      V
-//deactivate player ui     V
-//activate color menu      V
-
 //data structures we use:
-//1. structure of new game state- game after move- returned from server
-//2. current game state
-//3. list of cards player selects
+//1. params_array    ->       assoc array structure of new game state- game after move- returned from server
+//2. cuur_gamr       ->       current game state
+//3. chosen_cards    ->       list of cards player selects
 
 //server returns:
 //0 - internal error
@@ -25,70 +13,36 @@
 //6 - You Win
 //7 - Your turn
 //8 - Not your turn
+
+//Globals:
 var params_array= new Array();
 var game_end = 0;
-//var got_input = 0;
-//var command;
+var xmlhttp;
 var chosen_cards= new Array();
 var curr_game = {'game_id': 0 ,'player_a': null, 'player_b': null ,'my_cards':new Array(), 'opp_num_cards':0,'last_open_card': null, 'turn':-1, 'sum_of_turns': 0, 'winner': 999, 'game_start_time': null, 'game_finish_Time': null, 'sequential_two':0};
-//var new_game = new Object();
 
-function server_answer( answer) {
-    switch (parseInt(answer)) {
-        case 1: //illegal_move();
-            chosen_cards= new Array();
-            draw_board();
-            break;
-        case 2:
-            draw_board();
-            update_game_object();
-           setTimeout(my_turn(),6000);
-            break;
-        case 3:
-            disable_UI();
-            visible_color_menu();
-            break;
-        case 4:
-            draw_board();
-            update_game_object();
-            disable_UI();
-            check_who_wins();
-            break;
-    }
+
+//////////////////////////////////
+///////Logic game functions///////
+/////////////////////////////////
+
+//does: initialize the board, structures
+function game_start() {
+    game_get_state();                   //at first we want to get the game start state
+    draw_board();                       //draw for the first time the board
+    update_game_object();               //update current game state
+    draw_names();                       //draw the players names on the board
+    disable_UI();                       //deactivate all board
+    my_turn();                          //starts asking the server if it's the player's turn to play
 }
 
-function on_card_click(card) {
-    //if the card is already in the chosen card- remove it, else add it.
-    for(var i=0;i<chosen_cards.length;i++) {
-        if(card == chosen_cards[i]) {
-            //remove card
-            chosen_cards.splice(i,1);
-            return;
-        }
-    }
-    //add card
-    chosen_cards.push(card);
-}
-function on_put_down_click() {
-    //take all chosen cards and prepare a string command to the server
-    var cmd ="put down cards";
-    for(var i=0;i<chosen_cards.length;i++) {
-        cmd=cmd.concat(" ");
-        cmd= cmd.concat(chosen_cards[i]);
-    }
-    //got_input=1;
-    //command= cmd;
-    send_move_request(cmd);
-}
-//game_params is a list of key-val
+//does: compare params_array to curr_game for deciding what should be updated
 function draw_board() {
-    //game_state fields: game_id, player_a player_b my_cards opp_num_cards last_open_card sum_of_turns winner game_start_time game_finish_Tine sequential_two
-    //compare game_params to curr_game for deciding what should be updated
-    //document.writeln(game_params['my_cards']);
 
     if(!(curr_game['my_cards']== params_array['my_cards'])) {
         var splitted_params_array = params_array['my_cards'].split(",");
-        var cards_group= intersection3(curr_game['my_cards'],splitted_params_array);
+        var splitted_curr_game = curr_game['my_cards'].split(",");
+        var cards_group= intersection3(splitted_curr_game,splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
         display_my_hand_cards(to_be_removed,0,1);
@@ -111,62 +65,37 @@ function draw_board() {
     if(curr_game['sum_of_turns']!= params_array['sum_of_turns']) {
     }
 }
-function intersection3(arr1, arr2) {
-    var right=new Array();
-    var mid= new Array();
-    var left=new Array();
-    for (var i = 0; i < arr2.length; i++) {
-        if (arr1.indexOf(arr2[i]) !== -1) {
-            mid.push(arr1[i]);
-        } else {
-            right.push(arr2[i]);
-        }
+
+//does: proccess the answer sent by server
+function server_answer( answer) {
+    switch (parseInt(answer)) {
+        case 1:
+            //illegal move
+            chosen_cards= new Array();
+            draw_board();
+            break;
+        case 2:
+            // legal move
+            draw_board();
+            update_game_object();
+            setTimeout(my_turn(),6000);
+            break;
+        case 3:
+            // user needs to select a color
+            disable_UI();
+            visible_color_menu();
+            break;
+        case 4:
+            // game ended
+            draw_board();
+            update_game_object();
+            disable_UI();
+            check_who_wins();
+            break;
     }
-    for(var i = 0; i< arr1.length; i++){
-        if(mid.indexOf(arr1[i]) == -1) {
-            left.push(arr1[i]);
-        }
-    }
-    var results= new Array();
-    results.push(left,mid,right);
-    return results;
-}
-function game_start() {
-    game_get_state();                   //at first we want to get the game start state
-    draw_board();                            //draw for the first time the board
-    update_game_object();          //update current game state
-    draw_names();
-    disable_UI();                                       //deactivate all board                                         //enter loop
-    my_turn();
-}
-function draw_names() {
-    var my_name = curr_game['player_a'];
-    var op_name = curr_game['player_b'];
-    document.getElementById("my_name").innerHTML= my_name;
-    document.getElementById("op_name").innerHTML= op_name;
 }
 
-function check_who_wins() {
-    post_f("../Taki/Game.php","",function()
-    {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-            var num = xmlhttp.responseText;
-            if(num==5) {
-                if(confirm('You Lost'))
-                {
-                    window.location.href="../Taki/statistics.php";
-                }
-            }else {
-                if(confirm('You Win!'))
-                {
-                    window.location.href="../Taki/statistics.php";
-                }
-            }
-        }
-    });
-}
-
+//does: update the curr_game structure
 function update_game_object() {
     curr_game['game_id']=params_array['game_id'];
     curr_game['player_a']=params_array['player_a'];
@@ -180,62 +109,10 @@ function update_game_object() {
     curr_game['game_start_time']=params_array['game_start_time'];
     curr_game['game_finish_time']=params_array['game_finish_time'];
     curr_game['sequential_two']=params_array['sequential_two'];
-
-    /*    for(var i= 0;i<params_array;i=i+2)
-     {
-     var key = params_array[i];
-     var val = params_array[i+1];
-     curr_game[key]= val;
-     }*/
-}
-function send_move_request(move) {
-    post_f("../Taki/Game.php",move,function()
-    {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-            var result= xmlhttp.responseText;
-            if((result.charAt(0)==2)||(result.charAt(0)==4)) {
-                var params=result.slice(2,result.length-1);
-                parse_string(params);
-            }
-            server_answer(result.charAt(0));
-        }
-    });
-}
-
-function my_turn() {
-    post_f("../Taki/Game.php","turn check",function()
-    {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-            //if result == 8 ==> not my turn
-            //if result == 7  ==> my turn (result is build of "7 game-params"
-            var result = xmlhttp.responseText;
-            var num = result.charAt(0);
-            if(num=="8") {
-                var elem1 =document.getElementById("my_name");
-                elem1.style.color="whitesmoke";
-                var elem2 =document.getElementById("op_name");
-                elem2.style.color="yellow";
-               setTimeout(my_turn(),6000);
-            }
-            if(num==7) {
-                game_get_state();
-                draw_board();
-                update_game_object();
-                enable_UI();
-                var elem1 =document.getElementById("my_name");
-                elem1.style.color="yellow";
-                var elem2 =document.getElementById("op_name");
-                elem2.style.color="whitesmoke";
-            }
-        }
-
-    });
 }
 
 //parse a str representing the server's answer
-//game_state fields: game_id, player_a player_b my_cards opp_num_cards last_open_card //turn sum_of_turns winner game_start_time game_finish_Tine sequential_two
+//game_state fields: game_id, player_a player_b my_cards opp_num_cards last_open_card turn sum_of_turns winner game_start_time game_finish_Tine sequential_two
 function parse_string(str) {
 
     var values= new Array();
@@ -266,24 +143,13 @@ function parse_string(str) {
     params_array['game_start_time']=values[9];
     params_array['game_finish_time']=values[10];
     params_array['sequential_two']=isNaN(parseInt(values[11]))? 0:parseInt(values[11]);
-    return params_array;
 }
 
-//gets the last state of the game.
-function game_get_state() {
-    post_f("../Taki/Game.php","print game",function()
-    {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-            //get current game params
-            parse_string(xmlhttp.responseText);
-        }
-    });
-}
+////////////////////////////////////
+///////////Ajax Functions///////////
+////////////////////////////////////
 
-
-
-var xmlhttp;
+//does:  a general functions for handling posts requests.
 function post_f(url,arg,cfunc)
 {
     if (window.XMLHttpRequest)
@@ -302,58 +168,97 @@ function post_f(url,arg,cfunc)
     xmlhttp.send("arg="+arg);
 }
 
-//Activate Colors Menu
-function visible_color_menu()
-{
-    document.getElementById("colors").visibility="visible";
-}
-
-//Activate Colors Menu
-function hide_color_menu()
-{
-    document.getElementById("colors").visibility="hidden";
-}
-
-//Disable UI elements
-function disable_UI()
-{
-    document.getElementById("deck").disabled=true;
-    document.getElementById("open_cards").disabled =true;
-    document.getElementsByClassName("card").disabled = true;
-    document.getElementById("my_hand").disabled =true;
-    document.getElementById("op_hand").disabled =true;
-}
-
-//Enable UI elements
-function enable_UI()
-{
-    document.getElementById("deck").disabled=false;
-    document.getElementById("open_cards").disabled =false;
-    document.getElementsByClassName("card").disabled = false;
-    document.getElementById("my_hand").disabled =false;
-    document.getElementById("op_hand").disabled =false;
-}
-
-//On surrender event
-function on_surrender()
-{
-
-    post_f("../Taki/Game.php","surrender",function()
+//checks if its the players turn to play.
+//if so- we ask for the latest game state, build the updated board, update our data structurs, enabling the UI
+//if not- we keep asking the server 
+function my_turn() {
+    post_f("../Taki/Game.php","turn check",function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
-            if(xmlhttp.responseText=='5')
-            {
+            //if result == 8 ==> not my turn
+            //if result == 7  ==> my turn (result is build of "7 game-params"
+            var result = xmlhttp.responseText;
+            var num = result.charAt(0);
+            if(num=="8") {
+                var elem1 =document.getElementById("my_name");
+                elem1.style.color="whitesmoke";
+                var elem2 =document.getElementById("op_name");
+                elem2.style.color="yellow";
+                setTimeout(my_turn(),6000);
+            }
+            if(num==7) {
+                game_get_state();
+                draw_board();
+                update_game_object();
+                enable_UI();
+                var elem1 =document.getElementById("my_name");
+                elem1.style.color="yellow";
+                var elem2 =document.getElementById("op_name");
+                elem2.style.color="whitesmoke";
+            }
+        }
+
+    });
+}
+
+
+function check_who_wins() {
+    post_f("../Taki/Game.php","",function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            var num = xmlhttp.responseText;
+            if(num==5) {
                 if(confirm('You Lost'))
                 {
-                    disable_UI();
+                    window.location.href="../Taki/statistics.php";
+                }
+            }else {
+                if(confirm('You Win!'))
+                {
                     window.location.href="../Taki/statistics.php";
                 }
             }
         }
     });
 }
-//Display my cards (removes and adds cards)
+
+function send_move_request(move) {
+    post_f("../Taki/Game.php",move,function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            var result= xmlhttp.responseText;
+            if((result.charAt(0)==2)||(result.charAt(0)==4)) {
+                parse_string(params);
+            }
+            server_answer(result.charAt(0));
+        }
+    });
+}
+
+
+//gets the last state of the game, and updates the params_array structure.
+function game_get_state() {
+    post_f("../Taki/Game.php","print game",function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            //get current game params
+            parse_string(xmlhttp.responseText);
+        }
+    });
+}
+
+/////////////////////////////////
+/////// display functions////////
+/////////////////////////////////
+
+//does: display my cards.
+//input: cards- list of cards titles,
+//       action- 0-> remove cards, 1-> add cards
+//       animate- 0- dont animate movement, 1- animate movement
 function display_my_hand_cards(cards,action,animate)
 {
     var path = "../Taki/TakiImages/";
@@ -408,7 +313,7 @@ function display_my_hand_cards(cards,action,animate)
     }
 }
 
-//Display opponent cards (removes and adds cards)
+//Display opponent cards (removes and adds cards with 'back' images)
 function display_op_hand_cards(num_of_cards)
 {
     var path = "../Taki/TakiImages/back/Back.jpg";
@@ -443,24 +348,7 @@ function display_op_hand_cards(num_of_cards)
     }
 }
 
-// Return change color (color_name)
-// turn on got input
-function on_color(color)
-{
-    //got_input=1;
-    var cmd= "change color "+color;
-    send_move_request(cmd);
-}
-
-//return draw cards
-function on_deck()
-{
-    //got_input=1;
-    var cmd= "draw cards";
-    send_move_request(cmd);
-}
-
-//Display last open card
+//Updates the open card according to the given cards
 function  display_last_opened_card(card)
 {
     var path = "../Taki/TakiImages/";
@@ -475,13 +363,46 @@ function  display_last_opened_card(card)
     element.setAttribute('ondragover',"allow_drop(event)");
 }
 
-//Prevent the default handling of the element.
-function allow_drop(event)
+/////////////////////////////////
+///////Events Functions/////////
+////////////////////////////////
+
+//On surrender event- sends a post request to the model with a surrender command.
+function on_surrender()
 {
-    event.preventDefault();
+
+    post_f("../Taki/Game.php","surrender",function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            if(xmlhttp.responseText=='5')
+            {
+                if(confirm('You Lost'))
+                {
+                    disable_UI();
+                    window.location.href="../Taki/statistics.php";
+                }
+            }
+        }
+    });
 }
 
-//Data to be dragged + select the dragged data in chosen cards
+// Sends a post request for changing color
+function on_color(color)
+{
+    var cmd= "change color "+color;
+    send_move_request(cmd);
+}
+
+// Sends a post request with a 'draw card' command
+function on_deck()
+{
+    //got_input=1;
+    var cmd= "draw cards";
+    send_move_request(cmd);
+}
+
+//saves the card's title + adds the card to chosen cards list
 function on_drag(event)
 {
     event.dataTransfer.setData("Text",event.target.title);
@@ -489,7 +410,7 @@ function on_drag(event)
 }
 
 //Specify what shall happen on drop event;
-//1. replace image on  open cards
+//1. replace image on open cards
 //2. remove the card from my hand
 function on_drop(event)
 {
@@ -504,7 +425,35 @@ function on_drop(event)
     display_my_hand_cards(temp,0,0);
 }
 
-//Calculate deltas where to move from
+function on_card_click(card) {
+    //if the card is already in the chosen card- remove it, else add it.
+    for(var i=0;i<chosen_cards.length;i++) {
+        if(card == chosen_cards[i]) {
+            //remove card
+            chosen_cards.splice(i,1);
+            return;
+        }
+    }
+    //add card
+    chosen_cards.push(card);
+}
+function on_put_down_click() {
+    //take all chosen cards and prepare a string command to the server
+    var cmd ="put down cards";
+    for(var i=0;i<chosen_cards.length;i++) {
+        cmd=cmd.concat(" ");
+        cmd= cmd.concat(chosen_cards[i]);
+    }
+    send_move_request(cmd);
+}
+
+//////////////////////////////////////
+///////// Animation functions/////////
+//////////////////////////////////////
+
+/does: animating a card movment statring from its current position
+/when the card arrives it's destination (the last-open-card element) we remove it from 'my-hand' div
+/input: card element, numeric value to shift in x axis, numeric value ti shoft in y axis
 function animate(card, delta_x, delta_y)
 {
     var open_card_result = getPosition(document.getElementById("open_cards"));
@@ -544,12 +493,11 @@ function animate(card, delta_x, delta_y)
         setTimeout(function(){ animate(card,5, 8); }, 50);
     }
 }
-
-//Animation
+// a wrapper to animate
 function animate_move (card) {
     var card_result = getPosition(card);
     card_result=card_result.split(",");
-   card.style.visibility="hidden";
+    card.style.visibility="hidden";
     card.style.position="fixed";
     card.style.left= card_result[0]+"px";
     card.style.top=card_result[1]+"px";
@@ -560,7 +508,40 @@ function animate_move (card) {
 
 }
 
-//Find the real position of an object in the DOM
+////////////////////////////////////
+/////////util functions////////////
+///////////////////////////////////
+
+/does: compare elements of 2 arrays
+/input: 2 arrays
+/output: 3 arrays: left-all elems in arr1 that dont exist in arr2
+/                  mid- all elems that exist in both arrays
+/                  right- all elems in arr2 that dont exist in arr1
+
+function intersection3(arr1, arr2) {
+    var right=new Array();
+    var mid= new Array();
+    var left=new Array();
+    for (var i = 0; i < arr2.length; i++) {
+        if (arr1.indexOf(arr2[i]) !== -1) {
+            mid.push(arr2[i]);
+        } else {
+            right.push(arr2[i]);
+        }
+    }
+    for(var i = 0; i< arr1.length; i++){
+        if(mid.indexOf(arr1[i]) == -1) {
+            left.push(arr1[i]);
+        }
+    }
+    var results= new Array();
+    results.push(left,mid,right);
+    return results;
+}
+
+/does: Finds the real position of an object in the DOM
+/input: obj
+/output: obj's coords relative to the top left ot the browser
 function getPosition(obj){
     var topValue= 0,leftValue= 0;
     while(obj){
@@ -569,4 +550,50 @@ function getPosition(obj){
         obj= obj.offsetParent;
     }
     return leftValue + "," + topValue;
+}
+
+//Prevent the default handling of the element.
+function allow_drop(event)
+{
+    event.preventDefault();
+}
+
+
+//Activate Colors Menu
+function visible_color_menu()
+{
+    document.getElementById("colors").visibility="visible";
+}
+
+//Activate Colors Menu
+function hide_color_menu()
+{
+    document.getElementById("colors").visibility="hidden";
+}
+
+//Disable UI elements
+function disable_UI()
+{
+    document.getElementById("deck").disabled=true;
+    document.getElementById("open_cards").disabled =true;
+    document.getElementsByClassName("card").disabled = true;
+    document.getElementById("my_hand").disabled =true;
+    document.getElementById("op_hand").disabled =true;
+}
+
+//Enable UI elements
+function enable_UI()
+{
+    document.getElementById("deck").disabled=false;
+    document.getElementById("open_cards").disabled =false;
+    document.getElementsByClassName("card").disabled = false;
+    document.getElementById("my_hand").disabled =false;
+    document.getElementById("op_hand").disabled =false;
+}
+
+function draw_names() {
+    var my_name = curr_game['player_a'];
+    var op_name = curr_game['player_b'];
+    document.getElementById("my_name").innerHTML= my_name;
+    document.getElementById("op_name").innerHTML= op_name;
 }

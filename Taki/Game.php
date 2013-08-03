@@ -141,8 +141,16 @@ class game {
         if ($l_col!= $col) {return 0;}
 
         if (count($cards)==1) {
-            //TODO: Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
-            //TODO: animate the card pulling from the deck.
+            //Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
+            $k = array_rand($this->closed_cards,1);
+            $card = $this->closed_cards[$k];
+            if($player_id==$this->player_a) {
+                array_push($this->cards_a, $card);
+            } else {
+                array_push($this->cards_b, $card);
+            }
+            unset($this->closed_cards[$k]);
+            $this->closed_cards=array_values($this->closed_cards);
         } else {
             list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
             if((($sign=='one') || ($sign=='two') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) && (count($cards)==2)) {
@@ -373,7 +381,6 @@ class game {
             $k = array_rand($this->closed_cards,1);
             $card = $this->closed_cards[$k];
             array_push($players_cards, $card);
-            //array_push($taken_cards,$card);
             unset($this->closed_cards[$k]);
         }
         if($this->turn == 0) {
@@ -405,7 +412,7 @@ class game {
             $my_cards = $this->cards_b;
             $opp_num_cards= count($this->cards_a);
         }
-       $my_cards = implode(",",$my_cards);
+        $my_cards = implode(",",$my_cards);
         $str = "game_id=".$this->game_id."&player_a=".$this->player_a."&player_b=".$this->player_b."&my_cards=".$my_cards."&opp_num_cards=".$opp_num_cards."&last_open_card=".$this->last_open_card."&turn=".$this->turn."&sum_of_turns=".$this->sum_of_turns."&winner=".$this->winner."&game_start_time=".$this->game_start_time."&game_finish_line=".$this->game_finish_time."&sequential_two=".$this->sequential_two;
         return $str;
     }
@@ -418,7 +425,6 @@ class game {
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         if ($l_sign=='two') {
             if ($sign !='two') {
-                //TODO: deal with error. you must choose a two.
                 return 0;
             } else {
                 if(count($cards)>1) {
@@ -504,11 +510,12 @@ class game {
                 return 0;
             default :
                 if(($sign=='one') || ($sign=='two') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) {
-                 //in case sign is a number between 1-9
+                    //in case sign is a number between 1-9
                     if($this->check_number($cards)) {
                         if($sign=='two') {
                             $this->sequential_two++;
                         }
+                        $this->change_turn();
                         $this->incr_turns_count();
                         $this->remove_cards($player_id,$cards);
                         $this->update_db();
@@ -651,8 +658,8 @@ else
                 echo "2"." ".$game_data;
                 break;
             }
-         default:
-             echo $result;
+        default:
+            echo $result;
 
     }
 }
