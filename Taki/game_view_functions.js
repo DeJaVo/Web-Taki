@@ -27,7 +27,6 @@
 //8 - Not your turn
 var params_array= new Array();
 var game_end = 0;
-var my_interval = null;
 //var got_input = 0;
 //var command;
 var chosen_cards= new Array();
@@ -38,11 +37,12 @@ function server_answer( answer) {
     switch (parseInt(answer)) {
         case 1: //illegal_move();
             chosen_cards= new Array();
+            draw_board();
             break;
         case 2:
             draw_board();
             update_game_object();
-            my_interval=setInterval(my_turn(),3000);
+           setTimeout(my_turn(),3000);
             break;
         case 3:
             disable_UI();
@@ -71,14 +71,14 @@ function on_card_click(card) {
 }
 function on_put_down_click() {
     //take all chosen cards and prepare a string command to the server
-    var cmd ="put down cards ";
+    var cmd ="put down cards";
     for(var i=0;i<chosen_cards.length;i++) {
+        cmd=cmd.concat(" ");
         cmd= cmd.concat(chosen_cards[i]);
     }
     //got_input=1;
     //command= cmd;
-    var answer=send_move_request(cmd);
-    return server_answer(answer);
+    send_move_request(cmd);
 }
 //game_params is a list of key-val
 function draw_board() {
@@ -136,8 +136,8 @@ function game_start() {
     draw_board();                            //draw for the first time the board
     update_game_object();          //update current game state
     draw_names();
-    disable_UI();                                       //deactivate all board
-    my_interval=setInterval(my_turn(),5000);                                        //enter loop
+    disable_UI();                                       //deactivate all board                                         //enter loop
+    my_turn();
 }
 function draw_names() {
     var my_name = curr_game['player_a'];
@@ -198,15 +198,12 @@ function send_move_request(move) {
                 var params=result.slice(2,result.length-1);
                 parse_string(params);
             }
-            return result.charAt(0);
+            server_answer(result.charAt(0));
         }
-        return -1;
-
     });
 }
 
 function my_turn() {
-    clearInterval(my_interval);
     post_f("../Taki/Game.php","turn check",function()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
@@ -216,11 +213,11 @@ function my_turn() {
             var result = xmlhttp.responseText;
             var num = result.charAt(0);
             if(num=="8") {
-                my_interval=setInterval(my_turn(),5000);
                 var elem1 =document.getElementById("my_name");
                 elem1.style.color="whitesmoke";
                 var elem2 =document.getElementById("op_name");
                 elem2.style.color="yellow";
+               setTimeout(my_turn(),3000);
             }
             if(num==7) {
                 game_get_state();
@@ -451,8 +448,7 @@ function on_color(color)
 {
     //got_input=1;
     var cmd= "change color "+color;
-    var answer=send_move_request(cmd);
-    return server_answer(answer);
+    send_move_request(cmd);
 }
 
 //return draw cards
@@ -460,8 +456,7 @@ function on_deck()
 {
     //got_input=1;
     var cmd= "draw cards";
-    var answer=send_move_request(cmd);
-    return server_answer(answer);
+    send_move_request(cmd);
 }
 
 //Display last open card
