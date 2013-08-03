@@ -249,8 +249,8 @@ class game {
         }
     }                        //Initialize all cards
 
-    public function game($user_name) {
-        $this->model = new taki_model();
+    public function game($model,$user_name) {
+        $this->model=$model;
         $this->all_cards = array();
         $this->cards_a = array();
         $this->cards_b = array();
@@ -401,7 +401,7 @@ class game {
     }
 
     public function game_return_game_data() {
-        $username =$_SESSION['username'];
+        $username =$this->model->get_decrypted($_SESSION['username']);
         if($username==$this->player_a)
         {
             $my_cards = $this->cards_a;
@@ -565,10 +565,11 @@ class game {
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
 $command=$_POST['arg'];
-$user = $_SESSION['username'];
+$model = new taki_model();
+$user = $model->get_decrypted( $_SESSION['username']);
 
 $result = 0;
-$game = new game($user);
+$game = new game($model,$user);
 
 //|| ($game->game_id == 0)
 if (($game->winner==0)||($game->winner==1) )

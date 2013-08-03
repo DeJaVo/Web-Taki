@@ -118,6 +118,7 @@ HEADER
 	color: #414848;
 	text-shadow: 1px 1px 0 rgba(256,256,256,1.0);
 	margin-bottom: 10px;
+    text-align:center;
 }
 
 .login-form .header span {
@@ -125,6 +126,7 @@ HEADER
 	line-height: 16px;
 	color: #678889;
 	text-shadow: 1px 1px 0 rgba(256,256,256,1.0);
+    text-align:center;
 }
 
 /*******************

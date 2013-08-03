@@ -7,6 +7,8 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 
 class taki_model
 {
+    private $secret_key ="H6XmkH+VWvdD88THCl";
+
     private $db;
     //C'tor
     public function taki_model()
@@ -133,5 +135,17 @@ class taki_model
     //returns all active games
     public function tm_all_active_games(){
         return $this->db->db_all_active_games();
+    }
+
+    //Encrypt data in session
+    public function set_encrypted($value)
+    {
+        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->secret_key, $value, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+    }
+
+    //Decrypt data in session
+    public function get_decrypted($value)
+    {
+        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $this->secret_key, base64_decode($value), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
     }
 }

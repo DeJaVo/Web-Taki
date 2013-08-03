@@ -39,7 +39,7 @@ class waitingroom
             echo "Stay";
         }
         else if ($num_of_players==2) {
-            if($this->check_user($_SESSION['username'])) {
+            if($this->check_user(  $this->model->get_decrypted($_SESSION['username']))) {
                 //remove users from waiting room table
                 foreach($this->list_of_waiting_players as $pair) {
                     list($user_name, $nick_name)=$pair;

@@ -1,5 +1,5 @@
 <?php
-require_once("member_site_config.php");
+
 
 if(!isset($_SESSION)){ session_start(); }
 if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
@@ -16,7 +16,6 @@ class data_base
         if (mysqli_connect_errno($con))
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
-            //TODO:deal with error
         }
         if (!mysqli_select_db($con,'taki_db'))
         {
@@ -28,13 +27,11 @@ class data_base
             }
             else
             {
-                //TODO: deal with error
                 echo "Error creating database: taki_db <br>" . mysqli_error($con)."<br>";
             }
 
             /////////////////////Create Tables////////////////////
             //create Games Table
-            //TODO: when game finishes we need to update game finish time
             $con=mysqli_connect("","root","","taki_db");
             // Check connection
             if (mysqli_connect_errno())
@@ -59,11 +56,9 @@ class data_base
             else
             {
                 echo "Error creating table: Games <br>" . mysqli_error($con);
-                //TODO: Deal with error
             }
 
             //create Players Table
-            //TODO:update average after each game
             $sql="CREATE TABLE IF NOT EXISTS players
 	    (
             username VARCHAR(200) NOT NULL,
@@ -78,7 +73,6 @@ class data_base
             else
             {
                 echo "Error creating table: Players<br>" . mysqli_error($con)."<br>";
-                //TODO:deal with error
             }
             $sql="CREATE TABLE IF NOT EXISTS room
 	    (
@@ -91,7 +85,6 @@ class data_base
             else
             {
                 echo "Error creating table: Room<br>" . mysqli_error($con)."<br>";
-                //TODO:deal with error
             }
             $sql="CREATE TABLE IF NOT EXISTS admins
 	    (
@@ -104,7 +97,6 @@ class data_base
             else
             {
                 echo "Error creating table: Room<br>" . mysqli_error($con)."<br>";
-                //TODO:deal with error
             }
             $username = 'admin';
             $password = '12345';
@@ -199,7 +191,6 @@ class data_base
     }
 
     //Insert new game
-    //TODO: calculate sum of turns and game start time and finish time
     public function db_insert_new_game($usernameA,$usernameB,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two)
     {
         $con=mysqli_connect("","root","","taki_db");
