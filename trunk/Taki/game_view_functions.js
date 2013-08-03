@@ -91,8 +91,8 @@ function draw_board() {
         var cards_group= intersection3(curr_game['my_cards'],splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
-        display_my_hand_cards(to_be_removed,0);
-        display_my_hand_cards(to_be_added,1);
+        display_my_hand_cards(to_be_removed,0,1);
+        display_my_hand_cards(to_be_added,1,0);
     }
     if(curr_game['opp_num_cards'].toString()!= params_array['opp_num_cards']) {
         var num_old=curr_game['opp_num_cards'];
@@ -356,7 +356,7 @@ function on_surrender()
     });
 }
 //Display my cards (removes and adds cards)
-function display_my_hand_cards(cards,action)
+function display_my_hand_cards(cards,action,animate)
 {
     var path = "../Taki/TakiImages/";
     var element = document.getElementById("my_hand");
@@ -375,6 +375,8 @@ function display_my_hand_cards(cards,action)
             div.style["background-position"]="center";
             div.title =card_array[0]+" "+card_array[1];
             div.setAttribute('onclick',"on_card_click(\'"+card_array[0]+" "+card_array[1]+"\')");
+            div.setAttribute('draggable','true');
+            div.setAttribute("ondragstart","on_drag(event)");
             element.appendChild(div);
         }
     }
@@ -389,11 +391,18 @@ function display_my_hand_cards(cards,action)
                 var child_title = child[k].getAttribute("title");
                 if(cards[j]==child_title)
                 {
-                    element.removeChild(child[k]);
-                    removed++;
-                    if(removed==length)
+                    if(animate)
                     {
-                        return;
+                        animate_move(child[k]);
+                    }
+                    else
+                    {
+                        element.removeChild(child[k]);
+                        removed++;
+                        if(removed==length)
+                        {
+                            return;
+                        }
                     }
                 }
             }
@@ -466,4 +475,165 @@ function  display_last_opened_card(card)
     element.style["background-size"] = "contain";
     element.style["background-repeat"]="no-repeat";
     element.style["background-position"]="center";
+    element.setAttribute('ondrop',"on_drop(event)");
+    element.setAttribute('ondragover',"allow_drop(event)");
+}
+
+//Prevent the default handling of the element.
+function allow_drop(event)
+{
+    event.preventDefault();
+}
+
+//Data to be dragged + select the dragged data in chosen cards
+function on_drag(event)
+{
+    event.dataTransfer.setData("Text",event.target.title);
+    on_card_click(event.target.title);
+}
+
+//Specify what shall happen on drop event;
+//1. replace image on  open cards
+//2. remove the card from my hand
+function on_drop(event)
+{
+    var path = "../Taki/TakiImages/";
+    var element = document.getElementById("open_cards");
+    event.preventDefault();
+    var data=event.dataTransfer.getData("Text");
+    var card_array = data.split(" ");
+    var image = path + card_array[0] +"/"+card_array[1]+".jpg";
+    element.style["background-image"]="url(\'"+image +"\')";
+    var temp = new Array(data);
+    display_my_hand_cards(temp,0,0);
+}
+
+/*function cal_frames_move(card)
+{
+    //var frameCount = 20;
+    var frames = [];//array of coordinates we'll compute
+    var points = {
+        // moving a box "from" and "to", eg. on the X coordinate
+        'fromX': 0,
+        'fromY':0,
+        'toX': 0,
+        'toY':0
+    }
+    var to = document.getElementById("open_cards");
+    var old_left = card.style.left;
+    var old_top =  card.style.top;
+    var splited_left = old_left.split('px');
+    var splited_top = old_top.split('px');
+    var to_old_left = to.style.left;
+    var to_old_top =  to.style.top;
+    var to_splited_left = to_old_left.split('px');
+    var to_splited_top = to_old_top.split('px');
+    points.fromX=splited_left;
+    points.toX= to_splited_left;
+    points.fromY=splited_top;
+    points.toY=to_splited_top ;
+    var animDeltaX = (points.toX - points.fromX); // how far to move
+    var animDeltaY = (points.toY - points.fromY); // how far to move
+    *//*var tweenAmount = (points.to - points.from)/frameCount;
+     for (var i=0; i<frameCount; i++) {
+     // calculate the points to animate
+     frames[i] = points.from+(tweenAmount*i);
+     }*//*
+    // animation curve: "sum of numbers" (=100%), slow-fast-slow
+    var tweenAmount = [1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1];
+    // move from X to Y over frames as defined by tween curve
+    var frameCount = tweenAmount.length;
+    var newFrameX = points.fromX; // starting coordinate
+    var newFrameY = points.fromY; // starting coordinate
+    for (var i=0; i<frameCount; i++) {
+        // calculate the points to animate
+        newFrameX += (animDeltaX*tweenAmount[i]/100);
+        newFrameY += (animDeltaY*tweenAmount[i]/100);
+        frames[i] = new Array(newFrameX,newFrameY);
+    }
+    return frames;
+}*/
+
+/*
+function animate(card)
+{
+    card.setAttribute('z-index','199999999');
+    var frames = cal_frames_move(card);
+
+    for(var i=0;i<frames.length;i++)
+    {
+        var old_left = card.style.left;
+        var old_top =  card.style.top;
+        var splited_left = old_left.split('px');
+        var splited_top = old_top.split('px');
+        var newX = frames[i][0];
+        var newY = frames[i][1];
+        var new_left = parseInt(splited_left[0]) + newX ;
+        var new_top = parseInt(splited_top[0]) + newY;
+        card.style.left=new_left+"px";
+        card.style.top=new_top+"px";
+    }
+    card.removeAttribute('z-index');
+}*/
+function animate(card, delta_x, delta_y)
+{
+    var open_card_result = getPosition(document.getElementById("open_cards"));
+    open_card_result=open_card_result.split(",");
+    var old_top =card.style.top;
+    var old_left = card.style.left;
+    var splited__old_left = old_left.split('px');
+    var splited_old_top = old_top.split('px');
+    old_top=parseInt(splited_old_top[0]);
+    old_left=parseInt(splited__old_left[0]);
+
+    var d_top=parseInt(open_card_result[1]);
+    var d_left=parseInt(open_card_result[0]);
+
+    var did_moved = 0;
+    if(old_left+delta_x<=d_left) {
+        var new_left= old_left+delta_x+"px";
+        card.style.left=new_left;
+        did_moved=1;
+    }
+    if(old_top-delta_y >= d_top) {
+        var new_top= old_top-delta_y+"px";
+        card.style.top=new_top;
+        did_moved=1;
+    }
+    if (did_moved == 0) {
+        card.style.zIndex="";
+        if(document.contains(card))
+        {
+            card.style.position="absolute";
+            document.getElementById("my_hand").removeChild(card);
+        }
+    }
+    else
+    {
+        setTimeout(function(){ animate(card,5, 8); }, 33);
+    }
+}
+
+function animate_move (card) {
+    var card_result = getPosition(card);
+    card_result=card_result.split(",");
+   card.style.visibility="hidden";
+    card.style.position="fixed";
+    card.style.left= card_result[0]+"px";
+    card.style.top=card_result[1]+"px";
+    card.style.visibility="visible";
+
+    card.style.zIndex='199999999';
+    setTimeout(function(){ animate(card,5, 8); }, 50);
+
+}
+
+function getPosition(obj){
+    var topValue= 0,leftValue= 0;
+    while(obj){
+        leftValue+= obj.offsetLeft;
+        topValue+= obj.offsetTop;
+        obj= obj.offsetParent;
+    }
+    return leftValue + "," + topValue;
 }

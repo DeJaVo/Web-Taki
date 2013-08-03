@@ -27,8 +27,8 @@ body{
     border-radius: 10px;
     -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
     box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
-    left: 30%;
-    top: 2%;
+    left: 420px;
+    top: 4px;
     width:110px;
     height:180px;
     border: 1px solid;
@@ -42,8 +42,8 @@ body{
     border-radius: 10px;
     -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
     box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
-    left: 55%;
-    top: 2%;
+    left: 850px;
+    top: 4px;
     width:110px;
     height:180px;
     border: 1px solid;
@@ -90,8 +90,8 @@ body{
     position: absolute;
     width: 40px;
     height: 30px;
-    top: 20%;
-    left: 46%;
+    top: 100px;
+    left: 660px;
 }
 
 #my_name
@@ -186,6 +186,8 @@ body{
 {
     position: relative;
     float: left;
+    top: 2px;
+    left: 10px;
     margin-right: 10px;
     width: 110px;
     height: 180px;
@@ -199,6 +201,9 @@ body{
     cursor: pointer;
 }
 
+.card.floating{
+    z-index:199999999;
+}
 
 #my_hand > .card {
     -webkit-transition: all 0.5s ease;
@@ -217,3 +222,4 @@ body{
     -ms-transform: scale(1.05,1.05);
     transform: scale(1.05,1.05);
 }
+

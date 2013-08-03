@@ -14,6 +14,7 @@ include_once('TakiModel.php');
     <meta name="keywords" content="login form, psd, html, css3, tutorial" />
     <meta name="M&M" content="Miki Mook" />
     <!--Stylesheets-->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" >
     <link href="css/stat.css" rel="stylesheet" type="text/css" />
     <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
 </head>
