@@ -188,11 +188,13 @@ class game {
         list($sign,$col)=$this->game_get_cards_data($cards[0]);
         //get last open card data
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
-        //if last open card color is different than this card color then turn is not legal.
-        if ($l_col!= $col) {return 0;}
-
         //if player selected more than one card its illegal.
         if(count($cards)>1) {return 0;}
+        //if last open card color is different than this card color then turn is not legal.
+        if ($l_col== $col) {return 1;}
+        //if last open card has the same sign as this card then turn is legal;
+        if ($l_sign== $sign) {return 1;}
+        return 0;
     }
     private function game_init_all_cards() {
         //creating all regular cards
@@ -301,7 +303,7 @@ class game {
         do {
             $key=array_rand($this->closed_cards, 1);
             list($sign, $col)=$this->game_get_cards_data($this->closed_cards[$key]);
-            if(($sign=='one') || ($sign=='two') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) {
+            if(($sign=='one') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) {
                 $ok =1;
             }
         } while ($ok == 0);
