@@ -508,73 +508,7 @@ function on_drop(event)
     display_my_hand_cards(temp,0,0);
 }
 
-/*function cal_frames_move(card)
-{
-    //var frameCount = 20;
-    var frames = [];//array of coordinates we'll compute
-    var points = {
-        // moving a box "from" and "to", eg. on the X coordinate
-        'fromX': 0,
-        'fromY':0,
-        'toX': 0,
-        'toY':0
-    }
-    var to = document.getElementById("open_cards");
-    var old_left = card.style.left;
-    var old_top =  card.style.top;
-    var splited_left = old_left.split('px');
-    var splited_top = old_top.split('px');
-    var to_old_left = to.style.left;
-    var to_old_top =  to.style.top;
-    var to_splited_left = to_old_left.split('px');
-    var to_splited_top = to_old_top.split('px');
-    points.fromX=splited_left;
-    points.toX= to_splited_left;
-    points.fromY=splited_top;
-    points.toY=to_splited_top ;
-    var animDeltaX = (points.toX - points.fromX); // how far to move
-    var animDeltaY = (points.toY - points.fromY); // how far to move
-    *//*var tweenAmount = (points.to - points.from)/frameCount;
-     for (var i=0; i<frameCount; i++) {
-     // calculate the points to animate
-     frames[i] = points.from+(tweenAmount*i);
-     }*//*
-    // animation curve: "sum of numbers" (=100%), slow-fast-slow
-    var tweenAmount = [1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1];
-    // move from X to Y over frames as defined by tween curve
-    var frameCount = tweenAmount.length;
-    var newFrameX = points.fromX; // starting coordinate
-    var newFrameY = points.fromY; // starting coordinate
-    for (var i=0; i<frameCount; i++) {
-        // calculate the points to animate
-        newFrameX += (animDeltaX*tweenAmount[i]/100);
-        newFrameY += (animDeltaY*tweenAmount[i]/100);
-        frames[i] = new Array(newFrameX,newFrameY);
-    }
-    return frames;
-}*/
-
-/*
-function animate(card)
-{
-    card.setAttribute('z-index','199999999');
-    var frames = cal_frames_move(card);
-
-    for(var i=0;i<frames.length;i++)
-    {
-        var old_left = card.style.left;
-        var old_top =  card.style.top;
-        var splited_left = old_left.split('px');
-        var splited_top = old_top.split('px');
-        var newX = frames[i][0];
-        var newY = frames[i][1];
-        var new_left = parseInt(splited_left[0]) + newX ;
-        var new_top = parseInt(splited_top[0]) + newY;
-        card.style.left=new_left+"px";
-        card.style.top=new_top+"px";
-    }
-    card.removeAttribute('z-index');
-}*/
+//Calculate deltas where to move from
 function animate(card, delta_x, delta_y)
 {
     var open_card_result = getPosition(document.getElementById("open_cards"));
@@ -604,6 +538,7 @@ function animate(card, delta_x, delta_y)
         card.style.zIndex="";
         if(document.contains(card))
         {
+            card.style.visibility="hidden";
             card.style.position="absolute";
             document.getElementById("my_hand").removeChild(card);
         }
@@ -614,6 +549,7 @@ function animate(card, delta_x, delta_y)
     }
 }
 
+//Animation
 function animate_move (card) {
     var card_result = getPosition(card);
     card_result=card_result.split(",");
@@ -628,6 +564,7 @@ function animate_move (card) {
 
 }
 
+//Find the real position of an object in the DOM
 function getPosition(obj){
     var topValue= 0,leftValue= 0;
     while(obj){
