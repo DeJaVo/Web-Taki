@@ -439,12 +439,16 @@ function on_card_click(card) {
     //if the card is already in the chosen card- remove it, else add it.
     for(var i=0;i<chosen_cards.length;i++) {
         if(card == chosen_cards[i]) {
+            var card_node=find_card_by_title(card);;
+            card_node.style.border="";
             //remove card
             chosen_cards.splice(i,1);
             return;
         }
     }
     //add card
+    var card_node=find_card_by_title(card);
+    card_node.style.border="5px solid yellow";
     chosen_cards.push(card);
 }
 function on_put_down_click() {
@@ -517,6 +521,7 @@ function animate_move (card) {
     setTimeout(function(){ animate(card,8, 11); }, 33);
 
 }
+
 
 ////////////////////////////////////
 /////////util functions////////////
@@ -620,3 +625,19 @@ function draw_names(my_name, active) {
         elem2.style.color="yellow";
     }
 }
+
+//Find card title
+function find_card_by_title(card_title)
+{
+    var element =document.getElementById("my_hand");
+    var childrens = element.children;
+    for(var j= 0; j<childrens.length; j++)
+    {
+            var child_title = childrens[j].getAttribute("title");
+            if(child_title==card_title)
+            {
+                return childrens[j]
+            }
+    }
+}
+
