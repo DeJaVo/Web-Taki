@@ -287,6 +287,9 @@ function display_my_hand_cards(cards,action,animate)
             else
             {
                 div.style["background-image"]="url(\'"+image +"\')";
+                div.style["background-size"] = "contain";
+                div.style["background-repeat"]="no-repeat";
+                div.style["background-position"]="center";
             }
             div.title =card_array[0]+" "+card_array[1];
             div.setAttribute('onclick',"on_card_click(\'"+card_array[0]+" "+card_array[1]+"\')");
@@ -352,6 +355,9 @@ function display_op_hand_cards(num_of_cards)
             var div = document.createElement("div");
             div.className = "card";
             div.style["background-image"]="url(\'"+path +"\')";
+            div.style["background-size"] = "contain";
+            div.style["background-repeat"]="no-repeat";
+            div.style["background-position"]="center";
             element.appendChild(div);
         }
     }
@@ -362,9 +368,13 @@ function  display_last_opened_card(card)
 {
     var path = "../Taki/TakiImages/";
     var card_array = card.split(" ");
+    if((card_array[0]=="king") || (card_array[0]=="change_col")) {card_array[1]="special";}
     var image = path + card_array[0] +"/"+card_array[1]+".jpg";
     var element = document.getElementById("open_cards");
     element.style["background-image"]="url(\'"+image +"\')";
+    element.style["background-size"] = "contain";
+    element.style["background-repeat"]="no-repeat";
+    element.style["background-position"]="center";
     element.setAttribute('ondrop',"on_drop(event)");
     element.setAttribute('ondragover',"allow_drop(event)");
 }
@@ -469,10 +479,13 @@ function animate(card, delta_x, delta_y)
 {
     var open_card_result = getPosition(document.getElementById("open_cards"));
     open_card_result=open_card_result.split(",");
+
     var old_top =card.style.top;
     var old_left = card.style.left;
+
     var splited__old_left = old_left.split('px');
     var splited_old_top = old_top.split('px');
+
     old_top=parseInt(splited_old_top[0]);
     old_left=parseInt(splited__old_left[0]);
 
@@ -480,10 +493,19 @@ function animate(card, delta_x, delta_y)
     var d_left=parseInt(open_card_result[0]);
 
     var did_moved = 0;
-    if(old_left+delta_x<=d_left) {
-        var new_left= old_left+delta_x+"px";
-        card.style.left=new_left;
-        did_moved=1;
+
+    if (old_left < d_left ) {
+        if(old_left+delta_x<=d_left) {
+            var new_left= old_left+delta_x+"px";
+            card.style.left=new_left;
+            did_moved=1;
+        }
+    } else {
+        if(old_left-delta_x>=d_left) {
+            var new_left= old_left-delta_x+"px";
+            card.style.left=new_left;
+            did_moved=1;
+        }
     }
     if(old_top-delta_y >= d_top) {
         var new_top= old_top-delta_y+"px";
@@ -508,14 +530,20 @@ function animate(card, delta_x, delta_y)
 function animate_move (card) {
     var card_result = getPosition(card);
     card_result=card_result.split(",");
-    card.style.visibility="hidden";
-    card.style.position="fixed";
-    card.style.left= card_result[0]+"px";
-    card.style.top=card_result[1]+"px";
-    card.style.visibility="visible";
-
-    card.style.zIndex='199999999';
-    setTimeout(function(){ animate(card,8, 11); }, 33);
+    card.style.display="none";
+    setTimeout(function(){
+        card.style.position="fixed";
+        card.style.left= card_result[0]+"px";
+        card.style.top=card_result[1]+"px";
+        card.style.zIndex='199999999';
+        card.style.display="inline";
+    }, 500);
+    //card.style.position="fixed";
+    //card.style.left= card_result[0]+"px";
+    //card.style.top=card_result[1]+"px";
+    //card.style.zIndex='199999999';
+    //card.style.display="inline";
+    setTimeout(function(){ animate(card,8, 11); }, 500);
 
 }
 
@@ -635,11 +663,11 @@ function find_card_by_title(card_title)
     var childrens = element.children;
     for(var j= 0; j<childrens.length; j++)
     {
-            var child_title = childrens[j].getAttribute("title");
-            if(child_title==card_title)
-            {
-                return childrens[j]
-            }
+        var child_title = childrens[j].getAttribute("title");
+        if(child_title==card_title)
+        {
+            return childrens[j]
+        }
     }
 }
 
