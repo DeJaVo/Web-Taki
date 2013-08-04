@@ -329,7 +329,7 @@ class game {
         $this->highest_num_cards_b=8;
 
         //initialize start time
-        $this->game_start_time = date("d:m:y h:i:s ");
+        $this->game_start_time = date("Y-m-d H:i:s");
         // insert new game to DB
         $this->model->tm_insert_new_game($this->player_a,$this->player_b,implode(",",$this->cards_a),$this->highest_num_cards_a,implode(",",$this->cards_b),$this->highest_num_cards_b,$this->last_open_card,implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner, $this->sequential_two);
         return 1;
@@ -345,7 +345,7 @@ class game {
         }
         $average_num_of_cards_per_game= ($this->highest_num_cards_a+($average_num_of_cards_per_game* $num_of_games))/($num_of_games + 1);
         $num_of_games++;
-        $this->model->tm_update_player($username, $user_password, $nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game );
+        $this->model->tm_update_player($username,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game );
 
         $b_data =$this->model->tm_search_user_by_username($this->player_b);
         list($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game) = $b_data;
@@ -356,10 +356,10 @@ class game {
         }
         $average_num_of_cards_per_game= ($this->highest_num_cards_b+($average_num_of_cards_per_game*$num_of_games))/($num_of_games + 1);
         $num_of_games++;
-        $this->model->tm_update_player($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
+        $this->model->tm_update_player($username,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
 
         $this->game_id=0;
-        $this->game_finish_time = date("d:m:y h:i:s");
+        $this->game_finish_time = date("Y-m-d H:i:s");
         $this->update_db();
     }                                  //Update players record when game ends
 
@@ -429,7 +429,7 @@ class game {
 
         //if last open card is a plus-two - check if the player chose a plus two card, if he did- play the turn, else return error.
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
-        if ($l_sign=='two') {
+        if (($l_sign=='two') && ($this->sequential_two>0)) {
             if ($sign !='two') {
                 return 0;
             } else {
@@ -511,12 +511,12 @@ class game {
             case 'change_col':
                 if($this->check_change_col($cards)) {
                     if($this->turn == 0) {
-                        unset($this->cards_a[array_search($cards, $this->cards_a)]);
+                        unset($this->cards_a[array_search($cards[0], $this->cards_a)]);
                     } else {
-                        unset($this->cards_b[array_search($cards, $this->cards_b)]);
+                        unset($this->cards_b[array_search($cards[0], $this->cards_b)]);
                     }
-                    //$this->change_turn();
-                    $this->last_open_card=$cards;
+                    $this->last_open_card=$cards[0];
+                    $this->update_db();
                     return 3;
                 }
                 return 0;
@@ -620,7 +620,8 @@ if(isset($_POST['arg']))
                 break;
             case 'surrender':
                 $game->game_surrender($user);
-                $result=6;
+                $game->game_ends();
+                $result=5;
                 break;
             case 'change':
                 $result=$game->game_change_color($line[2]);
