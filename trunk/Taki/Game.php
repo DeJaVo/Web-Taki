@@ -564,107 +564,110 @@ class game {
     //if the player has more than one plus-two cards, we dont do anything and return. if he has only one, we do it automatically.
     //we turn 1 if a turn was played automatically, else we return 0- that means the player has to choose one of its twos
 }
-$command=$_POST['arg'];
-$model = new taki_model();
-$user = $model->get_decrypted( $_SESSION['username']);
+if(isset($_POST['arg']))
+{
+    $command=$_POST['arg'];
 
-$result = 0;
-$game = new game($model,$user);
+    $model = new taki_model();
+    $user = $model->get_decrypted( $_SESSION['username']);
+
+    $result = 0;
+    $game = new game($model,$user);
 
 //|| ($game->game_id == 0)
-if (($game->winner==0)||($game->winner==1) )
-{
-    //in case the game already ended
-    if($user==$game->winner)
+    if (($game->winner==0)||($game->winner==1) )
     {
-        echo "6";
-    }
-    if ($user!= $game->winner)
-    {
-        echo "5";
-    }
-}
-
-else
-{
-    $line = explode(" ", $command);
-    switch($line[0])
-    {
-        case 'start':
-            $playerA = $line[3];
-            $playerB =  $line[4];
-            $result=$game->game_starts($playerA, $playerB);
-            break;
-        case 'draw':
-            $result=$game->game_draw_cards();
-            break;
-        case 'put':
-            $broken_cards=array_slice($line,3,(count($line)-1));
-            $cards=$game->cvt_brk_crd_to_str($broken_cards);
-            $result=$game->game_put_down_cards($cards);
-            break;
-        case 'surrender':
-            $game->game_surrender($user);
-            $result=6;
-            break;
-        case 'change':
-            $result=$game->game_change_color($line[2]);
-            break;
-        case 'turn':
-            if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1)))
-            {
-                //in case it's not you turn
-                $result=8;
-                break;
-            }
-            else
-            {
-                $game_data=$game->game_return_game_data();
-                $result =7;
-                break;
-            }
-        case 'print':
-            //$result= $game->game_return_game_data();
-            $result=1;
-            break;
-        default:
-            //todo: handle error;
-            break;
+        //in case the game already ended
+        if($user==$game->winner)
+        {
+            echo "6";
+        }
+        if ($user!= $game->winner)
+        {
+            echo "5";
+        }
     }
 
-    switch($result)
+    else
     {
-        case 0:
-            if(is_string($result))
-            {
+        $line = explode(" ", $command);
+        switch($line[0])
+        {
+            case 'start':
+                $playerA = $line[3];
+                $playerB =  $line[4];
+                $result=$game->game_starts($playerA, $playerB);
+                break;
+            case 'draw':
+                $result=$game->game_draw_cards();
+                break;
+            case 'put':
+                $broken_cards=array_slice($line,3,(count($line)-1));
+                $cards=$game->cvt_brk_crd_to_str($broken_cards);
+                $result=$game->game_put_down_cards($cards);
+                break;
+            case 'surrender':
+                $game->game_surrender($user);
+                $result=6;
+                break;
+            case 'change':
+                $result=$game->game_change_color($line[2]);
+                break;
+            case 'turn':
+                if((($user==$game->player_a)&&($game->turn!=0)) || (($user==$game->player_b)&&($game->turn!=1)))
+                {
+                    //in case it's not you turn
+                    $result=8;
+                    break;
+                }
+                else
+                {
+                    $game_data=$game->game_return_game_data();
+                    $result =7;
+                    break;
+                }
+            case 'print':
+                //$result= $game->game_return_game_data();
+                $result=1;
+                break;
+            default:
+                //todo: handle error;
+                break;
+        }
+
+        switch($result)
+        {
+            case 0:
+                if(is_string($result))
+                {
+                    echo $result;
+                }
+                else
+                {
+                    echo "1";
+                }
+
+                break;
+            case 1:
+                if($game->game_did_game_end())
+                {
+                    $game->game_ends();
+                    $game_data=$game->game_return_game_data();
+                    echo "4"." ".$game_data;
+                    break;
+                }
+                else
+                {
+                    $game_data=$game->game_return_game_data();
+                    echo "2"." ".$game_data;
+                    break;
+                }
+            default:
                 echo $result;
-            }
-            else
-            {
-                echo "1";
-            }
 
-            break;
-        case 1:
-            if($game->game_did_game_end())
-            {
-                $game->game_ends();
-                $game_data=$game->game_return_game_data();
-                echo "4"." ".$game_data;
-                break;
-            }
-            else
-            {
-                $game_data=$game->game_return_game_data();
-                echo "2"." ".$game_data;
-                break;
-            }
-        default:
-            echo $result;
-
+        }
     }
 }
-
 //if move was legal - game data will be updated accordingly and result will set to 1;
 //server returns:
 //0 - internal error
