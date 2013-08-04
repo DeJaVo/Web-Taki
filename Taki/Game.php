@@ -110,9 +110,9 @@ class game {
         //get last open card data
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
-        if ($l_col!= $col) {return 0;}
-
-        return 1;
+        if ($l_col == $col) {return 1;}
+        if($l_sign == $sign) {return 1;}
+        return 0;
     }
     private function check_change_col($cards) {
         //check that there are no other cards after this card
