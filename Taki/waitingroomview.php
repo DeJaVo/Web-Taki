@@ -89,7 +89,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
     <!--Header-->
     <div class="header">
         <h1>Waiting Room Form</h1>
-        <span>Please be patience and wait for another user to login</span>
+        <span>Waiting for an opponent...</span>
     </div>
     <!--END header-->
 

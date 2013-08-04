@@ -50,8 +50,8 @@ function draw_board() {
         var to_be_added=cards_group[2];
         display_my_hand_cards(to_be_removed,0,1);
         display_my_hand_cards(to_be_added,1,0);*/
-        display_my_hand_cards( params_array['my_cards'],0,1);
-        display_my_hand_cards( params_array['my_cards'],1,0);
+        display_my_hand_cards( splitted_params_array,0,1);
+        display_my_hand_cards( splitted_params_array,1,0);
     }
     else {
         //illegal move: need to revert D&D changes
@@ -81,6 +81,7 @@ function server_answer( answer) {
     switch (parseInt(answer)) {
         case 1:
             //illegal move
+            alert("Illegal Move, Please Try Again");
             draw_board();
             chosen_cards= new Array();
             break;
