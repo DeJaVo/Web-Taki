@@ -13,6 +13,31 @@
     <!--Stylesheets-->
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
+    <script>
+        var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
+        var tagOrComment = new RegExp(
+                '<(?:'
+                    // Comment body.
+                        + '!--(?:(?:-*[^->])*--+|-?)'
+                    // Special "raw text" elements whose content should be elided.
+                        + '|script\\b' + tagBody + '>[\\s\\S]*?<\/script\\s*'
+            + '|style\\b' + tagBody + '>[\\s\\S]*?<\/style\\s*'
+    // Regular name
+    + '|/?[a-z]'
+    + tagBody
+    + ')>',
+    'gi');
+
+        function removeTags(html) {
+
+            var oldHtml;
+            do {
+                oldHtml = html;
+                html = html.replace(tagOrComment, '');
+            } while (html !== oldHtml);
+            return html.replace(/</g, '&lt;');
+        }
+    </script>
 </head>
 <body>
 
@@ -35,9 +60,15 @@
 
         <!--Input fields-->
         <div class="content">
-            <!--USERNAME--><input name="username" type="text" class="input username" placeholder="Username" /><!--END USERNAME-->
-            <!--PASSWORD--><input name="password" type="password" class="input password" placeholder="Password" /><!--END PASSWORD-->
-            <!--NICKNAME--><input name="nickname" type="text" class="input nickname" placeholder="Nickname" /><!--END PASSWORD-->
+            <!--USERNAME--><label>
+            <input name="username" type="text" class="input username" placeholder="Username"/>
+        </label><!--END USERNAME-->
+            <!--PASSWORD--><label>
+            <input name="password" type="password" class="input password" placeholder="Password"/>
+        </label><!--END PASSWORD-->
+            <!--NICKNAME--><label>
+            <input name="nickname" type="text" class="input nickname" placeholder="Nickname"/>
+        </label><!--END PASSWORD-->
         </div>
         <!--END Input fields-->
 
@@ -54,6 +85,5 @@
     <!--end login form-->
 
 </div>
-
 </body>
 </html>

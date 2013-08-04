@@ -103,16 +103,34 @@ class login
             }
         }
     }
+
 }
+
+function trim_value(&$value)
+{
+    $value = trim($value);    // this removes whitespace and related characters from the beginning and end of the string
+}
+
 
 if(isset($_POST['submit']))
 {
     $submit = trim($_POST['submit']);
     $model = new taki_model();
+    array_filter($_POST,'trim_value');
+    $postfilter =
+        array(
+            'username'                            =>    array('filter' => FILTER_SANITIZE_ENCODED, 'flags' => FILTER_FLAG_STRIP_LOW),
+            'password'                            =>    array('filter' => FILTER_SANITIZE_ENCODED, 'flags' => FILTER_FLAG_STRIP_LOW),
+            'nickname'                            =>    array('filter' => FILTER_SANITIZE_ENCODED, 'flags' => FILTER_FLAG_STRIP_LOW),
+        );
+    $revised_post_array = filter_var_array($_POST, $postfilter);
+    $sanitized_username=$revised_post_array['username'];
+    $sanitized_password=$revised_post_array['password'];
+    $sanitized_nickname=$revised_post_array['nickname'];
     //TODO: fix use in mysql_real into mysqli_stmt also in DB
-    $username = mysql_real_escape_string(trim($_POST['username']));
-    $password = mysql_real_escape_string(trim($_POST['password']));
-    $nickname = mysql_real_escape_string(trim($_POST['nickname']));
+    $username = mysql_real_escape_string(htmlentities($sanitized_username,ENT_COMPAT | ENT_HTML401,"UTF-8"));
+    $password = mysql_real_escape_string(htmlentities($sanitized_password,ENT_COMPAT | ENT_HTML401,"UTF-8"));
+    $nickname = mysql_real_escape_string( htmlentities($sanitized_nickname,ENT_COMPAT | ENT_HTML401,"UTF-8"));
     $error =false;
     if(empty($username))
     {

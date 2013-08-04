@@ -83,7 +83,7 @@ function server_answer( answer) {
             draw_board();
             update_game_object();
             chosen_cards= new Array();
-            setTimeout(my_turn(),6000);
+            setTimeout(my_turn,6000);
             break;
         case 3:
             // user needs to select a color
