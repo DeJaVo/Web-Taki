@@ -325,7 +325,7 @@ function display_op_hand_cards(num_of_cards)
     var element = document.getElementById("op_hand");
     var count = element.getElementsByTagName("div").length;
 
-    if(num_of_cards<0){
+    if(num_of_cards>0){
 
         num_of_cards = Math.abs(num_of_cards);
         if(count>num_of_cards)
@@ -338,7 +338,7 @@ function display_op_hand_cards(num_of_cards)
             }
         }
     }
-    else if(num_of_cards>0)
+    else if(num_of_cards<0)
     {
         for(var i= count; i<count+num_of_cards; i++)
         {
