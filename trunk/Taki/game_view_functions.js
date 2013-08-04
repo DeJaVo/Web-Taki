@@ -75,13 +75,14 @@ function server_answer( answer) {
     switch (parseInt(answer)) {
         case 1:
             //illegal move
-            chosen_cards= new Array();
             draw_board();
+            chosen_cards= new Array();
             break;
         case 2:
             // legal move
             draw_board();
             update_game_object();
+            chosen_cards= new Array();
             setTimeout(my_turn(),6000);
             break;
         case 3:
