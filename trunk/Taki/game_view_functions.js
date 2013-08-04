@@ -45,13 +45,11 @@ function draw_board() {
         } else {
             splitted_curr_game = curr_game['my_cards'].split(",");
         }
-        /*var cards_group= intersection3(splitted_curr_game,splitted_params_array);
+        var cards_group= intersection3(splitted_curr_game,splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
         display_my_hand_cards(to_be_removed,0,1);
-        display_my_hand_cards(to_be_added,1,0);*/
-        display_my_hand_cards( splitted_params_array,0,1);
-        display_my_hand_cards( splitted_params_array,1,0);
+        display_my_hand_cards(to_be_added,1,0);
     }
     else {
         //illegal move: need to revert D&D changes
@@ -91,7 +89,7 @@ function server_answer( answer) {
             update_game_object();
             chosen_cards= new Array();
             disable_UI();
-            setTimeout(my_turn,6000);
+            setTimeout(my_turn,3000);
             break;
         case 3:
             // user needs to select a color
@@ -195,15 +193,15 @@ function my_turn() {
             var num = result.charAt(0);
             var result_arr = result.split(" ");
             var my_name= result_arr[1];
+            game_get_state();
+            draw_board();
+            update_game_object();
             if(num=="8") {
                 draw_names(my_name,8);
-                setTimeout(my_turn,6000);
+                setTimeout(my_turn,3000);
             }
             if(num=="7") {
-                game_get_state();
-                draw_board();
                 draw_names(my_name,7);
-                update_game_object();
                 enable_UI();
             }
         }
@@ -534,18 +532,23 @@ function animate_move (card) {
 //                  right- all elems in arr2 that dont exist in arr1
 
 function intersection3(arr1, arr2) {
+    var tmp = new Array();
     var right=new Array();
     var mid= new Array();
     var left=new Array();
     for (var i = 0; i < arr2.length; i++) {
-        if (arr1.indexOf(arr2[i]) !== -1) {
+        var key =arr1.indexOf(arr2[i]);
+        if ( key !== -1) {
             mid.push(arr2[i]);
+            tmp[key]= 1;
         } else {
             right.push(arr2[i]);
         }
     }
     for(var i = 0; i< arr1.length; i++){
         if(mid.indexOf(arr1[i]) == -1) {
+            left.push(arr1[i]);
+        }else if (tmp[i]==undefined) {
             left.push(arr1[i]);
         }
     }
