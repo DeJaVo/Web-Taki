@@ -128,9 +128,10 @@ class game {
         //get last open card data
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
-        if ($l_col!= $col) {return 0;}
-
-        return 1;
+        if ($l_col== $col) {return 1;}
+        //if last open card has the same sign as this card then turn is legal;
+        if ($l_sign== $sign) {return 1;}
+        return 0;
     }
     private function check_plus($player_id,$cards) {
         //get first card data
@@ -431,10 +432,10 @@ class game {
                     //TODO error- you can choose only one plus-two card;
                     return 0;
                 }
-                $this->change_turn();
                 $this->incr_turns_count();
                 $this->remove_cards($player_id,$cards);
                 $this->sequential_two=$this->sequential_two++;
+                $this->change_turn();
                 $this->update_db();
             }
         }
@@ -663,7 +664,11 @@ if(isset($_POST['arg']))
                     break;
                 }
             default:
-                echo $result;
+                if (($result== 7) || ($result == 8 )) {
+                    echo $result." ".$user;
+                }else {
+                    echo $result;
+                }
 
         }
     }

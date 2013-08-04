@@ -31,7 +31,6 @@ function game_start() {
     game_get_state();                   //at first we want to get the game start state
     draw_board();                       //draw for the first time the board
     update_game_object();               //update current game state
-    draw_names();                       //draw the players names on the board
     disable_UI();                       //deactivate all board
     my_turn();                          //starts asking the server if it's the player's turn to play
 }
@@ -52,6 +51,15 @@ function draw_board() {
         display_my_hand_cards(to_be_removed,0,1);
         display_my_hand_cards(to_be_added,1,0);
     }
+    else {
+        //illegal move: need to revert D&D changes
+        //draw dragged cards in "my_hand" again
+        if(curr_game['my_cards'] != null){
+            splitted_curr_game = curr_game['my_cards'].split(",");
+            display_my_hand_cards(splitted_curr_game,0,0);
+            display_my_hand_cards(splitted_curr_game,1,0);
+        }
+    }
     if(curr_game['opp_num_cards'].toString()!= params_array['opp_num_cards']) {
         var num_old=curr_game['opp_num_cards'];
         var num_new = params_array['opp_num_cards'];
@@ -59,6 +67,8 @@ function draw_board() {
     }
     if(curr_game['last_open_card']!= params_array['last_open_card']) {
         display_last_opened_card(params_array['last_open_card']);
+    } else {
+        display_last_opened_card(curr_game['last_open_card']);
     }
     if(curr_game['sum_of_turns']!= params_array['sum_of_turns']) {
     }
@@ -77,6 +87,7 @@ function server_answer( answer) {
             draw_board();
             update_game_object();
             chosen_cards= new Array();
+            disable_UI();
             setTimeout(my_turn,6000);
             break;
         case 3:
@@ -179,22 +190,18 @@ function my_turn() {
             //if result == 7  ==> my turn (result is build of "7 game-params"
             var result = xmlhttp.responseText;
             var num = result.charAt(0);
+            var result_arr = result.split(" ");
+            var my_name= result_arr[1];
             if(num=="8") {
-                var elem1 =document.getElementById("my_name");
-                elem1.style.color="whitesmoke";
-                var elem2 =document.getElementById("op_name");
-                elem2.style.color="yellow";
-                setTimeout(my_turn(),6000);
+                draw_names(my_name,8);
+                setTimeout(my_turn,6000);
             }
-            if(num==7) {
+            if(num=="7") {
                 game_get_state();
                 draw_board();
+                draw_names(my_name,7);
                 update_game_object();
                 enable_UI();
-                var elem1 =document.getElementById("my_name");
-                elem1.style.color="yellow";
-                var elem2 =document.getElementById("op_name");
-                elem2.style.color="whitesmoke";
             }
         }
 
@@ -490,7 +497,7 @@ function animate(card, delta_x, delta_y)
     }
     else
     {
-        setTimeout(function(){ animate(card,5, 8); }, 50);
+        setTimeout(function(){ animate(card,8, 11); }, 33);
     }
 }
 // a wrapper to animate
@@ -504,7 +511,7 @@ function animate_move (card) {
     card.style.visibility="visible";
 
     card.style.zIndex='199999999';
-    setTimeout(function(){ animate(card,5, 8); }, 50);
+    setTimeout(function(){ animate(card,8, 11); }, 33);
 
 }
 
@@ -591,9 +598,22 @@ function enable_UI()
     document.getElementById("op_hand").disabled =false;
 }
 
-function draw_names() {
-    var my_name = curr_game['player_a'];
-    var op_name = curr_game['player_b'];
-    document.getElementById("my_name").innerHTML= my_name;
-    document.getElementById("op_name").innerHTML= op_name;
+function draw_names(my_name, active) {
+    var elem1 =document.getElementById("my_name");
+    var elem2 =document.getElementById("op_name");
+    var op_name;
+    if(my_name == curr_game['player_a']) {
+        op_name= curr_game['player_b'];
+    } else {
+        op_name = curr_game['player_a'];
+    }
+    elem1.innerHTML=my_name;
+    elem2.innerHTML=op_name;
+    if (active==7) {
+        elem1.style.color="yellow";
+        elem2.style.color="whitesmoke";
+    }else {
+        elem1.style.color="whitesmoke";
+        elem2.style.color="yellow";
+    }
 }
