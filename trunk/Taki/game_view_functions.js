@@ -55,13 +55,7 @@ function draw_board() {
     if(curr_game['opp_num_cards'].toString()!= params_array['opp_num_cards']) {
         var num_old=curr_game['opp_num_cards'];
         var num_new = params_array['opp_num_cards'];
-        if(num_old>num_new){
-            //remove opp cards
-            display_op_hand_cards(num_old-num_new);
-        } else if (num_old<num_new) {
-            //add opp cards
-            display_op_hand_cards(num_new-num_old);
-        }else {};
+        display_op_hand_cards(num_new-num_old);
     }
     if(curr_game['last_open_card']!= params_array['last_open_card']) {
         display_last_opened_card(params_array['last_open_card']);
@@ -325,7 +319,7 @@ function display_op_hand_cards(num_of_cards)
     var element = document.getElementById("op_hand");
     var count = element.getElementsByTagName("div").length;
 
-    if(num_of_cards>0){
+    if(num_of_cards<0){
 
         num_of_cards = Math.abs(num_of_cards);
         if(count>num_of_cards)
@@ -338,7 +332,7 @@ function display_op_hand_cards(num_of_cards)
             }
         }
     }
-    else if(num_of_cards<0)
+    else if(num_of_cards>0)
     {
         for(var i= count; i<count+num_of_cards; i++)
         {
