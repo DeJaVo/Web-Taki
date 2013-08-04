@@ -515,9 +515,9 @@ class game {
                         if($sign=='two') {
                             $this->sequential_two++;
                         }
-                        $this->change_turn();
                         $this->incr_turns_count();
                         $this->remove_cards($player_id,$cards);
+                        $this->change_turn();
                         $this->update_db();
                         return 1;
                     }
