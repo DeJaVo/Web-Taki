@@ -19,7 +19,7 @@ var params_array= new Array();
 var game_end = 0;
 var xmlhttp;
 var chosen_cards= new Array();
-var curr_game = {'game_id': 0 ,'player_a': null, 'player_b': null ,'my_cards':new Array(), 'opp_num_cards':0,'last_open_card': null, 'turn':-1, 'sum_of_turns': 0, 'winner': 999, 'game_start_time': null, 'game_finish_Time': null, 'sequential_two':0};
+var curr_game = {'game_id': 0 ,'player_a': null, 'player_b': null ,'my_cards': null, 'opp_num_cards':0,'last_open_card': null, 'turn':-1, 'sum_of_turns': 0, 'winner': 999, 'game_start_time': null, 'game_finish_Time': null, 'sequential_two':0};
 
 
 //////////////////////////////////
@@ -38,10 +38,14 @@ function game_start() {
 
 //does: compare params_array to curr_game for deciding what should be updated
 function draw_board() {
-
+    var splitted_curr_game;
     if(!(curr_game['my_cards']== params_array['my_cards'])) {
         var splitted_params_array = params_array['my_cards'].split(",");
-        var splitted_curr_game = curr_game['my_cards'].split(",");
+        if(curr_game['my_cards'] == null){
+            splitted_curr_game= new Array();
+        } else {
+            splitted_curr_game = curr_game['my_cards'].split(",");
+        }
         var cards_group= intersection3(splitted_curr_game,splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
@@ -231,7 +235,7 @@ function send_move_request(move) {
         {
             var result= xmlhttp.responseText;
             if((result.charAt(0)==2)||(result.charAt(0)==4)) {
-                parse_string(params);
+                parse_string(result);
             }
             server_answer(result.charAt(0));
         }
@@ -451,9 +455,9 @@ function on_put_down_click() {
 ///////// Animation functions/////////
 //////////////////////////////////////
 
-/does: animating a card movment statring from its current position
-/when the card arrives it's destination (the last-open-card element) we remove it from 'my-hand' div
-/input: card element, numeric value to shift in x axis, numeric value ti shoft in y axis
+//does: animating a card movment statring from its current position
+//when the card arrives it's destination (the last-open-card element) we remove it from 'my-hand' div
+//input: card element, numeric value to shift in x axis, numeric value ti shoft in y axis
 function animate(card, delta_x, delta_y)
 {
     var open_card_result = getPosition(document.getElementById("open_cards"));
@@ -512,11 +516,11 @@ function animate_move (card) {
 /////////util functions////////////
 ///////////////////////////////////
 
-/does: compare elements of 2 arrays
-/input: 2 arrays
-/output: 3 arrays: left-all elems in arr1 that dont exist in arr2
-/                  mid- all elems that exist in both arrays
-/                  right- all elems in arr2 that dont exist in arr1
+//does: compare elements of 2 arrays
+//input: 2 arrays
+//output: 3 arrays: left-all elems in arr1 that dont exist in arr2
+//                  mid- all elems that exist in both arrays
+//                  right- all elems in arr2 that dont exist in arr1
 
 function intersection3(arr1, arr2) {
     var right=new Array();
@@ -539,9 +543,9 @@ function intersection3(arr1, arr2) {
     return results;
 }
 
-/does: Finds the real position of an object in the DOM
-/input: obj
-/output: obj's coords relative to the top left ot the browser
+//does: Finds the real position of an object in the DOM
+//input: obj
+//output: obj's coords relative to the top left ot the browser
 function getPosition(obj){
     var topValue= 0,leftValue= 0;
     while(obj){
