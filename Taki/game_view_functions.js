@@ -396,6 +396,7 @@ function on_surrender()
 function on_color(color)
 {
     var cmd= "change color "+color;
+    hide_color_menu();
     send_move_request(cmd);
 }
 
@@ -567,13 +568,13 @@ function allow_drop(event)
 //Activate Colors Menu
 function visible_color_menu()
 {
-    document.getElementById("colors").visibility="visible";
+    document.getElementById("colors").style.visibility="visible";
 }
 
 //Activate Colors Menu
 function hide_color_menu()
 {
-    document.getElementById("colors").visibility="hidden";
+    document.getElementById("colors").style.visibility="hidden";
 }
 
 //Disable UI elements
