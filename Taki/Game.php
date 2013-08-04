@@ -429,7 +429,6 @@ class game {
                 return 0;
             } else {
                 if(count($cards)>1) {
-                    //TODO error- you can choose only one plus-two card;
                     return 0;
                 }
                 $this->incr_turns_count();
@@ -451,28 +450,31 @@ class game {
                 return 0;
             case 'taki':
                 if($this->check_taki($cards)){
-                    $this->change_turn();
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
+                    list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
+                    if($l_sign!= 'stop') {
+                        $this->change_turn();
+                    }
                     $this->update_db();
                     return 1;
                 }
                 return 0;
             case 'change_cards':
                 if($this->check_change_cards($cards)){
-                    $this->change_turn();
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
                     $this->swap_cards();
+                    $this->change_turn();
                     $this->update_db();
                     return 1;
                 }
                 return 0;
             case 'change_dir':
                 if($this->check_change_dir($cards)) {
-                    $this->change_turn();
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
+                    $this->change_turn();
                     $this->update_db();
                     return 1;
                 }
@@ -496,15 +498,12 @@ class game {
             case 'change_col':
                 if($this->check_change_col($cards)) {
                     //Todo:: ask for color from user
-                    //$new_col =
                     if($this->turn == 0) {
                         unset($this->cards_a[array_search($cards, $this->cards_a)]);
-                        $this->turn=1;
                     } else {
                         unset($this->cards_b[array_search($cards, $this->cards_b)]);
-                        $this->turn=0;
                     }
-
+                    $this->change_turn();
                     $this->last_open_card=$cards;
                     return 3;
                 }

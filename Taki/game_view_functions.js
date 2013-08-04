@@ -45,11 +45,13 @@ function draw_board() {
         } else {
             splitted_curr_game = curr_game['my_cards'].split(",");
         }
-        var cards_group= intersection3(splitted_curr_game,splitted_params_array);
+        /*var cards_group= intersection3(splitted_curr_game,splitted_params_array);
         var to_be_removed=cards_group[0];
         var to_be_added=cards_group[2];
         display_my_hand_cards(to_be_removed,0,1);
-        display_my_hand_cards(to_be_added,1,0);
+        display_my_hand_cards(to_be_added,1,0);*/
+        display_my_hand_cards( params_array['my_cards'],0,1);
+        display_my_hand_cards( params_array['my_cards'],1,0);
     }
     else {
         //illegal move: need to revert D&D changes
