@@ -155,10 +155,11 @@ class game {
         } else {
             list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
             if((($sign=='one') || ($sign=='two') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) && (count($cards)==2)) {
-                return 1;
+                if ($l_col == $col) {return 1;}
             }
             if($c_sign=='king') {
                 if ($this->game_put_down_cards($player_id,array_slice($cards,1))) {
+                    $this->last_open_card=$cards[count($cards)-1];
                     $this->change_turn();
                     return 1;
                 }
@@ -323,6 +324,10 @@ class game {
         //define who gets first turn
         $this->turn = rand(0,1);
 
+        //initialize highest number of cards
+        $this->highest_num_cards_a=8;
+        $this->highest_num_cards_b=8;
+
         //initialize start time
         $this->game_start_time = date("d:m:y h:i:s ");
         // insert new game to DB
@@ -363,7 +368,7 @@ class game {
         //if last open card was plus-2 card- check how many twos were piled up.
         //else take only one card
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
-        if ($l_sign==2) {
+        if ($l_sign=='two') {
             $num_of_cards= $this->sequential_two*2;
             $this->sequential_two=0;
         } else {
@@ -440,8 +445,16 @@ class game {
         }
         switch ($sign){
             case 'king':
+                if (count($cards)>1) {
+                    $next_card= $cards[1];
+                    $next_card_data = $this->game_get_cards_data($next_card);
+                    list($n_sign, $n_col)= $next_card_data;
+                    $new_card=$n_sign." ".$n_col;
+                    $this->last_open_card=$new_card;
+                }
                 if($this->game_put_down_cards($player_id, array_slice($cards,1))) {
                     $this->remove_cards($player_id,$cards[0]);
+                    $this->last_open_card=$cards[count($cards)-1];
                     $this->change_turn();
                     $this->incr_turns_count();
                     $this->update_db();
@@ -497,13 +510,12 @@ class game {
                 return 0;
             case 'change_col':
                 if($this->check_change_col($cards)) {
-                    //Todo:: ask for color from user
                     if($this->turn == 0) {
                         unset($this->cards_a[array_search($cards, $this->cards_a)]);
                     } else {
                         unset($this->cards_b[array_search($cards, $this->cards_b)]);
                     }
-                    $this->change_turn();
+                    //$this->change_turn();
                     $this->last_open_card=$cards;
                     return 3;
                 }
@@ -631,7 +643,7 @@ if(isset($_POST['arg']))
                 $result=1;
                 break;
             default:
-                //todo: handle error;
+                $model->tm_handle_error("Fatal Error- Dont mess with our game!");
                 break;
         }
 
