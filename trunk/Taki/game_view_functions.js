@@ -279,10 +279,15 @@ function display_my_hand_cards(cards,action,animate)
             div.className = "card";
             var card_array = cards[i].split(" ");
             var image = path + card_array[0] +"/"+card_array[1]+".jpg";
-            div.style["background-image"]="url(\'"+image +"\')";
-            div.style["background-size"] = "contain";
-            div.style["background-repeat"]="no-repeat";
-            div.style["background-position"]="center";
+            var is_firefox= navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            if(is_firefox)
+            {
+                div.style["background"]="url(\'"+image +"\')";
+            }
+            else
+            {
+                div.style["background-image"]="url(\'"+image +"\')";
+            }
             div.title =card_array[0]+" "+card_array[1];
             div.setAttribute('onclick',"on_card_click(\'"+card_array[0]+" "+card_array[1]+"\')");
             div.setAttribute('draggable','true');
@@ -347,9 +352,6 @@ function display_op_hand_cards(num_of_cards)
             var div = document.createElement("div");
             div.className = "card";
             div.style["background-image"]="url(\'"+path +"\')";
-            div.style["background-size"] = "contain";
-            div.style["background-repeat"]="no-repeat";
-            div.style["background-position"]="center";
             element.appendChild(div);
         }
     }
@@ -363,9 +365,6 @@ function  display_last_opened_card(card)
     var image = path + card_array[0] +"/"+card_array[1]+".jpg";
     var element = document.getElementById("open_cards");
     element.style["background-image"]="url(\'"+image +"\')";
-    element.style["background-size"] = "contain";
-    element.style["background-repeat"]="no-repeat";
-    element.style["background-position"]="center";
     element.setAttribute('ondrop',"on_drop(event)");
     element.setAttribute('ondragover',"allow_drop(event)");
 }

@@ -14,28 +14,33 @@
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <link href="fonts/pacifico/stylesheet.css" rel="stylesheet" type="text/css" />
     <script>
-        var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
-        var tagOrComment = new RegExp(
-                '<(?:'
-                    // Comment body.
-                        + '!--(?:(?:-*[^->])*--+|-?)'
-                    // Special "raw text" elements whose content should be elided.
-                        + '|script\\b' + tagBody + '>[\\s\\S]*?<\/script\\s*'
-            + '|style\\b' + tagBody + '>[\\s\\S]*?<\/style\\s*'
-    // Regular name
-    + '|/?[a-z]'
-    + tagBody
-    + ')>',
-    'gi');
+        function login_validate()
+        {
+            var username = document.forms[0].elements[0];
+            var password = document.forms[0].elements[1];
+            var nickname = document.forms[0].elements[2];
+            if(username.value  == "")
+            {
+                alert( "Please fill in your username");
+                return false;
+            }
+            if(password.value  == "")
+            {
+                alert( "Please fill in your password");
+                return false;
+            }
+            if(nickname.value  == "")
+            {
+                alert( "Please fill in your nickname");
+                return false;
+            }
+            if(password.value.length<5)
+            {
+                alert( "Please, Write a longer password (minimum 5 chars");
+                return false;
 
-        function removeTags(html) {
-
-            var oldHtml;
-            do {
-                oldHtml = html;
-                html = html.replace(tagOrComment, '');
-            } while (html !== oldHtml);
-            return html.replace(/</g, '&lt;');
+            }
+            return true;
         }
     </script>
 </head>
@@ -49,7 +54,7 @@
 
 
     <!--login form inputs-->
-    <form name="login-form" class="login-form" action="Login.php" method="post">
+    <form name="login-form" class="login-form" action="Login.php" onsubmit="return login_validate();" method="post">
 
         <!--Header-->
         <div class="header">
