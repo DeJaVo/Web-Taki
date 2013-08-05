@@ -628,12 +628,6 @@ function disable_UI()
 
         element.children[i].setAttribute('draggable','false');
     }
-    var element1= document.getElementById("colors");
-    var length1 =element.children.length;
-    for(var j=0; j<length1;j++)
-    {
-        element1.children[i].disabled = true;
-    }
  }
 
 //Enable UI elements
@@ -646,12 +640,6 @@ function enable_UI()
     for(var i=0; i<length;i++)
     {
         element.children[i].setAttribute('draggable','true');
-    }
-    var element1= document.getElementById("colors");
-    var length1 =element.children.length;
-    for(var j=0; j<length1;j++)
-    {
-        element1.children[i].disabled = true;
     }
 }
 
