@@ -60,9 +60,10 @@ class taki_model
     }
 
     //Insert new game record
-    public function tm_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two)
+    public function tm_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two,$game_start_time)
     {
-        $this->db->db_insert_new_game($player_a,$player_b,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two);
+
+        $this->db->db_insert_new_game($player_a,$player_b,$cardsA,(string)$highest_num_of_cards_a,$cardsB,(string)$highest_num_cards_b,$last_open_card,$closed_cards,(string)$turn,(string)$sum_of_turns,(string)$winner,(string)$sequential_two,$game_start_time);
     }
 
     //Take card from deck
@@ -79,7 +80,7 @@ class taki_model
     //Update game record
     public function tm_update_game($game_id,$cards_a,$highest_number_of_cards_a,$cards_b,$highest_number_of_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two)
     {
-        $this->db->db_update_game($game_id,$cards_a,$highest_number_of_cards_a,$cards_b,$highest_number_of_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
+        $this->db->db_update_game($game_id,$cards_a,(string)$highest_number_of_cards_a,$cards_b,(string)$highest_number_of_cards_b,$last_open_card,$closed_cards,(string)$turn,(string)$sum_of_turns,(string)$winner,$game_start_time,$game_finish_time,(string)$sequential_two);
     }
 
     //Insert new user to waiting room

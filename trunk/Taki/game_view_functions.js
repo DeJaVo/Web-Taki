@@ -103,6 +103,11 @@ function server_answer( answer) {
             disable_UI();
             check_who_wins();
             break;
+        case 6:
+            if(confirm('You Win!'))
+            {
+                window.location.href="../Taki/statistics.php";
+            }
     }
 }
 
