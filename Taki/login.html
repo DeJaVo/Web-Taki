@@ -39,7 +39,13 @@
                 alert( "Please, Write a longer password (minimum 5 chars)");
                 return false;
             }
-            document.forms[0].submit();
+            var event = window.event;
+            var target = event.target||event.srcElement;
+            if(target.value=="Submit")
+            {
+                document.forms[0].submit();
+            }
+
             return true;
         }
     </script>
