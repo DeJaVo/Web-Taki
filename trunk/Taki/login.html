@@ -36,10 +36,12 @@
             }
             if(password.value.length<5)
             {
-                alert( "Please, Write a longer password (minimum 5 chars");
+                alert( "Please, Write a longer password (minimum 5 chars)");
                 return false;
 
             }
+            document.forms[0].elements[3].disabled=true;
+            document.forms[0].elements[4].disabled=true;
             return true;
         }
     </script>
@@ -79,8 +81,8 @@
 
         <!--Buttons-->
         <div class="footer">
-            <!--Login button--><input type="submit" name="submit" value="Submit" class="button" /><!--END Login button-->
-            <!--Register button--><input type="submit" name="submit" value="Register" class="register" /><!--END Register button-->
+            <!--Login button--><input type="submit" name="submit" value="Submit" class="button"   > <!--END Login button-->
+            <!--Register button--><input type="submit" name="submit" value="Register" class="register"><!--END Register button-->
         </div>
         <!--END Buttons-->
         <a href ="../Taki/Takiimages/Instructions/taki_he.pdf" style="text-decoration: none;" target="new">
