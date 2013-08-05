@@ -47,7 +47,7 @@ class data_base
             usernameB VARCHAR(200) NULL,
             cards_A TEXT,highest_number_of_cards_A INT DEFAULT '0', cards_B TEXT,highest_number_of_cards_B INT DEFAULT '0',
             last_open_card TEXT , closed_cards TEXT , turn INT DEFAULT '0', sum_of_turns INT DEFAULT '0',winner INT DEFAULT '9999',
-            game_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, game_finish_time TIMESTAMP,sequential_two INT DEFAULT '0'
+            game_start_time TEXT, game_finish_time TEXT,sequential_two INT DEFAULT '0'
         )AUTO_INCREMENT =1";
             if (mysqli_query($con,$sql))
             {
@@ -366,26 +366,7 @@ class data_base
         mysqli_close($con);
     }
 
-    //Find game by user name
-   /* public function db_search_game_by_user_name($user_name)
-    {
-        $con=mysqli_connect("","root","","taki_db");
-        if (mysqli_connect_errno())
-        {
-            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
-        }
-        $stmt=mysqli_prepare($con,"SELECT game_id,usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B,highest_number_of_cards_B,  last_open_card,closed_cards,turn,sum_of_turns,winner,game_start_time,game_finish_time,sequential_two  FROM games WHERE  usernameA='$user_name' OR usernameB='$user_name'");
-        if($stmt)
-        {
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt,$game_id,$usernameA,$usernameB,$cards_A,$highest_number_of_cards_A,$cards_B,$highest_number_of_cards_B,$last_open_card,$closed_cards ,$turn,$sum_of_turns,$winner,$game_start_time,$game_finish_time,$sequential_two);
-            mysqli_fetch_assoc($stmt);
-               $list =array('game_id'=>$game_id,'usernameA'=>$usernameA,'usernameB'=>$usernameB,'cards_A'=>$cards_A,'highest_number_of_cards_A'=>$highest_number_of_cards_A,'cards_B'=>$cards_B,'highest_number_of_cards_B'=>$highest_number_of_cards_B,'last_open_card'=>$last_open_card,'closed_cards'=>$closed_cards ,'turn'=>$turn,'sum_of_turns'=>$sum_of_turns,'winner'=>$winner,'game_start_time'=>$game_start_time,'game_finish_time'=>$game_finish_time,'sequential_two'=>$sequential_two);
-        mysqli_stmt_close($stmt);
-        mysqli_close($con);
-            return $list;
-        }
-    }*/
+
 
     public function db_search_game_by_user_name($user_name) {
         $con=mysqli_connect("","root","","taki_db");
