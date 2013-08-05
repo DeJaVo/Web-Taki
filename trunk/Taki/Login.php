@@ -38,7 +38,6 @@ class login
                     {
                         if(!isset($_SESSION)){ session_start(); }
                         echo("Connecting.... <br>");
-                        //TODO: html escaping
                         $_SESSION['username'] = $this->model->set_encrypted($this->username);
                         $result = $this->model->tm_insert_user_to_room($this->username);
                         if(!empty($result))
@@ -127,7 +126,6 @@ if(isset($_POST['submit']))
     $sanitized_username=$revised_post_array['username'];
     $sanitized_password=$revised_post_array['password'];
     $sanitized_nickname=$revised_post_array['nickname'];
-    //TODO: fix use in mysql_real into mysqli_stmt also in DB
     $username = mysql_real_escape_string(htmlentities($sanitized_username,ENT_COMPAT | ENT_HTML401,"UTF-8"));
     $password = mysql_real_escape_string(htmlentities($sanitized_password,ENT_COMPAT | ENT_HTML401,"UTF-8"));
     $nickname = mysql_real_escape_string( htmlentities($sanitized_nickname,ENT_COMPAT | ENT_HTML401,"UTF-8"));
