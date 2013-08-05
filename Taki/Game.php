@@ -13,13 +13,13 @@ class game {
     public $player_b = NULL;
     private $cards_a = NULL;                                         //list of a's cards
     private $cards_b = NULL;                                            // list of b's cards
-    private $highest_num_cards_a = 0;
-    private $highest_num_cards_b = 0;
-    private $last_open_card = NULL;
+    private $highest_num_cards_a;
+    private $highest_num_cards_b ;
+    public  $last_open_card = NULL;
     private $closed_cards = NULL;                                       //list of closed cards
     public  $turn = NULL;                                               // whose turn is it
     private $sum_of_turns = 0;
-    public $winner = 9999;                                             // by id/username
+    public $winner= 9999;                                             // by id/username
     private $game_start_time = NULL;
     private $game_finish_time = NULL;
     private $all_cards = NULL;
@@ -27,7 +27,7 @@ class game {
     private $command = NULL;
 
 
-    private function game_get_cards_data ($card_str) {
+    public function game_get_cards_data ($card_str) {
         list($sign,$col)=explode(" ",$card_str,2);
         return array($sign, $col);
     }               //gets a string of card path and split it into sections, to understand it's color and sign.
@@ -54,14 +54,14 @@ class game {
         unset($this->closed_cards[$k]);
         $this->closed_cards=array_values($this->closed_cards);
     }
-    private function change_turn () {
+    public function change_turn () {
         if ($this->turn==1) {
             $this->turn=0;
         } else {$this->turn=1;}
         return;
     }
     private function incr_turns_count () {$this->sum_of_turns++;}
-    private function update_db() {
+    public function update_db() {
         $this->model->tm_update_game($this->game_id,implode(",",$this->cards_a), $this->highest_num_cards_a, implode(",",$this->cards_b), $this->highest_num_cards_b,$this->last_open_card, implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time, $this->sequential_two);
     }
     private function swap_cards(){
@@ -175,14 +175,14 @@ class game {
                 $this->last_open_card=$cards[0];
                 if ($this->game_put_down_cards($player_id,array_slice($cards,1))) {
                     $this->last_open_card=$cards[count($cards)-1];
-                    $this->change_turn();
+                    //$this->change_turn();
                     return 1;
                 }
             }
             if($c_sign=='taki') {
                 $this->last_open_card=$cards[0];
                 if ($this->check_taki(array_slice($cards,1))) {
-                    $this->change_turn();
+                    //$this->change_turn();
                     return 1;
                 }
             }
@@ -190,14 +190,14 @@ class game {
                 $this->last_open_card=$cards[0];
                 if($this->check_change_cards(array_slice($cards,1))) {
                     $this->swap_cards();
-                    $this->change_turn();
+                    //$this->change_turn();
                     return 1;
                 }
             }
             if($c_sign=='change_dir') {
                 $this->last_open_card=$cards[0];
                 if($this->check_change_dir(array_slice($cards,1))) {
-                    $this->change_turn();
+                   //$this->change_turn();
                     return 1;
                 }
             }
@@ -352,7 +352,7 @@ class game {
         //initialize start time
         $this->game_start_time = date("Y-m-d H:i:s");
         // insert new game to DB
-        $this->model->tm_insert_new_game($this->player_a,$this->player_b,implode(",",$this->cards_a),$this->highest_num_cards_a,implode(",",$this->cards_b),$this->highest_num_cards_b,$this->last_open_card,implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner, $this->sequential_two);
+        $this->model->tm_insert_new_game($this->player_a,$this->player_b,implode(",",$this->cards_a),$this->highest_num_cards_a,implode(",",$this->cards_b),$this->highest_num_cards_b,$this->last_open_card,implode(",",$this->closed_cards),$this->turn,$this->sum_of_turns,$this->winner, $this->sequential_two,$this->game_start_time);
         return 1;
     }            //initialize a new game, and insert it into DB.
     public function game_ends () {
@@ -413,16 +413,16 @@ class game {
         if($this->turn == 0) {
             $this->cards_a=array();
             $this->cards_a=$players_cards;
-            $this->turn=1;
+          //  $this->turn=1;
         } else {
             $this->cards_b=array();
             $this->cards_b=$players_cards;
-            $this->turn=0;
+          //  $this->turn=0;
         }
         $this->sum_of_turns++;
         //$this->closed_cards = array_diff($this->closed_cards, $taken_cards);
         $this->closed_cards=array_values($this->closed_cards);
-        $this->update_db();
+        //$this->update_db();
         //$this->model->tm_update_game($this->game_id,$this->cards_a, $this->highest_num_cards_a, $this->cards_b, $this->highest_num_cards_b,$this->last_open_card, $this->closed_cards,$this->turn,$this->sum_of_turns,$this->winner,$this->game_start_time, $this->game_finish_time);
         return 1;
     }
@@ -460,8 +460,8 @@ class game {
                 $this->incr_turns_count();
                 $this->remove_cards($player_id,$cards);
                 $this->sequential_two=$this->sequential_two++;
-                $this->change_turn();
-                $this->update_db();
+               // $this->change_turn();
+                //$this->update_db();
             }
         }
         switch ($sign){
@@ -476,9 +476,9 @@ class game {
                 if($this->game_put_down_cards(array_slice($cards,1))) {
                     $this->remove_cards($player_id,$cards[0]);
                     $this->last_open_card=$cards[count($cards)-1];
-                    $this->change_turn();
+                   // $this->change_turn();
                     $this->incr_turns_count();
-                    $this->update_db();
+                  //  $this->update_db();
                     return 1;
                 }
                 return 0;
@@ -488,7 +488,7 @@ class game {
                     $this->remove_cards($player_id,$cards);
                     list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
                     if($l_sign!= 'stop') {
-                        $this->change_turn();
+                        //$this->change_turn();
                     }
                     if($l_sign == 'two') {
                         $this->sequential_two++;
@@ -496,7 +496,7 @@ class game {
                     if($l_sign== 'plus') {
                         $this->take_one($player_id);
                     }
-                    $this->update_db();
+                 //   $this->update_db();
                     return 1;
                 }
                 return 0;
@@ -505,8 +505,8 @@ class game {
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
                     $this->swap_cards();
-                    $this->change_turn();
-                    $this->update_db();
+                   // $this->change_turn();
+                    //$this->update_db();
                     return 1;
                 }
                 return 0;
@@ -514,8 +514,8 @@ class game {
                 if($this->check_change_dir($cards)) {
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
-                    $this->change_turn();
-                    $this->update_db();
+                   // $this->change_turn();
+                   // $this->update_db();
                     return 1;
                 }
                 return 0;
@@ -523,7 +523,7 @@ class game {
                 if($this->check_stop($cards)) {
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
-                    $this->update_db();
+                   // $this->update_db();
                     return 1;
                 }
                 return 0;
@@ -532,12 +532,12 @@ class game {
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
                     if($l_sign!= 'stop') {
-                        $this->change_turn();
+                       // $this->change_turn();
                     }
                     if($l_sign == 'two') {
                         $this->sequential_two++;
                     }
-                    $this->update_db();
+                   // $this->update_db();
                     return 1;
                 }
                 return 0;
@@ -549,7 +549,7 @@ class game {
                         unset($this->cards_b[array_search($cards[0], $this->cards_b)]);
                     }
                     $this->last_open_card=$cards[0];
-                    $this->update_db();
+                  //  $this->update_db();
                     return 3;
                 }
                 return 0;
@@ -562,8 +562,8 @@ class game {
                         }
                         $this->incr_turns_count();
                         $this->remove_cards($player_id,$cards);
-                        $this->change_turn();
-                        $this->update_db();
+                       // $this->change_turn();
+                       // $this->update_db();
                         return 1;
                     }
                 }
@@ -575,9 +575,9 @@ class game {
         if($l_sign=='change_col') {
             $new_card="$l_sign $new_col";
             $this->last_open_card=$new_card;
-            $this->change_turn();
+           // $this->change_turn();
             $this->incr_turns_count();
-            $this->update_db();
+           // $this->update_db();
             return 1;
         }
     }
@@ -706,6 +706,11 @@ if(isset($_POST['arg']))
 
                 break;
             case 1:
+                list($l_sign, $l_col) = $game->game_get_cards_data($game->last_open_card);
+                if (($l_sign != 'stop') && ($line[0] != 'start') && ($line[0] != 'print')) {
+                    $game->change_turn();
+                }
+                $game->update_db();
                 if($game->game_did_game_end())
                 {
                     $game->game_ends();

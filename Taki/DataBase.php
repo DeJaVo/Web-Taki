@@ -191,7 +191,7 @@ class data_base
     }
 
     //Insert new game
-    public function db_insert_new_game($usernameA,$usernameB,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two)
+    public function db_insert_new_game($usernameA,$usernameB,$cardsA,$highest_num_of_cards_a,$cardsB,$highest_num_cards_b,$last_open_card,$closed_cards,$turn,$sum_of_turns,$winner,$sequential_two, $game_start_time)
     {
         $con=mysqli_connect("","root","","taki_db");
         // Check connection
@@ -199,7 +199,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"INSERT INTO games ( usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner,sequential_two) VALUES ('$usernameA','$usernameB','$cardsA','$highest_num_of_cards_a','$cardsB','$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner','$sequential_two')");
+        mysqli_query($con,"INSERT INTO games ( usernameA,usernameB,cards_A,highest_number_of_cards_A,cards_B, highest_number_of_cards_B,last_open_card,closed_cards,turn,sum_of_turns,winner,sequential_two,game_start_time) VALUES ('$usernameA','$usernameB','$cardsA','$highest_num_of_cards_a','$cardsB','$highest_num_cards_b','$last_open_card','$closed_cards','$turn','$sum_of_turns','$winner','$sequential_two','$game_start_time')");
         mysqli_close($con);
     }
 
