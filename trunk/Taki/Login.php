@@ -38,6 +38,7 @@ class login
                     {
                         if(!isset($_SESSION)){ session_start(); }
                         echo("Connecting.... <br>");
+                        //TODO: html escaping
                         $_SESSION['username'] = $this->model->set_encrypted($this->username);
                         $result = $this->model->tm_insert_user_to_room($this->username);
                         if(!empty($result))
