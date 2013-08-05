@@ -277,7 +277,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',cards_B='$cards_B',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two ' WHERE game_id='$game_id'");
+        mysqli_query($con,"UPDATE games SET cards_A='$cards_A',highest_number_of_cards_A='$highest_number_of_cards_A',cards_B='$cards_B',highest_number_of_cards_B='$highest_number_of_cards_B',last_open_card='$last_open_card',closed_cards='$closed_cards',turn='$turn',sum_of_turns='$sum_of_turns',winner='$winner',game_start_time='$game_start_time',game_finish_time='$game_finish_time',sequential_two ='$sequential_two' WHERE game_id='$game_id'");
         mysqli_close($con);
     }
 
@@ -395,7 +395,7 @@ class data_base
         {
             echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
         }
-        $stmt=mysqli_prepare($con, "SELECT game_id,usernameA,usernameB,highest_number_of_cards_A,highest_number_of_cards_B,turn,sum_of_turns,winner, game_start_time,game_finish_time FROM games WHERE game_id > 0");
+        $stmt=mysqli_prepare($con, "SELECT game_id,usernameA,usernameB,highest_number_of_cards_A,highest_number_of_cards_B,turn,sum_of_turns,winner, game_start_time,game_finish_time FROM games WHERE game_id < 9999");
         if($stmt)
         {
             mysqli_stmt_execute($stmt);
@@ -411,5 +411,16 @@ class data_base
         mysqli_close($con);
     }
 
+    public function db_release_game($game_id)
+    {
+        $con=mysqli_connect("","root","","taki_db");
+        if (mysqli_connect_errno())
+        {
+            echo "Failed to connect to MySQL: <br>" . mysqli_connect_error()."<br>";
+        }
+        mysqli_query($con,"UPDATE games SET game_id= 9999 WHERE game_id='$game_id'");
+        mysqli_close($con);
+
+    }
 }
 

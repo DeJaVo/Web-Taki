@@ -8,7 +8,7 @@ if (!(isset($_SESSION['username']))) { header ("URL=../Taki/login.html'"); }
 class game {
     //TODO: when closed cards == 0 , reest closed cards
     private $model;
-    public  $game_id = NULL ;
+    public  $game_id ;
     public $player_a = NULL;
     public $player_b = NULL;
     private $cards_a = NULL;                                         //list of a's cards
@@ -18,12 +18,12 @@ class game {
     public  $last_open_card = NULL;
     private $closed_cards = NULL;                                       //list of closed cards
     public  $turn = NULL;                                               // whose turn is it
-    private $sum_of_turns = 0;
-    public $winner= 9999;                                             // by id/username
+    private $sum_of_turns;
+    public $winner;                                             // by id/username
     private $game_start_time = NULL;
-    private $game_finish_time = NULL;
+    private $game_finish_time;
     private $all_cards = NULL;
-    private $sequential_two = 0;                                        //number of two's in a row
+    private $sequential_two;                                        //number of two's in a row
     private $command = NULL;
 
 
@@ -278,6 +278,7 @@ class game {
         $this->cards_a = array();
         $this->cards_b = array();
         $this->closed_cards= array();
+        $this->winner=9999;
         $game_data=$this->model->tm_search_game_by_user_name($user_name);
         if(!empty($game_data['game_id'])) {
             $game_data['cards_A']=explode(",",$game_data['cards_A']);
@@ -288,8 +289,8 @@ class game {
             $this->player_b=$game_data['usernameB'];
             $this->cards_a= $game_data['cards_A'];
             $this->cards_b= $game_data['cards_B'];
-            $this->highest_number_of_cards_a=intval($game_data['highest_number_of_cards_A']);
-            $this->highest_number_of_cards_b=intval($game_data['highest_number_of_cards_B']);
+            $this->highest_num_cards_a=intval($game_data['highest_number_of_cards_A']);
+            $this->highest_num_cards_b=intval($game_data['highest_number_of_cards_B']);
             $this->last_open_card=$game_data['last_open_card'];
             $this->closed_cards=$game_data['closed_cards'];
             $this->turn=intval($game_data['turn']);
@@ -359,7 +360,7 @@ class game {
         //update each player's record
         $a_data =$this->model->tm_search_user_by_username($this->player_a);
         list($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game) = $a_data;
-        if($this->player_a==$this->winner) {
+        if($this->winner== 0) {
             $num_of_wins++;
         }else {
             $num_of_loses++;
@@ -370,7 +371,7 @@ class game {
 
         $b_data =$this->model->tm_search_user_by_username($this->player_b);
         list($username,$user_password,$nick_name,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game) = $b_data;
-        if($this->player_b==$this->winner) {
+        if($this->winner==1) {
             $num_of_wins++;
         }else {
             $num_of_loses++;
@@ -379,9 +380,10 @@ class game {
         $num_of_games++;
         $this->model->tm_update_player($username,$num_of_games,$num_of_wins,$num_of_loses,$average_num_of_cards_per_game);
 
-        $this->game_id=0;
+        //$this->game_id=0;
         $this->game_finish_time = date("Y-m-d H:i:s");
         $this->update_db();
+        $this->model->tm_release_game($this->game_id);
     }                                  //Update players record when game ends
 
     public function game_draw_cards() {
@@ -460,26 +462,31 @@ class game {
                 $this->incr_turns_count();
                 $this->remove_cards($player_id,$cards);
                 $this->sequential_two=$this->sequential_two++;
+                return 1;
                // $this->change_turn();
                 //$this->update_db();
             }
         }
         switch ($sign){
             case 'king':
-                if (count($cards)>1) {
+                if (count($cards)== 1) {
+                    $this->remove_cards($player_id,$cards);
+                    $this->incr_turns_count();
+                    return 1;
+                } else {
                     $next_card= $cards[1];
                     $next_card_data = $this->game_get_cards_data($next_card);
                     list($n_sign, $n_col)= $next_card_data;
                     $new_card=$n_sign." ".$n_col;
                     $this->last_open_card=$new_card;
-                }
-                if($this->game_put_down_cards(array_slice($cards,1))) {
-                    $this->remove_cards($player_id,$cards[0]);
-                    $this->last_open_card=$cards[count($cards)-1];
-                   // $this->change_turn();
-                    $this->incr_turns_count();
-                  //  $this->update_db();
-                    return 1;
+                    if($this->game_put_down_cards(array_slice($cards,1))) {
+                        $this->remove_cards($player_id,$cards[0]);
+                        $this->last_open_card=$cards[count($cards)-1];
+                        // $this->change_turn();
+                        $this->incr_turns_count();
+                        //  $this->update_db();
+                        return 1;
+                    }
                 }
                 return 0;
             case 'taki':
@@ -558,7 +565,7 @@ class game {
                     //in case sign is a number between 1-9
                     if($this->check_number($cards)) {
                         if($sign=='two') {
-                            $this->sequential_two++;
+                            $this->sequential_two=$this->sequential_two++;
                         }
                         $this->incr_turns_count();
                         $this->remove_cards($player_id,$cards);
@@ -585,12 +592,12 @@ class game {
 
         if (empty($this->cards_a)) {
             //a wons
-            $this->winner=$this->player_a;
+            $this->winner=0;
             return 1;
         }
         if (empty($this->cards_b)) {
             //b wons
-            $this->winner=$this->player_b;
+            $this->winner=1;
             return 1;
         }
         if(($this->winner==0) || ($this->winner==1)) {
@@ -599,10 +606,11 @@ class game {
         return 0;
     }
     public function game_surrender($user) {
+        $this->incr_turns_count();
         if($user==$this->player_a) {
-            $this->winner=$this->player_b;
+            $this->winner=1;
         } else {
-            $this->winner=$this->player_a;
+            $this->winner=0;
         }
     }
     //when changing color, we change the card path. according to the color chosen by the user we set the new card path.
@@ -619,17 +627,26 @@ if(isset($_POST['arg']))
     $result = 0;
     $game = new game($model,$user);
 
-//|| ($game->game_id == 0)
-    if (($game->winner==0)||($game->winner==1) )
-    {
-        //in case the game already ended
-        if($user==$game->winner)
-        {
-            echo "6";
+    if (($game->winner==0) || ($game->winner==1)) {
+        if($game->winner==0) {
+            if($user==$game->player_a)
+            {
+                echo "6";
+            }
+            if ($user!= $game->player_a)
+            {
+                echo "5";
+            }
         }
-        if ($user!= $game->winner)
-        {
-            echo "5";
+        if ($game->winner== 1) {
+            if($user==$game->player_b)
+            {
+                echo "6";
+            }
+            if ($user!= $game->player_b)
+            {
+                echo "5";
+            }
         }
     }
     else

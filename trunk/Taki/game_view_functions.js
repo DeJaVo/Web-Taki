@@ -199,6 +199,10 @@ function my_turn() {
             var result_arr = result.split(" ");
             var my_name= result_arr[1];
             game_get_state();
+            if((num == "6")||(num=="5"))
+            {
+                server_answer(num);
+            }
             draw_board();
             update_game_object();
             if(num=="8") {
