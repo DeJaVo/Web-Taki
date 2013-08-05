@@ -43,6 +43,17 @@ class game {
         }
         return $result;
     }
+    private function take_one($player_id) {
+        $k = array_rand($this->closed_cards,1);
+        $card = $this->closed_cards[$k];
+        if($player_id==$this->player_a) {
+            array_push($this->cards_a, $card);
+        } else {
+            array_push($this->cards_b, $card);
+        }
+        unset($this->closed_cards[$k]);
+        $this->closed_cards=array_values($this->closed_cards);
+    }
     private function change_turn () {
         if ($this->turn==1) {
             $this->turn=0;
@@ -62,11 +73,17 @@ class game {
     private function remove_cards($player_id, $cards) {
         foreach ($cards as $card) {
             if($this->turn == 0) {
-                unset($this->cards_a[array_search($card, $this->cards_a)]);
-                $this->last_open_card=$card;
+                $key= array_search($card, $this->cards_a);
+                if($key != -1) {
+                    unset($this->cards_a[$key]);
+                    $this->last_open_card=$card;
+                }
             } else {
-                unset($this->cards_b[array_search($card, $this->cards_b)]);
-                $this->last_open_card=$card;
+                $key= array_search($card, $this->cards_b);
+                if($key != -1) {
+                    unset($this->cards_b[$key]);
+                    $this->last_open_card=$card;
+                }
             }
         }
     }
@@ -78,8 +95,8 @@ class game {
         //get last open card data
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
 
-        //if last open card color is different than this taki card color then turn is not legal.
-        if ($l_col!= $col) {return 0;}
+        //if last open card color is different than this taki card color and they don't have the same sign then turn is not legal.
+        if (($l_col!= $col) && ($l_sign != $sign) ) {return 0;}
 
         foreach ($cards as $card) {
             list($c_sign,$c_col)=$this->game_get_cards_data($card);
@@ -87,8 +104,12 @@ class game {
                 $last_sign=$c_sign;
                 continue;
             } elseif ($last_sign== $c_sign) {
-                $color_was_changed=1;
-                continue;
+                if(!$color_was_changed) {
+                    $color_was_changed=1;
+                    continue;
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
 
@@ -139,25 +160,19 @@ class game {
         //get last open card data
         list($l_sign,$l_col)=$this->game_get_cards_data($this->last_open_card);
         //if last open card color is different than this card color then turn is not legal.
-        if ($l_col!= $col) {return 0;}
+        if (($l_col!= $col) && ($l_sign != $sign) ) {return 0;}
 
         if (count($cards)==1) {
             //Force player to take a card from deck. do it automatically, server side, without asking the player to do it.
-            $k = array_rand($this->closed_cards,1);
-            $card = $this->closed_cards[$k];
-            if($player_id==$this->player_a) {
-                array_push($this->cards_a, $card);
-            } else {
-                array_push($this->cards_b, $card);
-            }
-            unset($this->closed_cards[$k]);
-            $this->closed_cards=array_values($this->closed_cards);
+            $this->take_one($player_id);
+            return 1;
         } else {
             list($c_sign,$c_col)=$this->game_get_cards_data($cards[1]);
-            if((($sign=='one') || ($sign=='two') || ($sign=='three') || ($sign=='four') || ($sign=='five') || ($sign=='six') || ($sign=='seven') || ($sign=='eight') || ($sign=='nine')) && (count($cards)==2)) {
-                if ($l_col == $col) {return 1;}
+            if((($c_sign=='one') || ($c_sign=='two') || ($c_sign=='three') || ($c_sign=='four') || ($c_sign=='five') || ($c_sign=='six') || ($c_sign=='seven') || ($c_sign=='eight') || ($c_sign=='nine')) && (count($cards)==2)) {
+                if ($c_col == $col) {return 1;}
             }
             if($c_sign=='king') {
+                $this->last_open_card=$cards[0];
                 if ($this->game_put_down_cards($player_id,array_slice($cards,1))) {
                     $this->last_open_card=$cards[count($cards)-1];
                     $this->change_turn();
@@ -165,12 +180,14 @@ class game {
                 }
             }
             if($c_sign=='taki') {
+                $this->last_open_card=$cards[0];
                 if ($this->check_taki(array_slice($cards,1))) {
                     $this->change_turn();
                     return 1;
                 }
             }
             if($c_sign=='change_cards') {
+                $this->last_open_card=$cards[0];
                 if($this->check_change_cards(array_slice($cards,1))) {
                     $this->swap_cards();
                     $this->change_turn();
@@ -178,20 +195,24 @@ class game {
                 }
             }
             if($c_sign=='change_dir') {
+                $this->last_open_card=$cards[0];
                 if($this->check_change_dir(array_slice($cards,1))) {
                     $this->change_turn();
                     return 1;
                 }
             }
             if($c_sign=='stop') {
+                $this->last_open_card=$cards[0];
                 if($this->check_stop(array_slice($cards,1))) {
                     return 1;
                 }
             }
             if($c_sign=='plus') {
+                $this->last_open_card=$cards[0];
                 return $this->check_plus($player_id,array_slice($cards,1));
             }
         }
+        return 0;
     }
     private function check_number($cards) {
         //get first card data
@@ -469,6 +490,12 @@ class game {
                     if($l_sign!= 'stop') {
                         $this->change_turn();
                     }
+                    if($l_sign == 'two') {
+                        $this->sequential_two++;
+                    }
+                    if($l_sign== 'plus') {
+                        $this->take_one($player_id);
+                    }
                     $this->update_db();
                     return 1;
                 }
@@ -504,6 +531,12 @@ class game {
                 if($this->check_plus($player_id,$cards)) {
                     $this->incr_turns_count();
                     $this->remove_cards($player_id,$cards);
+                    if($l_sign!= 'stop') {
+                        $this->change_turn();
+                    }
+                    if($l_sign == 'two') {
+                        $this->sequential_two++;
+                    }
                     $this->update_db();
                     return 1;
                 }
@@ -599,10 +632,6 @@ if(isset($_POST['arg']))
             echo "5";
         }
     }
-    elseif (($user==$game->player_a && $game->turn==1) || ($user==$game->player_b && $game->turn==0)) {
-        //in case malicious users try to play not according to the turns...
-        echo "1";
-    }
     else
     {
         $line = explode(" ", $command);
@@ -614,9 +643,17 @@ if(isset($_POST['arg']))
                 $result=$game->game_starts($playerA, $playerB);
                 break;
             case 'draw':
+                if ((($user==$game->player_a) && ($game->turn==1)) || (($user==$game->player_b) && ($game->turn==0))) {
+                    //in case malicious users try to play not according to the turns...
+                    break;
+                }
                 $result=$game->game_draw_cards();
                 break;
             case 'put':
+                if ((($user==$game->player_a) && ($game->turn==1)) || (($user==$game->player_b) && ($game->turn==0))) {
+                    //in case malicious users try to play not according to the turns...
+                    break;
+                }
                 $broken_cards=array_slice($line,3,(count($line)-1));
                 $cards=$game->cvt_brk_crd_to_str($broken_cards);
                 $result=$game->game_put_down_cards($cards);
@@ -627,6 +664,10 @@ if(isset($_POST['arg']))
                 $result=5;
                 break;
             case 'change':
+                if ((($user==$game->player_a) && ($game->turn==1)) || (($user==$game->player_b) && ($game->turn==0))) {
+                    //in case malicious users try to play not according to the turns...
+                    break;
+                }
                 $result=$game->game_change_color($line[2]);
                 break;
             case 'turn':
