@@ -619,21 +619,40 @@ function hide_color_menu()
 //Disable UI elements
 function disable_UI()
 {
-    document.getElementById("deck").disabled=true;
-    document.getElementById("open_cards").disabled =true;
-    document.getElementsByClassName("card").disabled = true;
-    document.getElementById("my_hand").disabled =true;
-    document.getElementById("op_hand").disabled =true;
-}
+    document.getElementById("deck").onclick=null;
+    document.getElementById("play").onclick=null;
+    var element= document.getElementById("my_hand");
+    var length =element.children.length;
+    for(var i=0; i<length;i++)
+    {
+
+        element.children[i].setAttribute('draggable','false');
+    }
+    var element1= document.getElementById("colors");
+    var length1 =element.children.length;
+    for(var j=0; j<length1;j++)
+    {
+        element1.children[i].disabled = true;
+    }
+ }
 
 //Enable UI elements
 function enable_UI()
 {
-    document.getElementById("deck").disabled=false;
-    document.getElementById("open_cards").disabled =false;
-    document.getElementsByClassName("card").disabled = false;
-    document.getElementById("my_hand").disabled =false;
-    document.getElementById("op_hand").disabled =false;
+    document.getElementById("deck").onclick=on_deck;
+    document.getElementById("play").onclick =on_put_down_click;
+     var element= document.getElementById("my_hand");
+    var length =element.children.length;
+    for(var i=0; i<length;i++)
+    {
+        element.children[i].setAttribute('draggable','true');
+    }
+    var element1= document.getElementById("colors");
+    var length1 =element.children.length;
+    for(var j=0; j<length1;j++)
+    {
+        element1.children[i].disabled = true;
+    }
 }
 
 function draw_names(my_name, active) {
