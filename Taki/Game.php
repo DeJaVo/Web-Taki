@@ -599,7 +599,10 @@ if(isset($_POST['arg']))
             echo "5";
         }
     }
-
+    elseif (($user==$game->player_a && $game->turn==1) || ($user==$game->player_b && $game->turn==0)) {
+        //in case malicious users try to play not according to the turns...
+        echo "1";
+    }
     else
     {
         $line = explode(" ", $command);
