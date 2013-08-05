@@ -473,7 +473,7 @@ class game {
                     $new_card=$n_sign." ".$n_col;
                     $this->last_open_card=$new_card;
                 }
-                if($this->game_put_down_cards($player_id, array_slice($cards,1))) {
+                if($this->game_put_down_cards(array_slice($cards,1))) {
                     $this->remove_cards($player_id,$cards[0]);
                     $this->last_open_card=$cards[count($cards)-1];
                     $this->change_turn();
